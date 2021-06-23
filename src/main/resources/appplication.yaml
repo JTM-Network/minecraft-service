@@ -1,0 +1,16 @@
+server:
+  port: 8222
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: minecraft
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+
+reactor:
+  ipc:
+    netty:
+      workerCount: 1
