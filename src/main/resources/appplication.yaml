@@ -9,6 +9,8 @@ spring:
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
+  profiles:
+    active: ${PROFILE}
 
 reactor:
   ipc:
