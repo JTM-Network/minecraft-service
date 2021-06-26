@@ -1,5 +1,6 @@
 package com.jtm.minecraft.core.usecase
 
+import com.jtm.minecraft.core.domain.exceptions.FileNotFound
 import com.jtm.minecraft.core.usecase.file.FileHandler
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -16,19 +17,20 @@ import java.io.File
 @RunWith(SpringRunner::class)
 class FileHandlerTest {
 
-    private val path = "test"
+    private val path = "/test"
     private val handler = FileHandler()
 
     @Before fun setup() {
-        val folder = File(path)
+        handler.disk = "disk"
+        val folder = File(handler.disk + path)
         folder.mkdirs()
 
-        val file = File(path, "test.txt")
+        val file = File(handler.disk + path, "test.txt")
         file.createNewFile()
     }
 
     @After fun tearDown() {
-        val file = File(path)
+        val file = File(handler.disk)
         file.deleteRecursively()
     }
 
@@ -52,10 +54,16 @@ class FileHandlerTest {
         val returned = handler.fetch("$path/test.txt")
 
         StepVerifier.create(returned)
-            .assertNext {
-                assertThat(it.name).isEqualTo("test.txt")
-            }
+            .assertNext { assertThat(it.name).isEqualTo("test.txt") }
             .verifyComplete()
+    }
+
+    @Test fun fetch_thenNotFoundTest() {
+        val returned = handler.fetch("$path/text.txt")
+
+        StepVerifier.create(returned)
+            .expectError(FileNotFound::class.java)
+            .verify()
     }
 
     @Test fun deleteTest() {
@@ -66,6 +74,14 @@ class FileHandlerTest {
                 assertThat(it.name).isEqualTo("test.txt")
             }
             .verifyComplete()
+    }
+
+    @Test fun delete_thenNotFoundTest() {
+        val returned = handler.delete("$path/text.txt")
+
+        StepVerifier.create(returned)
+            .expectError(FileNotFound::class.java)
+            .verify()
     }
 
     @Test fun listFilesTest() {
