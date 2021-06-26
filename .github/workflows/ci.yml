@@ -4,9 +4,6 @@ on:
   push:
     branches: [ 'main' ]
 
-env:
-  NAME: minecraft
-
 jobs:
   build:
     if: github.ref == 'refs/heads/main'
