@@ -11,12 +11,12 @@ import org.springframework.context.annotation.Configuration
 open class FeignConfiguration {
 
     @Bean
-    fun decoder(): Decoder {
+    open fun decoder(): Decoder {
         return JacksonDecoder()
     }
 
     @Bean
-    fun encoder(): Encoder {
+    open fun encoder(): Encoder {
         return JacksonEncoder()
     }
 }
