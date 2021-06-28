@@ -1,4 +1,9 @@
 spring:
+  application:
+    name: minecraft
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
   data:
     mongodb:
       uri: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/admin
