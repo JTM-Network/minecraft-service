@@ -15,6 +15,6 @@ class TestController @Autowired constructor(private val accountProxy: AccountPro
 
     @GetMapping("/account")
     fun account(request: ServerHttpRequest): Mono<AccountInfo> {
-        return accountProxy.getAccount(request)
+        return Mono.just(accountProxy.getAccount(request))
     }
 }

@@ -18,13 +18,3 @@ open class MinecraftService
 fun main(args: Array<String>) {
     SpringApplication.run(MinecraftService::class.java, *args)
 }
-
-@Bean
-fun decoder(): Decoder {
-    return JacksonDecoder()
-}
-
-@Bean
-fun encoder(): Encoder {
-    return JacksonEncoder()
-}
