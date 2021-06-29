@@ -33,7 +33,6 @@ dependencies {
     implementation 'com.stripe:stripe-java:20.41.0'
     implementation 'com.google.guava:guava:28.1-jre'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
-    implementation 'io.github.openfeign:feign-jackson:11.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
 
