@@ -19,4 +19,8 @@ class AccountTokenProvider {
         val claims = Jwts.parser().setSigningKey(accessKey).parseClaimsJws(token)
         return UUID.fromString(claims.body["id"].toString())
     }
+
+    fun getAccountEmail(token: String): String {
+        return Jwts.parser().setSigningKey(accessKey).parseClaimsJws(token).body.subject
+    }
 }
