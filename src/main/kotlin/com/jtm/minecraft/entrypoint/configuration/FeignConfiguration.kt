@@ -14,12 +14,12 @@ open class FeignConfiguration {
 
     @Bean
     open fun decoder(): Decoder {
-        return JacksonDecoder()
+        return JacksonDecoder(mapper())
     }
 
     @Bean
     open fun encoder(): Encoder {
-        return JacksonEncoder()
+        return JacksonEncoder(mapper())
     }
 
     @Bean
