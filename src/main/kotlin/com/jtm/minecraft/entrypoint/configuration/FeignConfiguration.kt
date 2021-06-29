@@ -8,7 +8,6 @@ import feign.jackson.JacksonDecoder
 import feign.jackson.JacksonEncoder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 
 @Configuration
 open class FeignConfiguration {
@@ -24,10 +23,7 @@ open class FeignConfiguration {
     }
 
     @Bean
-    open fun mappingJackson2HttpMessageConverter(): MappingJackson2HttpMessageConverter {
-        val mapper = ObjectMapper()
-        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        val converter = MappingJackson2HttpMessageConverter(mapper);
-        return converter;
+    open fun mapper(): ObjectMapper {
+        return ObjectMapper().disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
     }
 }
