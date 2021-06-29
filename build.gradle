@@ -35,7 +35,6 @@ dependencies {
     implementation 'io.github.openfeign:feign-jackson:11.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.2'
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
 
     runtimeOnly 'org.jetbrains.kotlin:kotlin-reflect:1.5.0'
