@@ -11,7 +11,6 @@ import reactor.core.publisher.Mono
 class TestService @Autowired constructor(@Lazy private val accountProxy: AccountProxy) {
 
     fun testAccount(bearer: String): Mono<AccountInfo> {
-        val account = accountProxy.getAccount(bearer)
-        return Mono.just(account)
+        return accountProxy.getAccount(bearer)
     }
 }
