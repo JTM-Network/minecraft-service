@@ -1,5 +1,6 @@
 package com.jtm.minecraft.entrypoint.controller
 
+import com.jtm.minecraft.core.domain.exceptions.InvalidJwtToken
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.server.reactive.ServerHttpRequest
@@ -15,7 +16,7 @@ class TestController @Autowired constructor(private val accountTokenProvider: Ac
 
     @GetMapping("/account")
     fun account(request: ServerHttpRequest): Mono<UUID> {
-        val bearer = request.headers.getFirst("Authorization")
+        val bearer = request.headers.getFirst("Authorization") ?: return Mono.error(InvalidJwtToken())
         val token = accountTokenProvider.resolveToken(bearer)
         return Mono.just(accountTokenProvider.getAccountId(token))
     }
