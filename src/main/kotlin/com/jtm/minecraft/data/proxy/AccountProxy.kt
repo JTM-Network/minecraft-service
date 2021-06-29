@@ -11,5 +11,5 @@ import reactor.core.publisher.Mono
 interface AccountProxy {
 
     @GetMapping("/auth/me")
-    fun getAccount(request: ServerHttpRequest): AccountInfo
+    fun getAccount(request: ServerHttpRequest): Mono<AccountInfo>
 }
