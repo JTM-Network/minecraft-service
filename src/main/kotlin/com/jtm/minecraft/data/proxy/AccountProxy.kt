@@ -8,7 +8,7 @@ import reactivefeign.spring.config.ReactiveFeignClient
 import reactor.core.publisher.Mono
 
 @Component
-@ReactiveFeignClient("account", url = "lb://account")
+@ReactiveFeignClient("account", url = "account")
 interface AccountProxy {
 
     @GetMapping("/auth/me")
