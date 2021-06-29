@@ -13,9 +13,6 @@ import reactor.core.publisher.Mono
 class TestService @Autowired constructor(private val pluginRepository: PluginRepository, @Lazy private val accountProxy: AccountProxy) {
 
     fun testAccount(bearer: String): Mono<AccountInfo> {
-        val account = accountProxy.getAccount(bearer)
-        println("${account.id}")
-        return pluginRepository.findById(account.id)
-            .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) }).cast(AccountInfo::class.java)
+        return accountProxy.getAccount(bearer)
     }
 }
