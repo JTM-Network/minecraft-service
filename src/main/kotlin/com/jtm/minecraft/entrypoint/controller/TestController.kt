@@ -1,5 +1,6 @@
 package com.jtm.minecraft.entrypoint.controller
 
+import com.jtm.minecraft.core.domain.exceptions.InvalidHeader
 import com.jtm.minecraft.core.domain.model.AccountInfo
 import com.jtm.minecraft.data.proxy.AccountProxy
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +16,7 @@ class TestController @Autowired constructor(private val accountProxy: AccountPro
 
     @GetMapping("/account")
     fun account(request: ServerHttpRequest): Mono<AccountInfo> {
-        return accountProxy.getAccount(request)
+        val bearer = request.headers.getFirst("Authorization") ?: return Mono.error { InvalidHeader() }
+        return Mono.just(accountProxy.getAccount(bearer))
     }
 }
