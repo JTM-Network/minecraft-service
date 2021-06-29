@@ -17,7 +17,6 @@ class TestController @Autowired constructor(private val accountProxy: AccountPro
     @GetMapping("/account")
     fun account(request: ServerHttpRequest): Mono<AccountInfo> {
         val bearer = request.headers.getFirst("Authorization") ?: return Mono.error { InvalidHeader() }
-        val account = accountProxy.getAccount(bearer)
-        return Mono.just(account)
+        return accountProxy.getAccount(bearer)
     }
 }

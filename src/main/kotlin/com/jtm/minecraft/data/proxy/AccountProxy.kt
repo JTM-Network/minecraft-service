@@ -1,16 +1,16 @@
 package com.jtm.minecraft.data.proxy
 
 import com.jtm.minecraft.core.domain.model.AccountInfo
-import org.springframework.cloud.openfeign.FeignClient
-import org.springframework.http.server.reactive.ServerHttpRequest
+import org.springframework.stereotype.Component
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
+import reactivefeign.spring.config.ReactiveFeignClient
 import reactor.core.publisher.Mono
 
-@FeignClient("account")
+@Component
+@ReactiveFeignClient("account")
 interface AccountProxy {
 
     @GetMapping("/auth/me")
-    fun getAccount(@RequestHeader("Authorization") bearer: String): AccountInfo
+    fun getAccount(@RequestHeader("Authorization") bearer: String): Mono<AccountInfo>
 }
