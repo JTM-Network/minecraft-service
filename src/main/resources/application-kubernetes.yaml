@@ -1,15 +1,12 @@
 spring:
-  application:
-    name: minecraft
-  jackson:
-    serialization:
-      FAIL_ON_EMPTY_BEANS: false
   data:
     mongodb:
       uri: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/admin
       database: ${MONGO_DATABASE}
 
 security:
+  jwt:
+    access-key: ${ACCESS_KEY}
   stripe:
     pb-key: ${STRIPE_PB_KEY}
     secret-key: ${STRIPE_SECRET_KEY}
