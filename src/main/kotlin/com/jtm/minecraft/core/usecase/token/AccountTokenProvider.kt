@@ -2,8 +2,10 @@ package com.jtm.minecraft.core.usecase.token
 
 import io.jsonwebtoken.Jwts
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.stereotype.Component
 import java.util.*
 
+@Component
 class AccountTokenProvider {
 
     @Value("\${security.jwt.access-key:accessKey}")
