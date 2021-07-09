@@ -1,6 +1,7 @@
 package com.jtm.minecraft.entrypoint.controller
 
 import com.jtm.minecraft.core.domain.dto.AccountDto
+import com.jtm.minecraft.core.domain.exceptions.FailedAccountFetch
 import com.jtm.minecraft.core.domain.exceptions.InvalidJwtToken
 import com.jtm.minecraft.core.usecase.proxy.AccountClient
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,6 +18,7 @@ class AccountController @Autowired constructor(val client: AccountClient) {
     @GetMapping("/me")
     fun getMe(request: ServerHttpRequest): Mono<AccountDto> {
         val bearer = request.headers.getFirst("Authorization") ?: return Mono.error { InvalidJwtToken() }
-        return client.whoami(bearer)
+        val account = client.whoami(bearer).execute().body() ?: return Mono.error { FailedAccountFetch() }
+        return Mono.just(account)
     }
 }
