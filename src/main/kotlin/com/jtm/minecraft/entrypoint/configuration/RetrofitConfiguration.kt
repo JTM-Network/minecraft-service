@@ -12,7 +12,7 @@ open class RetrofitConfiguration {
 
     @Bean
     @LoadBalanced
-    fun okHttpClientBuilder(): WebClient.Builder {
+    open fun okHttpClientBuilder(): WebClient.Builder {
         return WebClient.builder()
     }
 }
