@@ -9,6 +9,8 @@ version '0.1'
 
 repositories {
     mavenCentral()
+    maven { url="https://repo.spring.io/milestone" }
+    maven { url="https://repo.spring.io/snapshot" }
 }
 
 ext {
@@ -28,7 +30,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.cloud:spring-cloud-starter-kubernetes-client'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-square-retrofit:0.4.0-M1'
     implementation 'com.stripe:stripe-java:20.41.0'
     implementation 'com.google.guava:guava:28.1-jre'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
