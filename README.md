@@ -8,7 +8,7 @@ This service handles majority of the minecraft related services being offered un
 - Kotlin
   - Spring Boot
   - Spring Cloud
-
+- MongoDB
 - Docker
 - Kubernetes
 - Github Actions
