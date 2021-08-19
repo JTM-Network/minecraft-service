@@ -14,3 +14,4 @@ security:
 
 sentry:
   service: ${SERVICE_DSN}
+  plugin: ${PLUGIN_DSN}
