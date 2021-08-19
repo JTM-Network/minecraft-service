@@ -1,6 +1,6 @@
 package com.jtm.minecraft.core.usecase.file
 
-import com.jtm.minecraft.core.domain.exceptions.FileNotFound
+import com.jtm.minecraft.core.domain.exceptions.file.FileNotFound
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.codec.multipart.FilePart

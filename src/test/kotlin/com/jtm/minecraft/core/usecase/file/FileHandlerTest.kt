@@ -1,7 +1,6 @@
-package com.jtm.minecraft.core.usecase
+package com.jtm.minecraft.core.usecase.file
 
-import com.jtm.minecraft.core.domain.exceptions.FileNotFound
-import com.jtm.minecraft.core.usecase.file.FileHandler
+import com.jtm.minecraft.core.domain.exceptions.file.FileNotFound
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before

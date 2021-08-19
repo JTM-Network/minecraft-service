@@ -1,4 +1,4 @@
-package com.jtm.minecraft.core.domain.exceptions
+package com.jtm.minecraft.core.domain.exceptions.token
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
