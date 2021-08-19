@@ -40,7 +40,7 @@ class ProfileService @Autowired constructor(private val profileRepository: Profi
         if (token.isEmpty()) return Mono.error { InvalidJwtToken() }
         val id = tokenProvider.getAccountId(token) ?: return Mono.error { InvalidJwtToken() }
         return profileRepository.findById(id)
-            .switchIfEmpty(Mono.defer { Mono.error(ProfileNotFound()) })
+            .switchIfEmpty(Mono.defer { insertProfile(request) })
     }
 
     fun getProfiles(): Flux<Profile> {
