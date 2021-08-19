@@ -7,14 +7,12 @@ import java.util.*
 
 @Document("plugins")
 data class Plugin(
+    @Id val id: UUID = UUID.randomUUID(),
     var name: String,
-    var description: String
-) {
-    @Id
-    val id: UUID = UUID.randomUUID()
-    var version: String? = null
-    val createdTime: Long = System.currentTimeMillis()
-    var lastUpdated: Long = System.currentTimeMillis()
+    var description: String,
+    var version: String? = null,
+    val createdTime: Long = System.currentTimeMillis(),
+    var lastUpdated: Long = System.currentTimeMillis()) {
 
     fun update(dto: PluginDto): Plugin {
         this.name = dto.name
