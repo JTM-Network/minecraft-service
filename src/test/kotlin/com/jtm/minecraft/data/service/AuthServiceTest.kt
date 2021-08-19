@@ -2,7 +2,9 @@ package com.jtm.minecraft.data.service
 
 import com.jtm.minecraft.core.domain.entity.BlacklistToken
 import com.jtm.minecraft.core.domain.entity.Plugin
+import com.jtm.minecraft.core.domain.entity.Profile
 import com.jtm.minecraft.core.domain.exceptions.plugin.PluginNotFound
+import com.jtm.minecraft.core.domain.exceptions.plugin.PluginUnauthorized
 import com.jtm.minecraft.core.domain.exceptions.token.BlacklistTokenFound
 import com.jtm.minecraft.core.domain.exceptions.token.InvalidJwtToken
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
@@ -26,12 +28,14 @@ class AuthServiceTest {
 
     private val tokenProvider: AccountTokenProvider = mock()
     private val pluginService: PluginService = mock()
+    private val profileService: ProfileService = mock()
     private val tokenService: BlacklistTokenService = mock()
     private val authService = AuthService(tokenProvider, pluginService, tokenService)
 
     private val request: ServerHttpRequest = mock()
     private val plugin: Plugin = mock()
     private val created = BlacklistToken("token")
+    private val profile: Profile = mock()
 
     @Before
     fun setup() {
@@ -46,7 +50,7 @@ class AuthServiceTest {
         `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
         `when`(tokenProvider.getAccountId(anyString())).thenReturn(null)
 
-        val returned = authService.authenticate(request, "test")
+        val returned = authService.authenticate(request, profileService,"test")
 
         verify(tokenProvider, times(1)).resolveToken(anyString())
         verify(tokenProvider, times(1)).getAccountId(anyString())
@@ -63,7 +67,7 @@ class AuthServiceTest {
         `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
         `when`(tokenProvider.getAccountEmail(anyString())).thenReturn(null)
 
-        val returned = authService.authenticate(request, "test")
+        val returned = authService.authenticate(request, profileService, "test")
 
         verify(tokenProvider, times(1)).resolveToken(anyString())
         verify(tokenProvider, times(1)).getAccountId(anyString())
@@ -82,7 +86,7 @@ class AuthServiceTest {
         `when`(tokenProvider.getAccountEmail(anyString())).thenReturn("test@gmail.com")
         `when`(pluginService.getPluginByName(anyString())).thenReturn(Mono.empty())
 
-        val returned = authService.authenticate(request, "test")
+        val returned = authService.authenticate(request, profileService, "test")
 
         verify(tokenProvider, times(1)).resolveToken(anyString())
         verify(tokenProvider, times(1)).getAccountId(anyString())
@@ -98,6 +102,32 @@ class AuthServiceTest {
     }
 
     @Test
+    fun authenticate_thenPluginUnauthorized() {
+        `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
+        `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
+        `when`(tokenProvider.getAccountEmail(anyString())).thenReturn("test@gmail.com")
+        `when`(tokenProvider.createPluginToken(anyOrNull(), anyOrNull(), anyOrNull())).thenReturn("token")
+        `when`(pluginService.getPluginByName(anyString())).thenReturn(Mono.just(plugin))
+        `when`(plugin.id).thenReturn(UUID.randomUUID())
+        `when`(profileService.getProfile(anyOrNull())).thenReturn(Mono.just(profile))
+        `when`(profile.isAuthenticated(anyOrNull())).thenReturn(false)
+
+        val returned = authService.authenticate(request, profileService, "name")
+
+        verify(tokenProvider, times(1)).resolveToken(anyString())
+        verify(tokenProvider, times(1)).getAccountId(anyString())
+        verify(tokenProvider, times(1)).getAccountEmail(anyString())
+        verifyNoMoreInteractions(tokenProvider)
+
+        verify(pluginService, times(1)).getPluginByName(anyString())
+        verifyNoMoreInteractions(pluginService)
+
+        StepVerifier.create(returned)
+            .expectError(PluginUnauthorized::class.java)
+            .verify()
+    }
+
+    @Test
     fun authenticateTest() {
         `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
         `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
@@ -105,8 +135,10 @@ class AuthServiceTest {
         `when`(tokenProvider.createPluginToken(anyOrNull(), anyOrNull(), anyOrNull())).thenReturn("token")
         `when`(pluginService.getPluginByName(anyString())).thenReturn(Mono.just(plugin))
         `when`(plugin.id).thenReturn(UUID.randomUUID())
+        `when`(profileService.getProfile(anyOrNull())).thenReturn(Mono.just(profile))
+        `when`(profile.isAuthenticated(anyOrNull())).thenReturn(true)
 
-        val returned = authService.authenticate(request, "name")
+        val returned = authService.authenticate(request, profileService, "name")
 
         verify(tokenProvider, times(1)).resolveToken(anyString())
         verify(tokenProvider, times(1)).getAccountId(anyString())

@@ -2,6 +2,8 @@ package com.jtm.minecraft.data.service
 
 import com.jtm.minecraft.core.domain.entity.BlacklistToken
 import com.jtm.minecraft.core.domain.exceptions.plugin.PluginNotFound
+import com.jtm.minecraft.core.domain.exceptions.plugin.PluginUnauthorized
+import com.jtm.minecraft.core.domain.exceptions.profile.ProfileNotFound
 import com.jtm.minecraft.core.domain.exceptions.token.BlacklistTokenFound
 import com.jtm.minecraft.core.domain.exceptions.token.InvalidJwtToken
 import com.jtm.minecraft.core.domain.model.AuthToken
@@ -21,7 +23,7 @@ class AuthService @Autowired constructor(private val tokenProvider: AccountToken
     @Value("\${sentry.plugin:pluginDsn}")
     var pluginDsn: String = ""
 
-    fun authenticate(request: ServerHttpRequest, plugin: String): Mono<AuthToken> {
+    fun authenticate(request: ServerHttpRequest, profileService: ProfileService, plugin: String): Mono<AuthToken> {
         val bearer = request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return Mono.error { InvalidJwtToken() }
         val token = tokenProvider.resolveToken(bearer)
         val id = tokenProvider.getAccountId(token) ?: return Mono.error { InvalidJwtToken() }
@@ -29,8 +31,13 @@ class AuthService @Autowired constructor(private val tokenProvider: AccountToken
         return pluginService.getPluginByName(plugin)
             .switchIfEmpty(Mono.defer { Mono.error { PluginNotFound() } })
             .flatMap {
-                val pluginToken = tokenProvider.createPluginToken(id, email, it.id)
-                return@flatMap Mono.just(AuthToken(pluginToken, pluginDsn))
+                profileService.getProfile(id)
+                    .switchIfEmpty(Mono.defer { Mono.error(ProfileNotFound()) })
+                    .flatMap { profile ->
+                        if (!profile.isAuthenticated(it.id)) return@flatMap Mono.error(PluginUnauthorized())
+                        val pluginToken = tokenProvider.createPluginToken(id, email, it.id)
+                        return@flatMap Mono.just(AuthToken(pluginToken, pluginDsn))
+                    }
             }
     }
 

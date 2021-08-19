@@ -3,6 +3,7 @@ package com.jtm.minecraft.entrypoint.controller
 import com.jtm.minecraft.core.domain.entity.BlacklistToken
 import com.jtm.minecraft.core.domain.model.AuthToken
 import com.jtm.minecraft.data.service.AuthService
+import com.jtm.minecraft.data.service.ProfileService
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
@@ -27,10 +28,11 @@ class AuthControllerTest {
 
     @Autowired lateinit var testClient: WebTestClient
     @MockBean lateinit var authService: AuthService
+    @MockBean lateinit var profileService: ProfileService
 
     @Test
     fun authenticateTest() {
-        `when`(authService.authenticate(anyOrNull(), anyString())).thenReturn(Mono.just(AuthToken("token", "dsn")))
+        `when`(authService.authenticate(anyOrNull(), anyOrNull(), anyString())).thenReturn(Mono.just(AuthToken("token", "dsn")))
 
         testClient.get()
             .uri("/auth/authenticate?plugin=name")
@@ -40,7 +42,7 @@ class AuthControllerTest {
             .jsonPath("$.token").isEqualTo("token")
             .jsonPath("$.sentryDsn").isEqualTo("dsn")
 
-        verify(authService, times(1)).authenticate(anyOrNull(), anyString())
+        verify(authService, times(1)).authenticate(anyOrNull(), anyOrNull(), anyString())
         verifyNoMoreInteractions(authService)
     }
 
