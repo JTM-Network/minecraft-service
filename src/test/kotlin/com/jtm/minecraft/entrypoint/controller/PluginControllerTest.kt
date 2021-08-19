@@ -13,6 +13,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
@@ -23,7 +24,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @RunWith(SpringRunner::class)
-@WebFluxTest(PluginController::class)
+@WebFluxTest(PluginController::class, excludeAutoConfiguration = [ReactiveSecurityAutoConfiguration::class])
 @AutoConfigureWebTestClient
 class PluginControllerTest {
 

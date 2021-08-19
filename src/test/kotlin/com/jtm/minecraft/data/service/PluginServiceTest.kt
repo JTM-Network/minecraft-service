@@ -2,8 +2,8 @@ package com.jtm.minecraft.data.service
 
 import com.jtm.minecraft.core.domain.dto.PluginDto
 import com.jtm.minecraft.core.domain.entity.Plugin
-import com.jtm.minecraft.core.domain.exceptions.PluginFound
-import com.jtm.minecraft.core.domain.exceptions.PluginNotFound
+import com.jtm.minecraft.core.domain.exceptions.plugin.PluginFound
+import com.jtm.minecraft.core.domain.exceptions.plugin.PluginNotFound
 import com.jtm.minecraft.core.usecase.repository.PluginRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
