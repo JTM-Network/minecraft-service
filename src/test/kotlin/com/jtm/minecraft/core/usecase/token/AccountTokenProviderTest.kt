@@ -20,10 +20,10 @@ class AccountTokenProviderTest {
 
     @Before
     fun setup() {
-        tokenProvider.accessKey = "accessKey"
+        tokenProvider.apiKey = "accessKey"
         tokenProvider.pluginKey = "pluginKey"
 
-        access_token = createToken(tokenProvider.accessKey, uuid, "test@gmail.com", UUID.randomUUID())
+        access_token = createToken(tokenProvider.apiKey, uuid, "test@gmail.com", UUID.randomUUID())
         plugin_token = createToken(tokenProvider.pluginKey, uuid, "test@gmail.com", UUID.randomUUID())
     }
 

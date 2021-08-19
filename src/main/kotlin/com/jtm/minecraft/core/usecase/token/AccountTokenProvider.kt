@@ -9,8 +9,8 @@ import java.util.*
 @Component
 class AccountTokenProvider {
 
-    @Value("\${security.jwt.access-key:accessKey}")
-    lateinit var accessKey: String
+    @Value("\${security.jwt.api-key:apiKey}")
+    lateinit var apiKey: String
 
     @Value("\${security.jwt.plugin-key:pluginKey}")
     lateinit var pluginKey: String
@@ -20,12 +20,12 @@ class AccountTokenProvider {
     }
 
     fun getAccountId(token: String): UUID? {
-        val claims = Jwts.parser().setSigningKey(accessKey).parseClaimsJws(token)
+        val claims = Jwts.parser().setSigningKey(apiKey).parseClaimsJws(token)
         return UUID.fromString(claims.body["id"].toString())
     }
 
     fun getAccountEmail(token: String): String? {
-        return Jwts.parser().setSigningKey(accessKey).parseClaimsJws(token).body.subject
+        return Jwts.parser().setSigningKey(apiKey).parseClaimsJws(token).body.subject
     }
 
     fun createPluginToken(id: UUID, email: String, pluginId: UUID): String {

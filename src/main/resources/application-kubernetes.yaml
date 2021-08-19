@@ -6,7 +6,7 @@ spring:
 
 security:
   jwt:
-    access-key: ${ACCESS_KEY}
+    access-key: ${API_KEY}
     plugin-key: ${PLUGIN_KEY}
   stripe:
     pb-key: ${STRIPE_PB_KEY}
