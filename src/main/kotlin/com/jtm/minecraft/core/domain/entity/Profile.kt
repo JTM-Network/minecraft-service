@@ -4,7 +4,7 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 
-@Document("profiles")
+@Document("minecraft_profiles")
 data class Profile(
     @Id val id: UUID = UUID.randomUUID(),
     val email: String = "",
