@@ -6,8 +6,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient
 
 @EnableDiscoveryClient
 @SpringBootApplication
-open class MinecraftService
+open class MinecraftApplication
 
 fun main(args: Array<String>) {
-    runApplication<MinecraftService>(*args)
+    runApplication<MinecraftApplication>(*args)
 }
