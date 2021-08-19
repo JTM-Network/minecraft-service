@@ -2,8 +2,11 @@ package com.jtm.minecraft.entrypoint.controller
 
 import com.jtm.minecraft.core.domain.dto.PluginDto
 import com.jtm.minecraft.core.domain.entity.Plugin
+import com.jtm.minecraft.core.domain.model.PageSupport
 import com.jtm.minecraft.data.service.PluginService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -27,6 +30,21 @@ class PluginController @Autowired constructor(private val pluginService: PluginS
 
     @GetMapping("/all")
     fun getPlugins(): Flux<Plugin> = pluginService.getPlugins()
+
+    @GetMapping("/list")
+    fun getPlugins(@RequestParam(name = "page", defaultValue = "1") page: Int,
+                   @RequestParam(name = "size", defaultValue = "5") pageSize: Int,
+                   @RequestParam(name = "sortBy", defaultValue = "createdTime") sortBy: String,
+                   @RequestParam(name = "direction", defaultValue = "asc") direction: String): Mono<PageSupport<Plugin>> {
+        return pluginService.getPluginsSortable(PageRequest.of(page, pageSize, Sort.by(Sort.Direction.valueOf(direction.uppercase(Locale.getDefault())), sortBy)))
+    }
+
+    @GetMapping("/search/{search}")
+    fun getPlugins(@PathVariable search: String,
+                   @RequestParam(name = "page", defaultValue = "1") page: Int,
+                   @RequestParam(name = "size", defaultValue = "5") pageSize: Int): Mono<PageSupport<Plugin>> {
+        return pluginService.getPluginsBySearch(search, PageRequest.of(page, pageSize))
+    }
 
     @DeleteMapping("/{id}")
     fun deletePlugin(@PathVariable id: UUID): Mono<Plugin> = pluginService.removePlugin(id)

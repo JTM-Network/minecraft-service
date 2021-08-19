@@ -2,10 +2,10 @@ package com.jtm.minecraft.entrypoint.controller
 
 import com.jtm.minecraft.core.domain.dto.PluginDto
 import com.jtm.minecraft.core.domain.entity.Plugin
+import com.jtm.minecraft.core.domain.model.PageSupport
 import com.jtm.minecraft.data.service.PluginService
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.any
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.times
@@ -34,6 +34,7 @@ class PluginControllerTest {
     @MockBean
     lateinit var pluginService: PluginService
     private val created = Plugin(name = "test", description = "test")
+    private val createdTwo = Plugin(name = "test #2", description = "desc #2")
 
     @Test fun postPluginTest() {
         `when`(pluginService.insertPlugin(anyOrNull())).thenReturn(Mono.just(created))
@@ -111,6 +112,44 @@ class PluginControllerTest {
             .jsonPath("$[1].description").isEqualTo("desc #1")
 
         verify(pluginService, times(1)).getPlugins()
+        verifyNoMoreInteractions(pluginService)
+    }
+
+    @Test
+    fun getPluginsListTest() {
+        `when`(pluginService.getPluginsSortable(anyOrNull())).thenReturn(Mono.just(PageSupport(mutableListOf(created, createdTwo), 1, 5, 2)))
+
+        testClient.get()
+            .uri("/plugin/list")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.content[0].name").isEqualTo("test")
+            .jsonPath("$.content[0].description").isEqualTo("test")
+            .jsonPath("$.pageNumber").isEqualTo(1)
+            .jsonPath("$.pageSize").isEqualTo(5)
+            .jsonPath("$.totalElements").isEqualTo(2)
+
+        verify(pluginService, times(1)).getPluginsSortable(anyOrNull())
+        verifyNoMoreInteractions(pluginService)
+    }
+
+    @Test
+    fun getPluginsSearchTest() {
+        `when`(pluginService.getPluginsBySearch(anyString(), anyOrNull())).thenReturn(Mono.just(PageSupport(mutableListOf(created, createdTwo), 1, 5, 2)))
+
+        testClient.get()
+            .uri("/plugin/search/plug")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.content[0].name").isEqualTo("test")
+            .jsonPath("$.content[0].description").isEqualTo("test")
+            .jsonPath("$.pageNumber").isEqualTo(1)
+            .jsonPath("$.pageSize").isEqualTo(5)
+            .jsonPath("$.totalElements").isEqualTo(2)
+
+        verify(pluginService, times(1)).getPluginsBySearch(anyString(), anyOrNull())
         verifyNoMoreInteractions(pluginService)
     }
 

@@ -4,12 +4,15 @@ import com.jtm.minecraft.core.domain.dto.PluginDto
 import com.jtm.minecraft.core.domain.entity.Plugin
 import com.jtm.minecraft.core.domain.exceptions.plugin.PluginFound
 import com.jtm.minecraft.core.domain.exceptions.plugin.PluginNotFound
+import com.jtm.minecraft.core.domain.model.PageSupport
 import com.jtm.minecraft.core.usecase.repository.PluginRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.util.*
+import java.util.stream.Collectors
 
 @Service
 class PluginService @Autowired constructor(private val pluginRepository: PluginRepository) {
@@ -38,6 +41,32 @@ class PluginService @Autowired constructor(private val pluginRepository: PluginR
 
     fun getPlugins(): Flux<Plugin> {
         return pluginRepository.findAll()
+    }
+
+    fun getPluginsSortable(page: Pageable): Mono<PageSupport<Plugin>> {
+        return pluginRepository.findAll(page.sort)
+            .collectList()
+            .map { PageSupport(
+                it.stream()
+                    .skip(((page.pageNumber - 1) * page.pageSize).toLong())
+                    .limit(page.pageSize.toLong())
+                    .collect(Collectors.toList()),
+                page.pageNumber,
+                page.pageSize,
+                it.size) }
+    }
+
+    fun getPluginsBySearch(search: String, page: Pageable): Mono<PageSupport<Plugin>> {
+        return pluginRepository.findAll(page.sort)
+            .collectList()
+            .map {
+                val filtered = it.stream()
+                    .filter { plugin -> plugin.name.contains(search) }
+                    .skip(((page.pageNumber - 1) * page.pageSize).toLong())
+                    .limit(page.pageSize.toLong())
+                    .collect(Collectors.toList())
+                PageSupport(filtered, page.pageNumber, page.pageSize, filtered.size)
+            }
     }
 
     fun removePlugin(id: UUID): Mono<Plugin> {

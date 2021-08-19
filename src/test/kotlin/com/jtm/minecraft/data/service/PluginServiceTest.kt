@@ -10,8 +10,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.test.context.junit4.SpringRunner
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -167,7 +171,57 @@ class PluginServiceTest {
             .verifyComplete()
     }
 
-    @Test fun removePluginTest() {
+    @Test
+    fun getPluginsSortableTest() {
+        val pageable: Pageable = PageRequest.of(1, 5, Sort.by(Sort.Direction.ASC, "createdTime"))
+
+        `when`(pluginRepository.findAll(anyOrNull())).thenReturn(Flux.just(created, Plugin(name = "test #3", description = "desc #3")))
+
+        val returned = pluginService.getPluginsSortable(pageable)
+
+        verify(pluginRepository, times(1)).findAll(anyOrNull())
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.content[0].name).isEqualTo("test")
+                assertThat(it.content[0].description).isEqualTo("test")
+
+                assertThat(it.content[1].name).isEqualTo("test #3")
+                assertThat(it.content[1].description).isEqualTo("desc #3")
+
+                assertThat(it.pageSize).isEqualTo(5)
+                assertThat(it.pageNumber).isEqualTo(1)
+                assertThat(it.totalElements).isEqualTo(2)
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun getPluginsBySearchTest() {
+        val pageable: Pageable = PageRequest.of(1, 5, Sort.by(Sort.Direction.ASC, "createdTime"))
+
+        `when`(pluginRepository.findAll(anyOrNull())).thenReturn(Flux.just(created, Plugin(name = "test #3", description = "desc #3"), Plugin(name = "plugin", description = "plugin desc")))
+
+        val returned = pluginService.getPluginsBySearch("plu", pageable)
+
+        verify(pluginRepository, times(1)).findAll(anyOrNull())
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.content[0].name).isEqualTo("plugin")
+                assertThat(it.content[0].description).isEqualTo("plugin desc")
+
+                assertThat(it.pageSize).isEqualTo(5)
+                assertThat(it.pageNumber).isEqualTo(1)
+                assertThat(it.totalElements).isEqualTo(1)
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun removePluginTest() {
         `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(created))
         `when`(pluginRepository.delete(any(Plugin::class.java))).thenReturn(Mono.empty())
 
