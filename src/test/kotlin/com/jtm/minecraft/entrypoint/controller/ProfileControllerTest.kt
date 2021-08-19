@@ -29,22 +29,6 @@ class ProfileControllerTest {
     private val created = Profile(email = "test@gmail.com")
 
     @Test
-    fun postProfileTest() {
-        `when`(profileService.insertProfile(anyOrNull())).thenReturn(Mono.just(created))
-
-        testClient.post()
-            .uri("/profile")
-            .exchange()
-            .expectStatus().isOk
-            .expectBody()
-            .jsonPath("$.id").isEqualTo(created.id.toString())
-            .jsonPath("$.email").isEqualTo(created.email)
-
-        verify(profileService, times(1)).insertProfile(anyOrNull())
-        verifyNoMoreInteractions(profileService)
-    }
-
-    @Test
     fun getProfileTest() {
         `when`(profileService.getProfile(anyOrNull())).thenReturn(Mono.just(created))
 

@@ -201,26 +201,6 @@ class ProfileServiceTest {
     }
 
     @Test
-    fun getProfileByBearer_thenNotFound() {
-        `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
-        `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
-        `when`(profileRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
-
-        val returned = profileService.getProfileByBearer(request)
-
-        verify(tokenProvider, times(1)).resolveToken(anyString())
-        verify(tokenProvider, times(1)).getAccountId(anyString())
-        verifyNoMoreInteractions(tokenProvider)
-
-        verify(profileRepository, times(1)).findById(any(UUID::class.java))
-        verifyNoMoreInteractions(profileRepository)
-
-        StepVerifier.create(returned)
-            .expectError(ProfileNotFound::class.java)
-            .verify()
-    }
-
-    @Test
     fun getProfileByBearerTest() {
         `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
         `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
