@@ -13,11 +13,6 @@ import java.util.*
 @RequestMapping("/profile")
 class ProfileController @Autowired constructor(private val profileService: ProfileService) {
 
-    @PostMapping
-    fun postProfile(request: ServerHttpRequest): Mono<Profile> {
-        return profileService.insertProfile(request)
-    }
-
     @GetMapping("/id/{id}")
     fun getProfile(@PathVariable id: UUID): Mono<Profile> {
         return profileService.getProfile(id)
