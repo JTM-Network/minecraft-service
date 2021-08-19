@@ -23,8 +23,8 @@ class AccountTokenProviderTest {
         tokenProvider.accessKey = "accessKey"
         tokenProvider.pluginKey = "pluginKey"
 
-        access_token = createToken(tokenProvider.accessKey, uuid, "test@gmail.com")
-        plugin_token = createToken(tokenProvider.pluginKey, uuid, "test@gmail.com")
+        access_token = createToken(tokenProvider.accessKey, uuid, "test@gmail.com", UUID.randomUUID())
+        plugin_token = createToken(tokenProvider.pluginKey, uuid, "test@gmail.com", UUID.randomUUID())
     }
 
     @Test
@@ -50,7 +50,7 @@ class AccountTokenProviderTest {
 
     @Test
     fun createPluginTokenTest() {
-        val token = tokenProvider.createPluginToken(UUID.randomUUID(), "plugin@gmail.com")
+        val token = tokenProvider.createPluginToken(UUID.randomUUID(), "plugin@gmail.com", UUID.randomUUID())
 
         assertNotNull(token)
     }
@@ -69,11 +69,19 @@ class AccountTokenProviderTest {
         assertThat(email).isEqualTo("test@gmail.com")
     }
 
-    private fun createToken(key: String, id: UUID, email: String): String {
+    @Test
+    fun getPluginIdTest() {
+        val pluginId = tokenProvider.getPluginId(plugin_token)
+
+        assertThat(pluginId).isInstanceOf(UUID::class.java)
+    }
+
+    private fun createToken(key: String, id: UUID, email: String, pluginId: UUID): String {
         return Jwts.builder()
             .signWith(SignatureAlgorithm.HS256, key)
             .setSubject(email)
             .claim("id", id.toString())
+            .claim("plugin_id", pluginId.toString())
             .compact()
     }
 }

@@ -28,21 +28,27 @@ class AccountTokenProvider {
         return Jwts.parser().setSigningKey(accessKey).parseClaimsJws(token).body.subject
     }
 
-    fun createPluginToken(id: UUID, email: String): String {
+    fun createPluginToken(id: UUID, email: String, pluginId: UUID): String {
         return Jwts.builder()
             .signWith(SignatureAlgorithm.HS256, pluginKey)
             .setSubject(email)
             .claim("id", id.toString())
+            .claim("plugin_id", pluginId.toString())
             .compact()
     }
 
-    fun getPluginAccountId(token: String): UUID {
+    fun getPluginAccountId(token: String): UUID? {
         val claims = Jwts.parser().setSigningKey(pluginKey).parseClaimsJws(token)
         return UUID.fromString(claims.body["id"].toString())
 
     }
 
-    fun getPluginAccountEmail(token: String): String {
+    fun getPluginAccountEmail(token: String): String? {
         return Jwts.parser().setSigningKey(pluginKey).parseClaimsJws(token).body.subject
+    }
+
+    fun getPluginId(token: String): UUID? {
+        val claims = Jwts.parser().setSigningKey(pluginKey).parseClaimsJws(token)
+        return UUID.fromString(claims.body["plugin_id"].toString())
     }
 }
