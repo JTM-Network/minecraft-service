@@ -24,7 +24,7 @@ class PluginServiceTest {
     private val pluginRepository = mock(PluginRepository::class.java)
     private val pluginService = PluginService(pluginRepository)
 
-    private val created = Plugin("test", "test")
+    private val created = Plugin(name = "test", description = "test")
 
     @Test fun insertPluginTest() {
         `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.empty())
@@ -148,7 +148,7 @@ class PluginServiceTest {
     }
 
     @Test fun getPluginsTest() {
-        `when`(pluginRepository.findAll()).thenReturn(Flux.just(created, Plugin("test #2", "test #3")))
+        `when`(pluginRepository.findAll()).thenReturn(Flux.just(created, Plugin(name = "test #2", description = "test #3")))
 
         val returned = pluginService.getPlugins()
 

@@ -33,7 +33,7 @@ class PluginControllerTest {
 
     @MockBean
     lateinit var pluginService: PluginService
-    private val created = Plugin("test", "test")
+    private val created = Plugin(name = "test", description = "test")
 
     @Test fun postPluginTest() {
         `when`(pluginService.insertPlugin(anyOrNull())).thenReturn(Mono.just(created))
@@ -98,7 +98,7 @@ class PluginControllerTest {
     }
 
     @Test fun getPluginsTest() {
-        `when`(pluginService.getPlugins()).thenReturn(Flux.just(created, Plugin("test #1", "desc #1")))
+        `when`(pluginService.getPlugins()).thenReturn(Flux.just(created, Plugin(name = "test #1", description = "desc #1")))
 
         testClient.get()
             .uri("/plugin/all")
