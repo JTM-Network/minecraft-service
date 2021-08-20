@@ -26,8 +26,8 @@ class AuthService @Autowired constructor(private val tokenProvider: AccountToken
     fun authenticate(request: ServerHttpRequest, profileService: ProfileService, plugin: String): Mono<AuthToken> {
         val bearer = request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return Mono.error { InvalidJwtToken() }
         val token = tokenProvider.resolveToken(bearer)
-        val id = tokenProvider.getAccountId(token) ?: return Mono.error { InvalidJwtToken() }
-        val email = tokenProvider.getAccountEmail(token) ?: return Mono.error { InvalidJwtToken() }
+        val id = tokenProvider.getApiAccountId(token) ?: return Mono.error { InvalidJwtToken() }
+        val email = tokenProvider.getApiAccountEmail(token) ?: return Mono.error { InvalidJwtToken() }
         return pluginService.getPluginByName(plugin)
             .switchIfEmpty(Mono.defer { Mono.error { PluginNotFound() } })
             .flatMap {

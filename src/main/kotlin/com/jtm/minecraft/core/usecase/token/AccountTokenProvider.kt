@@ -10,6 +10,9 @@ import java.util.*
 @Component
 class AccountTokenProvider {
 
+    @Value("\${security.jwt.access-key:accessKey}")
+    lateinit var accessKey: String
+
     @Value("\${security.jwt.api-key:apiKey}")
     lateinit var apiKey: String
 
@@ -22,7 +25,7 @@ class AccountTokenProvider {
 
     fun getAccountId(token: String): UUID? {
         return try {
-            val claims = Jwts.parser().setSigningKey(apiKey).parseClaimsJws(token)
+            val claims = Jwts.parser().setSigningKey(accessKey).parseClaimsJws(token)
             UUID.fromString(claims.body["id"].toString())
         } catch (ex: SignatureException) {
             null
@@ -30,6 +33,23 @@ class AccountTokenProvider {
     }
 
     fun getAccountEmail(token: String): String? {
+        return try {
+            Jwts.parser().setSigningKey(accessKey).parseClaimsJws(token).body.subject
+        } catch (ex: SignatureException) {
+            null
+        }
+    }
+
+    fun getApiAccountId(token: String): UUID? {
+        return try {
+            val claims = Jwts.parser().setSigningKey(apiKey).parseClaimsJws(token)
+            UUID.fromString(claims.body["id"].toString())
+        } catch (ex: SignatureException) {
+            null
+        }
+    }
+
+    fun getApiAccountEmail(token: String): String? {
         return try {
             Jwts.parser().setSigningKey(apiKey).parseClaimsJws(token).body.subject
         } catch (ex: SignatureException) {
