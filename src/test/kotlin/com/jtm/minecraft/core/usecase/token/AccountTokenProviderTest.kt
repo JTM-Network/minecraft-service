@@ -16,14 +16,17 @@ class AccountTokenProviderTest {
     private val tokenProvider = AccountTokenProvider()
     private val uuid = UUID.randomUUID()
     private lateinit var access_token: String
+    private lateinit var api_token: String
     private lateinit var plugin_token: String
 
     @Before
     fun setup() {
-        tokenProvider.apiKey = "accessKey"
+        tokenProvider.accessKey = "accessKey"
+        tokenProvider.apiKey = "apiKey"
         tokenProvider.pluginKey = "pluginKey"
 
-        access_token = createToken(tokenProvider.apiKey, uuid, "test@gmail.com", UUID.randomUUID())
+        access_token = createToken(tokenProvider.accessKey, uuid, "test@gmail.com", UUID.randomUUID())
+        api_token = createToken(tokenProvider.accessKey, uuid, "test@gmail.com", UUID.randomUUID())
         plugin_token = createToken(tokenProvider.pluginKey, uuid, "test@gmail.com", UUID.randomUUID())
     }
 

@@ -48,12 +48,12 @@ class AuthServiceTest {
     @Test
     fun authenticate_thenAccountIdInvalid() {
         `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
-        `when`(tokenProvider.getAccountId(anyString())).thenReturn(null)
+        `when`(tokenProvider.getApiAccountId(anyString())).thenReturn(null)
 
         val returned = authService.authenticate(request, profileService,"test")
 
         verify(tokenProvider, times(1)).resolveToken(anyString())
-        verify(tokenProvider, times(1)).getAccountId(anyString())
+        verify(tokenProvider, times(1)).getApiAccountId(anyString())
         verifyNoMoreInteractions(tokenProvider)
 
         StepVerifier.create(returned)
@@ -64,14 +64,14 @@ class AuthServiceTest {
     @Test
     fun authenticate_thenAccountEmailInvalid() {
         `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
-        `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
-        `when`(tokenProvider.getAccountEmail(anyString())).thenReturn(null)
+        `when`(tokenProvider.getApiAccountId(anyString())).thenReturn(UUID.randomUUID())
+        `when`(tokenProvider.getApiAccountEmail(anyString())).thenReturn(null)
 
         val returned = authService.authenticate(request, profileService, "test")
 
         verify(tokenProvider, times(1)).resolveToken(anyString())
-        verify(tokenProvider, times(1)).getAccountId(anyString())
-        verify(tokenProvider, times(1)).getAccountEmail(anyString())
+        verify(tokenProvider, times(1)).getApiAccountId(anyString())
+        verify(tokenProvider, times(1)).getApiAccountEmail(anyString())
         verifyNoMoreInteractions(tokenProvider)
 
         StepVerifier.create(returned)
@@ -82,15 +82,15 @@ class AuthServiceTest {
     @Test
     fun authenticate_thenPluginNotFound() {
         `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
-        `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
-        `when`(tokenProvider.getAccountEmail(anyString())).thenReturn("test@gmail.com")
+        `when`(tokenProvider.getApiAccountId(anyString())).thenReturn(UUID.randomUUID())
+        `when`(tokenProvider.getApiAccountEmail(anyString())).thenReturn("test@gmail.com")
         `when`(pluginService.getPluginByName(anyString())).thenReturn(Mono.empty())
 
         val returned = authService.authenticate(request, profileService, "test")
 
         verify(tokenProvider, times(1)).resolveToken(anyString())
-        verify(tokenProvider, times(1)).getAccountId(anyString())
-        verify(tokenProvider, times(1)).getAccountEmail(anyString())
+        verify(tokenProvider, times(1)).getApiAccountId(anyString())
+        verify(tokenProvider, times(1)).getApiAccountEmail(anyString())
         verifyNoMoreInteractions(tokenProvider)
 
         verify(pluginService, times(1)).getPluginByName(anyString())
@@ -104,8 +104,8 @@ class AuthServiceTest {
     @Test
     fun authenticate_thenPluginUnauthorized() {
         `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
-        `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
-        `when`(tokenProvider.getAccountEmail(anyString())).thenReturn("test@gmail.com")
+        `when`(tokenProvider.getApiAccountId(anyString())).thenReturn(UUID.randomUUID())
+        `when`(tokenProvider.getApiAccountEmail(anyString())).thenReturn("test@gmail.com")
         `when`(tokenProvider.createPluginToken(anyOrNull(), anyOrNull(), anyOrNull())).thenReturn("token")
         `when`(pluginService.getPluginByName(anyString())).thenReturn(Mono.just(plugin))
         `when`(plugin.id).thenReturn(UUID.randomUUID())
@@ -115,8 +115,8 @@ class AuthServiceTest {
         val returned = authService.authenticate(request, profileService, "name")
 
         verify(tokenProvider, times(1)).resolveToken(anyString())
-        verify(tokenProvider, times(1)).getAccountId(anyString())
-        verify(tokenProvider, times(1)).getAccountEmail(anyString())
+        verify(tokenProvider, times(1)).getApiAccountId(anyString())
+        verify(tokenProvider, times(1)).getApiAccountEmail(anyString())
         verifyNoMoreInteractions(tokenProvider)
 
         verify(pluginService, times(1)).getPluginByName(anyString())
@@ -130,8 +130,8 @@ class AuthServiceTest {
     @Test
     fun authenticateTest() {
         `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
-        `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
-        `when`(tokenProvider.getAccountEmail(anyString())).thenReturn("test@gmail.com")
+        `when`(tokenProvider.getApiAccountId(anyString())).thenReturn(UUID.randomUUID())
+        `when`(tokenProvider.getApiAccountEmail(anyString())).thenReturn("test@gmail.com")
         `when`(tokenProvider.createPluginToken(anyOrNull(), anyOrNull(), anyOrNull())).thenReturn("token")
         `when`(pluginService.getPluginByName(anyString())).thenReturn(Mono.just(plugin))
         `when`(plugin.id).thenReturn(UUID.randomUUID())
@@ -141,8 +141,8 @@ class AuthServiceTest {
         val returned = authService.authenticate(request, profileService, "name")
 
         verify(tokenProvider, times(1)).resolveToken(anyString())
-        verify(tokenProvider, times(1)).getAccountId(anyString())
-        verify(tokenProvider, times(1)).getAccountEmail(anyString())
+        verify(tokenProvider, times(1)).getApiAccountId(anyString())
+        verify(tokenProvider, times(1)).getApiAccountEmail(anyString())
         verifyNoMoreInteractions(tokenProvider)
 
         verify(pluginService, times(1)).getPluginByName(anyString())
