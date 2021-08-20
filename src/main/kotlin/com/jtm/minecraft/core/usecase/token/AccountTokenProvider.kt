@@ -2,6 +2,7 @@ package com.jtm.minecraft.core.usecase.token
 
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import io.jsonwebtoken.SignatureException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.*
@@ -20,12 +21,20 @@ class AccountTokenProvider {
     }
 
     fun getAccountId(token: String): UUID? {
-        val claims = Jwts.parser().setSigningKey(apiKey).parseClaimsJws(token)
-        return UUID.fromString(claims.body["id"].toString())
+        return try {
+            val claims = Jwts.parser().setSigningKey(apiKey).parseClaimsJws(token)
+            UUID.fromString(claims.body["id"].toString())
+        } catch (ex: SignatureException) {
+            null
+        }
     }
 
     fun getAccountEmail(token: String): String? {
-        return Jwts.parser().setSigningKey(apiKey).parseClaimsJws(token).body.subject
+        return try {
+            Jwts.parser().setSigningKey(apiKey).parseClaimsJws(token).body.subject
+        } catch (ex: SignatureException) {
+            null
+        }
     }
 
     fun createPluginToken(id: UUID, email: String, pluginId: UUID): String {
@@ -38,17 +47,28 @@ class AccountTokenProvider {
     }
 
     fun getPluginAccountId(token: String): UUID? {
-        val claims = Jwts.parser().setSigningKey(pluginKey).parseClaimsJws(token)
-        return UUID.fromString(claims.body["id"].toString())
-
+        return try {
+            val claims = Jwts.parser().setSigningKey(pluginKey).parseClaimsJws(token)
+            UUID.fromString(claims.body["id"].toString())
+        } catch (ex: SignatureException) {
+            null
+        }
     }
 
     fun getPluginAccountEmail(token: String): String? {
-        return Jwts.parser().setSigningKey(pluginKey).parseClaimsJws(token).body.subject
+        return try {
+            Jwts.parser().setSigningKey(pluginKey).parseClaimsJws(token).body.subject
+        } catch (ex: SignatureException) {
+            null
+        }
     }
 
     fun getPluginId(token: String): UUID? {
-        val claims = Jwts.parser().setSigningKey(pluginKey).parseClaimsJws(token)
-        return UUID.fromString(claims.body["plugin_id"].toString())
+        return try {
+            val claims = Jwts.parser().setSigningKey(pluginKey).parseClaimsJws(token)
+            UUID.fromString(claims.body["plugin_id"].toString())
+        } catch (ex: SignatureException) {
+            null
+        }
     }
 }
