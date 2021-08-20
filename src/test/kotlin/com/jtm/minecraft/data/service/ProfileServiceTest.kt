@@ -140,6 +140,38 @@ class ProfileServiceTest {
     }
 
     @Test
+    fun updateProfile_thenNotFound() {
+        `when`(profileRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
+
+        val returned = profileService.updateProfile(created)
+
+        verify(profileRepository, times(1)).findById(any(UUID::class.java))
+        verifyNoMoreInteractions(profileRepository)
+
+        StepVerifier.create(returned)
+            .expectError(ProfileNotFound::class.java)
+            .verify()
+    }
+
+    @Test
+    fun updateProfileTest() {
+        `when`(profileRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(created))
+        `when`(profileRepository.save(anyOrNull())).thenReturn(Mono.just(created))
+
+        val returned = profileService.updateProfile(created)
+
+        verify(profileRepository, times(1)).findById(any(UUID::class.java))
+        verifyNoMoreInteractions(profileRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.id).isEqualTo(created.id)
+                assertThat(it.email).isEqualTo(created.email)
+            }
+            .verifyComplete()
+    }
+
+    @Test
     fun getProfile_thenNotFound() {
         `when`(profileRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
 

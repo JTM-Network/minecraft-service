@@ -34,8 +34,8 @@ class AuthServiceTest {
 
     private val request: ServerHttpRequest = mock()
     private val plugin: Plugin = mock()
-    private val created = BlacklistToken("token")
     private val profile: Profile = mock()
+    private val created = BlacklistToken("token")
 
     @Before
     fun setup() {

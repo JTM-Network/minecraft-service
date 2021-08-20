@@ -29,6 +29,12 @@ class ProfileService @Autowired constructor(private val profileRepository: Profi
             .switchIfEmpty(Mono.defer { profileRepository.save(Profile(id = id, email = email)) })
     }
 
+    fun updateProfile(profile: Profile): Mono<Profile> {
+        return profileRepository.findById(profile.id)
+            .switchIfEmpty(Mono.defer { Mono.error(ProfileNotFound()) })
+            .flatMap { profileRepository.save(profile) }
+    }
+
     fun getProfile(id: UUID): Mono<Profile> {
         return profileRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(ProfileNotFound()) })
