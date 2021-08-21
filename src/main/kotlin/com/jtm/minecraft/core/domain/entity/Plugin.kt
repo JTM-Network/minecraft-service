@@ -11,6 +11,8 @@ data class Plugin(
     var name: String,
     var description: String,
     var version: String? = null,
+    var premium: Boolean = false,
+    var price: Double = 0.0,
     val createdTime: Long = System.currentTimeMillis(),
     var lastUpdated: Long = System.currentTimeMillis()) {
 
