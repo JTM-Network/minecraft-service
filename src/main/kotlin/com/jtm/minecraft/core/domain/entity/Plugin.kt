@@ -10,7 +10,6 @@ data class Plugin(
     @Id val id: UUID = UUID.randomUUID(),
     var name: String,
     var description: String,
-    var version: String? = null,
     var premium: Boolean = false,
     var price: Double = 0.0,
     val createdTime: Long = System.currentTimeMillis(),

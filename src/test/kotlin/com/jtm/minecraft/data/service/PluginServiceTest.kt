@@ -43,7 +43,6 @@ class PluginServiceTest {
             .assertNext {
                 assertThat(it.name).isEqualTo("test")
                 assertThat(it.description).isEqualTo("test")
-                assertThat(it.version).isNull()
                 assertThat(it.createdTime).isLessThanOrEqualTo(System.currentTimeMillis())
             }
             .verifyComplete()
@@ -75,7 +74,6 @@ class PluginServiceTest {
             .assertNext {
                 assertThat(it.name).isEqualTo("test")
                 assertThat(it.description).isEqualTo("test")
-                assertThat(it.version).isNull()
             }
             .verifyComplete()
     }
