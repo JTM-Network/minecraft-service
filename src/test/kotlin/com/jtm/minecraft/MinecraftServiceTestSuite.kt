@@ -10,6 +10,7 @@ import com.jtm.minecraft.data.service.BlacklistTokenServiceTest
 import com.jtm.minecraft.data.service.PluginServiceTest
 import com.jtm.minecraft.data.service.ProfileServiceTest
 import com.jtm.minecraft.data.service.plugin.AccessServiceTest
+import com.jtm.minecraft.data.service.plugin.VersionServiceTest
 import com.jtm.minecraft.entrypoint.controller.AuthControllerTest
 import com.jtm.minecraft.entrypoint.controller.PluginControllerTest
 import com.jtm.minecraft.entrypoint.controller.ProfileControllerTest
@@ -27,6 +28,7 @@ import org.junit.runners.Suite
     BlacklistTokenServiceTest::class,
     AuthServiceTest::class,
     AccessServiceTest::class,
+    VersionServiceTest::class,
 
     SecurityContextRepositoryTest::class,
     AuthenticationManagerTest::class,
