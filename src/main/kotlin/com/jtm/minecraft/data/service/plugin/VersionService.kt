@@ -98,7 +98,7 @@ class VersionService @Autowired constructor(private val pluginService: PluginSer
     }
 
     fun removeFolderVersion(id: UUID, fileHandler: FileHandler): Mono<String> {
-        return fileHandler.delete(id.toString())
+        return fileHandler.delete("/versions/${id.toString()}")
             .map { it.name }
     }
 }
