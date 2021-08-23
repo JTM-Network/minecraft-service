@@ -3,7 +3,6 @@ package com.jtm.minecraft.core.domain.entity.plugin
 import com.jtm.minecraft.core.domain.dto.PluginVersionDto
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import sun.jvm.hotspot.utilities.Assert.that
 import java.util.*
 import kotlin.math.max
 
