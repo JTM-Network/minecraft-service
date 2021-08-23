@@ -2,6 +2,7 @@ package com.jtm.minecraft.entrypoint.controller.plugin
 
 import com.jtm.minecraft.core.domain.dto.PluginVersionDto
 import com.jtm.minecraft.core.domain.entity.plugin.PluginVersion
+import com.jtm.minecraft.core.domain.model.FolderInfo
 import com.jtm.minecraft.core.usecase.file.FileHandler
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
 import com.jtm.minecraft.data.service.plugin.AccessService
@@ -27,6 +28,7 @@ import org.springframework.web.reactive.function.BodyInserter
 import org.springframework.web.reactive.function.BodyInserters
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.io.File
 import java.util.*
 
 @RunWith(SpringRunner::class)
@@ -42,6 +44,8 @@ class VersionControllerTest {
 
     private val dto = PluginVersionDto(pluginId = UUID.randomUUID(), file = null, version = "0.1", changelog = "Change log.")
     private val created = PluginVersion(pluginId = UUID.randomUUID(), pluginName = "test", version = "0.1", changelog = "Changelog")
+    private val file: File = mock()
+
 
     @Test
     fun putVersionTest() {
@@ -158,6 +162,36 @@ class VersionControllerTest {
             .jsonPath("$.version").isEqualTo(created.version)
 
         verify(versionService, times(1)).removeVersion(anyOrNull())
+        verifyNoMoreInteractions(versionService)
+    }
+
+    @Test
+    fun getFolderVersionsTest() {
+        `when`(versionService.getFolderVersions(anyOrNull())).thenReturn(Flux.just(FolderInfo("test")))
+
+        testClient.get()
+            .uri("/version/file/all")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$[0].name").isEqualTo("test")
+
+        verify(versionService, times(1)).getFolderVersions(anyOrNull())
+        verifyNoMoreInteractions(versionService)
+    }
+
+    @Test
+    fun cleanVersionsTest() {
+        `when`(versionService.cleanVersions(anyOrNull())).thenReturn(Flux.just("test"))
+
+        testClient.delete()
+            .uri("/version/file/clean")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$").isEqualTo("test")
+
+        verify(versionService, times(1)).cleanVersions(anyOrNull())
         verifyNoMoreInteractions(versionService)
     }
 }

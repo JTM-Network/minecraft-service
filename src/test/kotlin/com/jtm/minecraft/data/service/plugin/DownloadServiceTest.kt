@@ -32,10 +32,8 @@ class DownloadServiceTest {
 
     private val linkRepository: DownloadLinkRepository = mock()
     private val versionRepository: PluginVersionRepository = mock()
-    private val tokenProvider: AccountTokenProvider = mock()
     private val fileHandler: FileHandler = mock()
-    private val downloadService = DownloadService(linkRepository, versionRepository, tokenProvider, fileHandler)
-    private val request: ServerHttpRequest = mock()
+    private val downloadService = DownloadService(linkRepository, versionRepository, fileHandler)
     private val response: ServerHttpResponse = mock()
     private val headers: HttpHeaders = mock()
     private val link = DownloadLink(pluginId = UUID.randomUUID(), version = "0.1", accountId = UUID.randomUUID())
@@ -44,44 +42,21 @@ class DownloadServiceTest {
 
     @Before
     fun setup() {
-        `when`(request.headers).thenReturn(headers)
         `when`(response.headers).thenReturn(headers)
         `when`(headers.getFirst(anyString())).thenReturn("Bearer test")
         `when`(file.name).thenReturn("test.jar")
-
-        `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
-    }
-
-    @Test
-    fun downloadVersion_thenAccountIdInvalid() {
-        `when`(tokenProvider.getAccountId(anyString())).thenReturn(null)
-
-        val returned = downloadService.downloadVersion(request, response, UUID.randomUUID())
-
-        verify(tokenProvider, times(1)).resolveToken(anyString())
-        verify(tokenProvider, times(1)).getAccountId(anyString())
-        verifyNoMoreInteractions(tokenProvider)
-
-        StepVerifier.create(returned)
-            .expectError(InvalidJwtToken::class.java)
-            .verify()
     }
 
     @Test
     fun downloadVersion_thenVersionFileNotFound() {
-        `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
-        `when`(linkRepository.findByIdAndAccountId(anyOrNull(), anyOrNull())).thenReturn(Mono.just(link))
+        `when`(linkRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(link))
         `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyString())).thenReturn(Mono.just(version))
         `when`(fileHandler.fetch(anyString())).thenReturn(Mono.just(file))
         `when`(file.exists()).thenReturn(false)
 
-        val returned = downloadService.downloadVersion(request, response, UUID.randomUUID())
+        val returned = downloadService.downloadVersion(response, UUID.randomUUID())
 
-        verify(tokenProvider, times(1)).resolveToken(anyString())
-        verify(tokenProvider, times(1)).getAccountId(anyString())
-        verifyNoMoreInteractions(tokenProvider)
-
-        verify(linkRepository, times(1)).findByIdAndAccountId(anyOrNull(), anyOrNull())
+        verify(linkRepository, times(1)).findById(any(UUID::class.java))
         verifyNoMoreInteractions(linkRepository)
 
         StepVerifier.create(returned)
@@ -91,19 +66,14 @@ class DownloadServiceTest {
 
     @Test
     fun downloadVersionTest() {
-        `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
-        `when`(linkRepository.findByIdAndAccountId(anyOrNull(), anyOrNull())).thenReturn(Mono.just(link))
+        `when`(linkRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(link))
         `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyString())).thenReturn(Mono.just(version))
         `when`(fileHandler.fetch(anyString())).thenReturn(Mono.just(file))
         `when`(file.exists()).thenReturn(true)
 
-        val returned = downloadService.downloadVersion(request, response, UUID.randomUUID())
+        val returned = downloadService.downloadVersion(response, UUID.randomUUID())
 
-        verify(tokenProvider, times(1)).resolveToken(anyString())
-        verify(tokenProvider, times(1)).getAccountId(anyString())
-        verifyNoMoreInteractions(tokenProvider)
-
-        verify(linkRepository, times(1)).findByIdAndAccountId(anyOrNull(), anyOrNull())
+        verify(linkRepository, times(1)).findById(any(UUID::class.java))
         verifyNoMoreInteractions(linkRepository)
 
         StepVerifier.create(returned)

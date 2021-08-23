@@ -29,6 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
+import java.io.File
 import java.util.*
 
 @RunWith(SpringRunner::class)
@@ -48,11 +49,15 @@ class VersionServiceTest {
     private val version = PluginVersion(pluginId = UUID.randomUUID(), pluginName = "test", version = "0.1", changelog = "Changelog #1")
     private val request: ServerHttpRequest = mock()
     private val headers: HttpHeaders = mock()
+    private val file: File = mock()
+    private val id = UUID.randomUUID()
 
     @Before
     fun setup() {
         `when`(request.headers).thenReturn(headers)
         `when`(headers.getFirst(anyString())).thenReturn("Bearer test")
+        `when`(file.name).thenReturn(id.toString())
+        `when`(file.path).thenReturn("/test")
     }
 
     @Test
@@ -321,6 +326,36 @@ class VersionServiceTest {
                 assertThat(it.version).isEqualTo(version.version)
                 assertThat(it.changelog).isEqualTo(version.changelog)
             }
+            .verifyComplete()
+    }
+
+    @Test
+    fun getFolderVersionsTest() {
+        `when`(fileHandler.listFiles(anyString())).thenReturn(Flux.just(file))
+
+        val returned = versionService.getFolderVersions(fileHandler)
+
+        verify(fileHandler, times(1)).listFiles(anyString())
+        verifyNoMoreInteractions(fileHandler)
+
+        StepVerifier.create(returned)
+            .assertNext { assertThat(it.name).isEqualTo(id.toString()) }
+            .verifyComplete()
+    }
+
+    @Test
+    fun cleanVersionsTest() {
+        `when`(fileHandler.listFiles(anyString())).thenReturn(Flux.just(file))
+        `when`(pluginService.getPlugin(anyOrNull())).thenReturn(Mono.empty())
+        `when`(fileHandler.delete(anyString())).thenReturn(Mono.just(file))
+
+        val returned = versionService.cleanVersions(fileHandler)
+
+        verify(fileHandler, times(1)).listFiles(anyString())
+        verifyNoMoreInteractions(fileHandler)
+
+        StepVerifier.create(returned)
+            .assertNext { assertThat(it).isEqualTo(id.toString()) }
             .verifyComplete()
     }
 }

@@ -2,6 +2,7 @@ package com.jtm.minecraft.entrypoint.controller.plugin
 
 import com.jtm.minecraft.core.domain.dto.PluginVersionDto
 import com.jtm.minecraft.core.domain.entity.plugin.PluginVersion
+import com.jtm.minecraft.core.domain.model.FolderInfo
 import com.jtm.minecraft.core.usecase.file.FileHandler
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
 import com.jtm.minecraft.data.service.plugin.AccessService
@@ -60,5 +61,15 @@ class VersionController @Autowired constructor(private val versionService: Versi
     @DeleteMapping("/{id}")
     fun deleteVersion(@PathVariable id: UUID): Mono<PluginVersion> {
         return versionService.removeVersion(id)
+    }
+
+    @GetMapping("/file/all")
+    fun getFolderVersions(): Flux<FolderInfo> {
+        return versionService.getFolderVersions(fileHandler)
+    }
+
+    @DeleteMapping("/file/clean")
+    fun cleanVersions(): Flux<String> {
+        return versionService.cleanVersions(fileHandler)
     }
 }

@@ -19,14 +19,10 @@ import java.util.*
 @Service
 class DownloadService @Autowired constructor(private val linkRepository: DownloadLinkRepository,
                                              private val versionRepository: PluginVersionRepository,
-                                             private val tokenProvider: AccountTokenProvider,
                                              private val fileHandler: FileHandler) {
 
-    fun downloadVersion(request: ServerHttpRequest, response: ServerHttpResponse, id: UUID): Mono<Resource> {
-        val bearer = request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return Mono.error { InvalidJwtToken() }
-        val token = tokenProvider.resolveToken(bearer)
-        val accountId = tokenProvider.getAccountId(token) ?: return Mono.error { InvalidJwtToken() }
-        return linkRepository.findByIdAndAccountId(id, accountId)
+    fun downloadVersion(response: ServerHttpResponse, id: UUID): Mono<Resource> {
+        return linkRepository.findById(id)
             .flatMap { link -> versionRepository.findByPluginIdAndVersion(link.pluginId, link.version)
                 .flatMap { fileHandler.fetch("/versions/${link.pluginId.toString()}/${it.pluginName}-${link.version}.jar")
                     .flatMap { file ->

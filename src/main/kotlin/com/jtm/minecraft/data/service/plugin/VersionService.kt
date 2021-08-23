@@ -7,13 +7,12 @@ import com.jtm.minecraft.core.domain.exceptions.plugin.version.VersionFound
 import com.jtm.minecraft.core.domain.exceptions.plugin.version.VersionNotFound
 import com.jtm.minecraft.core.domain.exceptions.profile.ProfileNoAccess
 import com.jtm.minecraft.core.domain.exceptions.token.InvalidJwtToken
+import com.jtm.minecraft.core.domain.model.FolderInfo
 import com.jtm.minecraft.core.usecase.file.FileHandler
 import com.jtm.minecraft.core.usecase.repository.DownloadLinkRepository
 import com.jtm.minecraft.core.usecase.repository.plugin.PluginVersionRepository
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
 import com.jtm.minecraft.data.service.PluginService
-import lombok.extern.slf4j.Slf4j
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.server.reactive.ServerHttpRequest
@@ -27,8 +26,6 @@ class VersionService @Autowired constructor(private val pluginService: PluginSer
                                             private val versionRepository: PluginVersionRepository,
                                             private val downloadLinkRepository: DownloadLinkRepository) {
 
-    private val logger = LoggerFactory.getLogger(VersionService::class.java)
-
     fun insertVersion(dto: PluginVersionDto, fileHandler: FileHandler): Mono<PluginVersion> {
         return pluginService.getPlugin(dto.pluginId)
             .flatMap { plugin -> versionRepository.findByPluginIdAndVersion(plugin.id, dto.version)
@@ -38,7 +35,7 @@ class VersionService @Autowired constructor(private val pluginService: PluginSer
             .flatMap { version ->
                 getLatest(version.pluginId).flatMap { latest -> pluginService.updateVersion(latest.pluginId, latest.version)
                     .flatMap { fileHandler.save("/versions/${version.pluginId.toString()}", dto.file!!, "${version.pluginName}-${version.version}.jar").thenReturn(latest) }
-                    .doOnSuccess { logger.info("Latest version found: ${latest.version}") } }
+                }
             }
     }
 
@@ -60,7 +57,7 @@ class VersionService @Autowired constructor(private val pluginService: PluginSer
                 .flatMap { plugin -> versionRepository.findByPluginIdAndVersion(plugin.id, version)
                     .switchIfEmpty(Mono.defer { Mono.error { VersionNotFound() } })
                     .flatMap { downloadLinkRepository.save(DownloadLink(pluginId = plugin.id, version = version, accountId = accountId))
-                        .map { "https://api.jtm-network.com/download/version/${it.id}" }
+                        .map { "https://api.jtm-network.com/mc/download/${it.id}" }
                     }
                 }
             })
@@ -91,5 +88,19 @@ class VersionService @Autowired constructor(private val pluginService: PluginSer
         return versionRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error { VersionNotFound() } })
             .flatMap { versionRepository.delete(it).thenReturn(it) }
+    }
+
+    fun getFolderVersions(fileHandler: FileHandler): Flux<FolderInfo> {
+        return fileHandler.listFiles("/versions")
+            .map { FolderInfo(it.name) }
+    }
+
+    fun cleanVersions(fileHandler: FileHandler): Flux<String> {
+        return fileHandler.listFiles("/versions")
+            .flatMap { dir -> pluginService.getPlugin(UUID.fromString(dir.name))
+                .flatMap { fileHandler.fetch(dir.path) }
+                .switchIfEmpty(Mono.defer { fileHandler.delete(dir.path) })
+                .map { dir.name }
+            }
     }
 }

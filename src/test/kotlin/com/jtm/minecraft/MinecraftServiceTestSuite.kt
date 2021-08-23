@@ -10,11 +10,14 @@ import com.jtm.minecraft.data.service.BlacklistTokenServiceTest
 import com.jtm.minecraft.data.service.PluginServiceTest
 import com.jtm.minecraft.data.service.ProfileServiceTest
 import com.jtm.minecraft.data.service.plugin.AccessServiceTest
+import com.jtm.minecraft.data.service.plugin.DownloadServiceTest
+import com.jtm.minecraft.data.service.plugin.ReviewServiceTest
 import com.jtm.minecraft.data.service.plugin.VersionServiceTest
 import com.jtm.minecraft.entrypoint.controller.AuthControllerTest
 import com.jtm.minecraft.entrypoint.controller.PluginControllerTest
 import com.jtm.minecraft.entrypoint.controller.ProfileControllerTest
 import com.jtm.minecraft.entrypoint.controller.plugin.AccessControllerTest
+import com.jtm.minecraft.entrypoint.controller.plugin.ReviewControllerTest
 import com.jtm.minecraft.entrypoint.controller.plugin.VersionControllerTest
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
@@ -31,6 +34,8 @@ import org.junit.runners.Suite
 
     AccessServiceTest::class,
     VersionServiceTest::class,
+    DownloadServiceTest::class,
+    ReviewServiceTest::class,
 
     SecurityContextRepositoryTest::class,
     AuthenticationManagerTest::class,
@@ -41,5 +46,6 @@ import org.junit.runners.Suite
 
     AccessControllerTest::class,
     VersionControllerTest::class,
+    ReviewControllerTest::class
 ])
 class MinecraftServiceTestSuite
