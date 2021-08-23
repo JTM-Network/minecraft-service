@@ -17,10 +17,10 @@ class FileHandler {
     @Value("\${disk.path:/disk}")
     lateinit var disk: String
 
-    fun save(path: String, filePart: FilePart): Mono<Void> {
+    fun save(path: String, filePart: FilePart, name: String): Mono<Void> {
         val folder = File(disk + path)
         if (!folder.exists()) if (folder.mkdirs()) logger.info("Created directories at: $path")
-        val file = File(disk + path, filePart.filename())
+        val file = File(disk + path, name)
         return filePart.transferTo(file)
     }
 

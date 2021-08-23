@@ -15,6 +15,7 @@ import com.jtm.minecraft.entrypoint.controller.AuthControllerTest
 import com.jtm.minecraft.entrypoint.controller.PluginControllerTest
 import com.jtm.minecraft.entrypoint.controller.ProfileControllerTest
 import com.jtm.minecraft.entrypoint.controller.plugin.AccessControllerTest
+import com.jtm.minecraft.entrypoint.controller.plugin.VersionControllerTest
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 
@@ -27,6 +28,7 @@ import org.junit.runners.Suite
     ProfileServiceTest::class,
     BlacklistTokenServiceTest::class,
     AuthServiceTest::class,
+
     AccessServiceTest::class,
     VersionServiceTest::class,
 
@@ -36,6 +38,8 @@ import org.junit.runners.Suite
     PluginControllerTest::class,
     ProfileControllerTest::class,
     AuthControllerTest::class,
-    AccessControllerTest::class
+
+    AccessControllerTest::class,
+    VersionControllerTest::class,
 ])
 class MinecraftServiceTestSuite

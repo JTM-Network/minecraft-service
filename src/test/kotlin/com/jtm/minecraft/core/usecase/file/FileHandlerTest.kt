@@ -39,9 +39,8 @@ class FileHandlerTest {
         `when`(filePart.filename()).thenReturn("test")
         `when`(filePart.transferTo(any(File::class.java))).thenReturn(Mono.empty())
 
-        val returned = handler.save(path, filePart)
+        val returned = handler.save(path, filePart, "test.jar")
 
-        verify(filePart, times(1)).filename()
         verify(filePart, times(1)).transferTo(any(File::class.java))
         verifyNoMoreInteractions(filePart)
 
