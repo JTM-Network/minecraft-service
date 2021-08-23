@@ -1,5 +1,6 @@
 package com.jtm.minecraft.core.usecase.file
 
+import com.jtm.minecraft.core.domain.exceptions.file.FailedToDeleteDir
 import com.jtm.minecraft.core.domain.exceptions.file.FileNotFound
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 
 @Component
 class FileHandler {
@@ -34,9 +37,9 @@ class FileHandler {
         val file = File(disk + path)
         if (!file.exists()) return Mono.error { FileNotFound() }
         return Mono.just(file)
-            .map {
-                it.delete()
-                it
+            .flatMap {
+                if (it.isDirectory) if (!Files.deleteIfExists(Path.of(it.toURI()))) return@flatMap Mono.error { FailedToDeleteDir() } else if (!it.delete()) return@flatMap Mono.error { FileNotFound() }
+                Mono.just(it)
             }
     }
 
