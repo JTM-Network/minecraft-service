@@ -3,7 +3,10 @@ package com.jtm.minecraft.core.domain.entity.plugin
 import com.jtm.minecraft.core.domain.dto.PluginVersionDto
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import sun.jvm.hotspot.utilities.Assert.that
 import java.util.*
+import kotlin.math.max
+
 
 @Document("plugin_version")
 data class PluginVersion(
@@ -23,6 +26,15 @@ data class PluginVersion(
     }
 
     override fun compareTo(other: PluginVersion): Int {
-        TODO("Not yet implemented")
+        val thisParts: List<String> = this.version.split("\\.")
+        val thatParts: List<String> = other.version.split("\\.")
+        val length = max(thisParts.size, thatParts.size)
+        for (i in 0 until length) {
+            val thisPart = if (i < thisParts.size) thisParts[i].toInt() else 0
+            val thatPart = if (i < thatParts.size) thatParts[i].toInt() else 0
+            if (thisPart < thatPart) return -1
+            if (thisPart > thatPart) return 1
+        }
+        return 0
     }
 }

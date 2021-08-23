@@ -23,7 +23,7 @@ class VersionController @Autowired constructor(private val versionService: Versi
                                                private val tokenProvider: AccountTokenProvider) {
 
     @PostMapping(produces = [MediaType.APPLICATION_JSON_VALUE], consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun postVersion(@RequestPart("pluginId") id: UUID, @RequestPart("version") version: String, @RequestPart("file") file: FilePart, @RequestPart("changelog") changelog: String): Mono<PluginVersion> {
+    fun postVersion(@RequestParam("pluginId") id: UUID, @RequestPart("version") version: String, @RequestPart("file") file: FilePart, @RequestPart("changelog") changelog: String): Mono<PluginVersion> {
         return versionService.insertVersion(PluginVersionDto(id, file, version, changelog), fileHandler)
     }
 
