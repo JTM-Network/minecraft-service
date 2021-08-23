@@ -63,13 +63,13 @@ class VersionController @Autowired constructor(private val versionService: Versi
         return versionService.removeVersion(id)
     }
 
-    @GetMapping("/file/all")
+    @GetMapping("/folder/all")
     fun getFolderVersions(): Flux<FolderInfo> {
         return versionService.getFolderVersions(fileHandler)
     }
 
-    @DeleteMapping("/file/clean")
-    fun cleanVersions(): Flux<String> {
-        return versionService.cleanVersions(fileHandler)
+    @DeleteMapping("/folder/{id}")
+    fun deleteFolderVersion(@PathVariable id: UUID): Mono<String> {
+        return versionService.removeFolderVersion(id, fileHandler)
     }
 }

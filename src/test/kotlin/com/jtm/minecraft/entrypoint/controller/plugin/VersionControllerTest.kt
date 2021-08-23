@@ -170,7 +170,7 @@ class VersionControllerTest {
         `when`(versionService.getFolderVersions(anyOrNull())).thenReturn(Flux.just(FolderInfo("test")))
 
         testClient.get()
-            .uri("/version/file/all")
+            .uri("/version/folder/all")
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -181,17 +181,17 @@ class VersionControllerTest {
     }
 
     @Test
-    fun cleanVersionsTest() {
-        `when`(versionService.cleanVersions(anyOrNull())).thenReturn(Flux.just("test"))
+    fun removeFolderVersionTest() {
+        `when`(versionService.removeFolderVersion(anyOrNull(), anyOrNull())).thenReturn(Mono.just("test"))
 
         testClient.delete()
-            .uri("/version/file/clean")
+            .uri("/version/folder/${UUID.randomUUID()}")
             .exchange()
             .expectStatus().isOk
             .expectBody()
             .jsonPath("$").isEqualTo("test")
 
-        verify(versionService, times(1)).cleanVersions(anyOrNull())
+        verify(versionService, times(1)).removeFolderVersion(anyOrNull(), anyOrNull())
         verifyNoMoreInteractions(versionService)
     }
 }

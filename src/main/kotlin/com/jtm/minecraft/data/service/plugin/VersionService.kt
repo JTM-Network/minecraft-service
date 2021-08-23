@@ -97,14 +97,8 @@ class VersionService @Autowired constructor(private val pluginService: PluginSer
             .map { FolderInfo(it.name) }
     }
 
-    fun cleanVersions(fileHandler: FileHandler): Flux<String> {
-        return fileHandler.listFiles("/versions")
-            .flatMap { dir -> pluginRepository.findById(UUID.fromString(dir.name))
-                .flatMap { fileHandler.fetch(dir.path).thenReturn(dir) }
-                .switchIfEmpty(Mono.defer { fileHandler.delete(dir.path)
-                    .doOnError { Mono.just(dir) }
-                })
-                .map { dir.name }
-            }
+    fun removeFolderVersion(id: UUID, fileHandler: FileHandler): Mono<String> {
+        return fileHandler.delete(id.toString())
+            .map { it.name }
     }
 }

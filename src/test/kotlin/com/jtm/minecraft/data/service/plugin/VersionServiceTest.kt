@@ -346,14 +346,12 @@ class VersionServiceTest {
     }
 
     @Test
-    fun cleanVersionsTest() {
-        `when`(fileHandler.listFiles(anyString())).thenReturn(Flux.just(file))
-        `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
+    fun removeFolderVersionTest() {
         `when`(fileHandler.delete(anyString())).thenReturn(Mono.just(file))
 
-        val returned = versionService.cleanVersions(fileHandler)
+        val returned = versionService.removeFolderVersion(UUID.randomUUID(), fileHandler)
 
-        verify(fileHandler, times(1)).listFiles(anyString())
+        verify(fileHandler, times(1)).delete(anyString())
         verifyNoMoreInteractions(fileHandler)
 
         StepVerifier.create(returned)
