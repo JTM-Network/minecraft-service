@@ -10,6 +10,7 @@ import com.jtm.minecraft.core.domain.exceptions.plugin.version.VersionNotFound
 import com.jtm.minecraft.core.domain.exceptions.token.InvalidJwtToken
 import com.jtm.minecraft.core.usecase.file.FileHandler
 import com.jtm.minecraft.core.usecase.repository.DownloadLinkRepository
+import com.jtm.minecraft.core.usecase.repository.PluginRepository
 import com.jtm.minecraft.core.usecase.repository.plugin.PluginVersionRepository
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
 import com.jtm.minecraft.data.service.PluginService
@@ -36,12 +37,13 @@ import java.util.*
 class VersionServiceTest {
 
     private val pluginService: PluginService = mock()
+    private val pluginRepository: PluginRepository = mock()
     private val fileHandler: FileHandler = mock()
     private val downloadLinkRepository: DownloadLinkRepository = mock()
     private val versionRepository: PluginVersionRepository = mock()
     private val accessService: AccessService = mock()
     private val tokenProvider: AccountTokenProvider = mock()
-    private val versionService = VersionService(pluginService, versionRepository, downloadLinkRepository)
+    private val versionService = VersionService(pluginService, pluginRepository, versionRepository, downloadLinkRepository)
 
     private val plugin = Plugin(name = "test", description = "desc")
     private val filePart: FilePart = mock()
@@ -346,7 +348,7 @@ class VersionServiceTest {
     @Test
     fun cleanVersionsTest() {
         `when`(fileHandler.listFiles(anyString())).thenReturn(Flux.just(file))
-        `when`(pluginService.getPlugin(anyOrNull())).thenReturn(Mono.empty())
+        `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
         `when`(fileHandler.delete(anyString())).thenReturn(Mono.just(file))
 
         val returned = versionService.cleanVersions(fileHandler)

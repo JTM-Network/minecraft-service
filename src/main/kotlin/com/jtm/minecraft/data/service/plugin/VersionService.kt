@@ -10,6 +10,7 @@ import com.jtm.minecraft.core.domain.exceptions.token.InvalidJwtToken
 import com.jtm.minecraft.core.domain.model.FolderInfo
 import com.jtm.minecraft.core.usecase.file.FileHandler
 import com.jtm.minecraft.core.usecase.repository.DownloadLinkRepository
+import com.jtm.minecraft.core.usecase.repository.PluginRepository
 import com.jtm.minecraft.core.usecase.repository.plugin.PluginVersionRepository
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
 import com.jtm.minecraft.data.service.PluginService
@@ -23,6 +24,7 @@ import java.util.*
 
 @Service
 class VersionService @Autowired constructor(private val pluginService: PluginService,
+                                            private val pluginRepository: PluginRepository,
                                             private val versionRepository: PluginVersionRepository,
                                             private val downloadLinkRepository: DownloadLinkRepository) {
 
@@ -97,7 +99,7 @@ class VersionService @Autowired constructor(private val pluginService: PluginSer
 
     fun cleanVersions(fileHandler: FileHandler): Flux<String> {
         return fileHandler.listFiles("/versions")
-            .flatMap { dir -> pluginService.getPlugin(UUID.fromString(dir.name))
+            .flatMap { dir -> pluginRepository.findById(UUID.fromString(dir.name))
                 .flatMap { fileHandler.fetch(dir.path) }
                 .switchIfEmpty(Mono.defer { fileHandler.delete(dir.path) })
                 .map { dir.name }
