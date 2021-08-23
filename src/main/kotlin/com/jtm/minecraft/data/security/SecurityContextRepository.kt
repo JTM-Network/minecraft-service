@@ -12,7 +12,8 @@ import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
 @Component
-class SecurityContextRepository @Autowired constructor(private val authenticationManager: AuthenticationManager, private val tokenProvider: AccountTokenProvider): ServerSecurityContextRepository {
+class SecurityContextRepository @Autowired constructor(private val authenticationManager: AuthenticationManager,
+                                                       private val tokenProvider: AccountTokenProvider): ServerSecurityContextRepository {
 
     override fun save(exchange: ServerWebExchange?, context: SecurityContext?): Mono<Void> {
         return Mono.empty()

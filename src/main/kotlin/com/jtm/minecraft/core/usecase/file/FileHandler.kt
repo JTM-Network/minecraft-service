@@ -38,7 +38,7 @@ class FileHandler {
         if (!file.exists()) return Mono.error { FileNotFound() }
         return Mono.just(file)
             .flatMap {
-                if (it.isDirectory) if (!Files.deleteIfExists(Path.of(it.toURI()))) return@flatMap Mono.error { FailedToDeleteDir() } else if (!it.delete()) return@flatMap Mono.error { FileNotFound() }
+                if (it.isDirectory) if (!Files.deleteIfExists(it.toPath())) return@flatMap Mono.error { FailedToDeleteDir() } else if (!it.delete()) return@flatMap Mono.error { FileNotFound() }
                 Mono.just(it)
             }
     }
