@@ -12,6 +12,8 @@ import com.jtm.minecraft.core.usecase.repository.DownloadLinkRepository
 import com.jtm.minecraft.core.usecase.repository.plugin.PluginVersionRepository
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
 import com.jtm.minecraft.data.service.PluginService
+import lombok.extern.slf4j.Slf4j
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.server.reactive.ServerHttpRequest
@@ -25,6 +27,8 @@ class VersionService @Autowired constructor(private val pluginService: PluginSer
                                             private val versionRepository: PluginVersionRepository,
                                             private val downloadLinkRepository: DownloadLinkRepository) {
 
+    private val logger = LoggerFactory.getLogger(VersionService::class.java)
+
     fun insertVersion(dto: PluginVersionDto, fileHandler: FileHandler): Mono<PluginVersion> {
         return pluginService.getPlugin(dto.pluginId)
             .flatMap { plugin -> versionRepository.findByPluginIdAndVersion(plugin.id, dto.version)
@@ -32,11 +36,9 @@ class VersionService @Autowired constructor(private val pluginService: PluginSer
                 .switchIfEmpty(Mono.defer { versionRepository.save(PluginVersion(pluginId = plugin.id, pluginName = plugin.name, version = dto.version, changelog = dto.changelog)) })
             }
             .flatMap { version ->
-                fileHandler.save("/versions/${version.pluginId.toString()}", dto.file!!, "${version.pluginName}-${version.version}.jar")
-                    .flatMap {
-                        getLatest(version.pluginId).flatMap { pluginService.updateVersion(it.pluginId, it.version) }
-                    }
-                    .thenReturn(version)
+                getLatest(version.pluginId).flatMap { latest -> pluginService.updateVersion(latest.pluginId, latest.version)
+                    .flatMap { fileHandler.save("/versions/${version.pluginId.toString()}", dto.file!!, "${version.pluginName}-${version.version}.jar").thenReturn(latest) }
+                    .doOnSuccess { logger.info("Latest version found: ${latest.version}") } }
             }
     }
 

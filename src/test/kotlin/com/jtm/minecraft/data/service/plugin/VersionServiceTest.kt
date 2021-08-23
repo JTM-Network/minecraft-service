@@ -76,6 +76,7 @@ class VersionServiceTest {
         `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyString())).thenReturn(Mono.empty())
         `when`(versionRepository.save(anyOrNull())).thenReturn(Mono.just(version))
         `when`(fileHandler.save(anyString(), anyOrNull(), anyString())).thenReturn(Mono.empty())
+        `when`(pluginService.updateVersion(anyOrNull(), anyOrNull())).thenReturn(Mono.just(plugin))
         `when`(versionRepository.findByPluginId(anyOrNull())).thenReturn(Flux.just(version))
 
         val returned = versionService.insertVersion(versionDto, fileHandler)
