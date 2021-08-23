@@ -37,6 +37,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.2'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation 'commons-io:commons-io:2.8.0'
 
     runtimeOnly 'org.jetbrains.kotlin:kotlin-reflect:1.5.0'
     compileOnly 'org.projectlombok:lombok:1.18.8'
