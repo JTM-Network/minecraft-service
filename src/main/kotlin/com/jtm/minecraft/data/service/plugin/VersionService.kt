@@ -31,11 +31,12 @@ class VersionService @Autowired constructor(private val pluginService: PluginSer
                 .flatMap<PluginVersion?> { Mono.defer { Mono.error { VersionFound() } } }
                 .switchIfEmpty(Mono.defer { versionRepository.save(PluginVersion(pluginId = plugin.id, pluginName = plugin.name, version = dto.version, changelog = dto.changelog)) })
             }
-            .doOnSuccess { version ->
+            .flatMap { version ->
                 fileHandler.save("/versions/${version.pluginId.toString()}", dto.file!!, "${version.pluginName}-${version.version}.jar")
-                    .doOnSuccess {
+                    .flatMap {
                         getLatest(version.pluginId).flatMap { pluginService.updateVersion(it.pluginId, it.version) }
                     }
+                    .thenReturn(version)
             }
     }
 
