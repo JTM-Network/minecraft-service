@@ -28,7 +28,7 @@ class DownloadService @Autowired constructor(private val linkRepository: Downloa
         val accountId = tokenProvider.getAccountId(token) ?: return Mono.error { InvalidJwtToken() }
         return linkRepository.findByIdAndAccountId(id, accountId)
             .flatMap { link -> versionRepository.findByPluginIdAndVersion(link.pluginId, link.version)
-                .flatMap { fileHandler.fetch("/${link.pluginId}/${it.pluginName}-${link.version}.jar")
+                .flatMap { fileHandler.fetch("/versions/${link.pluginId.toString()}/${it.pluginName}-${link.version}.jar")
                     .flatMap { file ->
                         if (!file.exists()) return@flatMap Mono.error { VersionFileNotFound() }
                         response.headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=${file.name}")
