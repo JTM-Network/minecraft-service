@@ -75,6 +75,8 @@ class VersionServiceTest {
         `when`(pluginService.getPlugin(anyOrNull())).thenReturn(Mono.just(plugin))
         `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyString())).thenReturn(Mono.empty())
         `when`(versionRepository.save(anyOrNull())).thenReturn(Mono.just(version))
+        `when`(fileHandler.save(anyString(), anyOrNull(), anyString())).thenReturn(Mono.empty())
+        `when`(versionRepository.findByPluginId(anyOrNull())).thenReturn(Flux.just(version))
 
         val returned = versionService.insertVersion(versionDto, fileHandler)
 
@@ -183,6 +185,22 @@ class VersionServiceTest {
 
         StepVerifier.create(returned)
             .assertNext { assertThat(it).isInstanceOf(String::class.java) }
+            .verifyComplete()
+    }
+
+    @Test
+    fun getLatestTest() {
+        val versionTwo = PluginVersion(pluginId = version.pluginId, pluginName = version.pluginName, version = "0.2", changelog = "Changelog")
+
+        `when`(versionRepository.findByPluginId(anyOrNull())).thenReturn(Flux.just(version, versionTwo))
+
+        val returned = versionService.getLatest(UUID.randomUUID())
+
+        verify(versionRepository, times(1)).findByPluginId(anyOrNull())
+        verifyNoMoreInteractions(versionRepository)
+
+        StepVerifier.create(returned)
+            .assertNext { assertThat(it.version).isEqualTo("0.2") }
             .verifyComplete()
     }
 

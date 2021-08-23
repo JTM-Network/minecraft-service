@@ -29,10 +29,10 @@ data class PluginVersion(
         val thatParts: List<String> = other.version.split("\\.")
         val length = max(thisParts.size, thatParts.size)
         for (i in 0 until length) {
-            val thisPart = if (i < thisParts.size) thisParts[i].toInt() else 0
-            val thatPart = if (i < thatParts.size) thatParts[i].toInt() else 0
-            if (thisPart < thatPart) return -1
-            if (thisPart > thatPart) return 1
+            val thisPart = if (i < thisParts.size) thisParts[i].toDouble() else 0.0
+            val thatPart = if (i < thatParts.size) thatParts[i].toDouble() else 0.0
+            if (thatPart < thisPart) return -1
+            if (thatPart > thisPart) return 1
         }
         return 0
     }

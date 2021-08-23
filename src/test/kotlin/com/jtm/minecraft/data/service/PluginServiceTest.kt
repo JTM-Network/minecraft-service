@@ -30,7 +30,8 @@ class PluginServiceTest {
 
     private val created = Plugin(name = "test", description = "test")
 
-    @Test fun insertPluginTest() {
+    @Test
+    fun insertPluginTest() {
         `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.empty())
         `when`(pluginRepository.save(any(Plugin::class.java))).thenReturn(Mono.just(created))
 
@@ -48,7 +49,8 @@ class PluginServiceTest {
             .verifyComplete()
     }
 
-    @Test fun insertPlugin_thenFoundTest() {
+    @Test
+    fun insertPlugin_thenFoundTest() {
         `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.just(created))
 
         val returned = pluginService.insertPlugin(PluginDto("test", "test"))
@@ -61,7 +63,8 @@ class PluginServiceTest {
             .verify()
     }
 
-    @Test fun updatePluginTest() {
+    @Test
+    fun updatePluginTest() {
         `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(created))
         `when`(pluginRepository.save(any(Plugin::class.java))).thenReturn(Mono.just(created))
 
@@ -78,7 +81,8 @@ class PluginServiceTest {
             .verifyComplete()
     }
 
-    @Test fun updatePlugin_thenNotFoundTest() {
+    @Test
+    fun updatePlugin_thenNotFoundTest() {
         `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
 
         val returned = pluginService.updatePlugin(UUID.randomUUID(), PluginDto("test", "test"))
@@ -91,7 +95,41 @@ class PluginServiceTest {
             .verify()
     }
 
-    @Test fun getPluginTest() {
+    @Test
+    fun updateVersion_thenNotFound() {
+        `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
+
+        val returned = pluginService.updateVersion(UUID.randomUUID(), "0.1")
+
+        verify(pluginRepository, times(1)).findById(any(UUID::class.java))
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .expectError(PluginNotFound::class.java)
+            .verify()
+    }
+
+    @Test
+    fun updateVersionTest() {
+        `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(created))
+        `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(created.updateVersion("0.1")))
+
+        val returned = pluginService.updateVersion(UUID.randomUUID(), "0.1")
+
+        verify(pluginRepository, times(1)).findById(any(UUID::class.java))
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.version).isEqualTo("0.1")
+                assertThat(it.name).isEqualTo("test")
+                assertThat(it.description).isEqualTo("test")
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun getPluginTest() {
         `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(created))
 
         val returned = pluginService.getPlugin(UUID.randomUUID())
@@ -107,7 +145,8 @@ class PluginServiceTest {
             .verifyComplete()
     }
 
-    @Test fun getPlugin_thenNotFoundTest() {
+    @Test
+    fun getPlugin_thenNotFoundTest() {
         `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
 
         val returned = pluginService.getPlugin(UUID.randomUUID())
@@ -120,7 +159,8 @@ class PluginServiceTest {
             .verify()
     }
 
-    @Test fun getPluginByNameTest() {
+    @Test
+    fun getPluginByNameTest() {
         `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.just(created))
 
         val returned = pluginService.getPluginByName("test")
@@ -136,7 +176,8 @@ class PluginServiceTest {
             .verifyComplete()
     }
 
-    @Test fun getPluginByName_thenNotFoundTest() {
+    @Test
+    fun getPluginByName_thenNotFoundTest() {
         `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.empty())
 
         val returned = pluginService.getPluginByName("test")
@@ -149,7 +190,8 @@ class PluginServiceTest {
             .verify()
     }
 
-    @Test fun getPluginsTest() {
+    @Test
+    fun getPluginsTest() {
         `when`(pluginRepository.findAll()).thenReturn(Flux.just(created, Plugin(name = "test #2", description = "test #3")))
 
         val returned = pluginService.getPlugins()
@@ -236,7 +278,8 @@ class PluginServiceTest {
             .verifyComplete()
     }
 
-    @Test fun removePlugin_thenNotFoundTest() {
+    @Test
+    fun removePlugin_thenNotFoundTest() {
         `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
 
         val returned = pluginService.removePlugin(UUID.randomUUID())

@@ -29,6 +29,12 @@ class PluginService @Autowired constructor(private val pluginRepository: PluginR
             .flatMap { pluginRepository.save(it.update(dto)) }
     }
 
+    fun updateVersion(id: UUID, version: String): Mono<Plugin> {
+        return pluginRepository.findById(id)
+            .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
+            .flatMap { pluginRepository.save(it.updateVersion(version)) }
+    }
+
     fun getPlugin(id: UUID): Mono<Plugin> {
         return pluginRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })

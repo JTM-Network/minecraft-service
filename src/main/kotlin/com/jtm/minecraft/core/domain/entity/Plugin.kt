@@ -10,6 +10,7 @@ data class Plugin(
     @Id val id: UUID = UUID.randomUUID(),
     var name: String,
     var description: String,
+    var version: String? = null,
     var premium: Boolean = false,
     var price: Double = 0.0,
     val createdTime: Long = System.currentTimeMillis(),
@@ -19,6 +20,11 @@ data class Plugin(
         this.name = dto.name
         this.description = dto.description
         this.lastUpdated = System.currentTimeMillis()
+        return this
+    }
+
+    fun updateVersion(version: String): Plugin {
+        this.version = version
         return this
     }
 }

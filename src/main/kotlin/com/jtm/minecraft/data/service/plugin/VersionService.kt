@@ -31,7 +31,12 @@ class VersionService @Autowired constructor(private val pluginService: PluginSer
                 .flatMap<PluginVersion?> { Mono.defer { Mono.error { VersionFound() } } }
                 .switchIfEmpty(Mono.defer { versionRepository.save(PluginVersion(pluginId = plugin.id, pluginName = plugin.name, version = dto.version, changelog = dto.changelog)) })
             }
-            .doOnSuccess { fileHandler.save("/versions/${it.pluginId.toString()}", dto.file!!, "${it.pluginName}-${it.version}.jar") }
+            .doOnSuccess { version ->
+                fileHandler.save("/versions/${version.pluginId.toString()}", dto.file!!, "${version.pluginName}-${version.version}.jar")
+                    .doOnSuccess {
+                        getLatest(version.pluginId).flatMap { pluginService.updateVersion(it.pluginId, it.version) }
+                    }
+            }
     }
 
     fun updateVersion(dto: PluginVersionDto): Mono<PluginVersion> {
@@ -56,6 +61,10 @@ class VersionService @Autowired constructor(private val pluginService: PluginSer
                     }
                 }
             })
+    }
+
+    fun getLatest(pluginId: UUID): Mono<PluginVersion> {
+        return versionRepository.findByPluginId(pluginId).sort { first, second -> first.compareTo(second) }.take(1).next()
     }
 
     fun getVersion(id: UUID): Mono<PluginVersion> {
