@@ -5,6 +5,7 @@ import com.jtm.minecraft.core.domain.entity.plugin.PluginReview
 import com.jtm.minecraft.data.service.plugin.ReviewService
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.mockito.Mockito.*
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.anyOrNull
@@ -55,11 +56,11 @@ class ReviewControllerTest {
     }
 
     @Test
-    fun putReviewTest() {
-        `when`(reviewService.updateReview(anyOrNull(), anyOrNull())).thenReturn(Mono.just(created))
+    fun putReviewRatingTest() {
+        `when`(reviewService.updateReviewRating(anyOrNull(), anyOrNull())).thenReturn(Mono.just(created))
 
         testClient.put()
-            .uri("/review")
+            .uri("/review/rating")
             .bodyValue(dto)
             .exchange()
             .expectStatus().isOk
@@ -69,8 +70,27 @@ class ReviewControllerTest {
             .jsonPath("$.rating").isEqualTo(created.rating)
             .jsonPath("$.comment").isEqualTo(created.comment)
 
-        verify(reviewService, times(1)).updateReview(anyOrNull(), anyOrNull())
+        verify(reviewService, times(1)).updateReviewRating(anyOrNull(), anyOrNull())
         verifyNoMoreInteractions(reviewService)
+    }
+
+    @Test
+    fun putReviewCommentTest() {
+        `when`(reviewService.updateReviewComment(anyOrNull(), anyOrNull())).thenReturn(Mono.just(created))
+
+        testClient.put()
+            .uri("/review/comment")
+            .bodyValue(dto)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.accountId").isEqualTo(created.accountId.toString())
+            .jsonPath("$.pluginId").isEqualTo(created.pluginId.toString())
+            .jsonPath("$.rating").isEqualTo(created.rating)
+            .jsonPath("$.comment").isEqualTo(created.comment)
+
+        verify(reviewService, times(1)).updateReviewComment(anyOrNull(), anyOrNull())
+        Mockito.verifyNoMoreInteractions(reviewService)
     }
 
     @Test

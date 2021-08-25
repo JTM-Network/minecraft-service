@@ -6,6 +6,7 @@ import com.jtm.minecraft.core.domain.entity.plugin.PluginReview
 import com.jtm.minecraft.core.domain.exceptions.plugin.PluginNotFound
 import com.jtm.minecraft.core.domain.exceptions.plugin.review.ReviewFound
 import com.jtm.minecraft.core.domain.exceptions.plugin.review.ReviewNotFound
+import com.jtm.minecraft.core.domain.exceptions.token.InvalidJwtToken
 import com.jtm.minecraft.core.usecase.repository.plugin.PluginReviewRepository
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
 import com.jtm.minecraft.data.service.PluginService
@@ -43,6 +44,22 @@ class ReviewServiceTest {
 
         `when`(request.headers).thenReturn(headers)
         `when`(headers.getFirst(anyString())).thenReturn("Bearer test")
+    }
+
+    @Test
+    fun insertReview_thenAccoundIdInvalid() {
+        `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
+        `when`(tokenProvider.getAccountId(anyString())).thenReturn(null)
+
+        val returned = reviewService.insertReview(dto, request)
+
+        verify(tokenProvider, times(1)).resolveToken(anyString())
+        verify(tokenProvider, times(1)).getAccountId(anyString())
+        verifyNoMoreInteractions(tokenProvider)
+
+        StepVerifier.create(returned)
+            .expectError(InvalidJwtToken::class.java)
+            .verify()
     }
 
     @Test
@@ -93,13 +110,29 @@ class ReviewServiceTest {
     }
 
     @Test
-    fun updateReview_thenNotFound() {
+    fun updateReviewRating_thenAccountIdInvalid() {
+        `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
+        `when`(tokenProvider.getAccountId(anyString())).thenReturn(null)
+
+        val returned = reviewService.updateReviewRating(dto, request)
+
+        verify(tokenProvider, times(1)).resolveToken(anyString())
+        verify(tokenProvider, times(1)).getAccountId(anyString())
+        verifyNoMoreInteractions(tokenProvider)
+
+        StepVerifier.create(returned)
+            .expectError(InvalidJwtToken::class.java)
+            .verify()
+    }
+
+    @Test
+    fun updateReviewRating_thenNotFound() {
         `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
         `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
         `when`(pluginService.getPlugin(anyOrNull())).thenReturn(Mono.just(plugin))
         `when`(reviewRepository.findByAccountIdAndPluginId(anyOrNull(), anyOrNull())).thenReturn(Mono.empty())
 
-        val returned = reviewService.updateReview(dto, request)
+        val returned = reviewService.updateReviewRating(dto, request)
 
         verify(tokenProvider, times(1)).resolveToken(anyString())
         verify(tokenProvider, times(1)).getAccountId(anyString())
@@ -114,14 +147,77 @@ class ReviewServiceTest {
     }
 
     @Test
-    fun updateReviewTest() {
+    fun updateReviewRatingTest() {
         `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
         `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
         `when`(pluginService.getPlugin(anyOrNull())).thenReturn(Mono.just(plugin))
         `when`(reviewRepository.findByAccountIdAndPluginId(anyOrNull(), anyOrNull())).thenReturn(Mono.just(review))
         `when`(reviewRepository.save(anyOrNull())).thenReturn(Mono.just(review))
 
-        val returned = reviewService.updateReview(dto, request)
+        val returned = reviewService.updateReviewRating(dto, request)
+
+        verify(tokenProvider, times(1)).resolveToken(anyString())
+        verify(tokenProvider, times(1)).getAccountId(anyString())
+        verifyNoMoreInteractions(tokenProvider)
+
+        verify(pluginService, times(1)).getPlugin(anyOrNull())
+        verifyNoMoreInteractions(pluginService)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.id).isEqualTo(review.id)
+                assertThat(it.rating).isEqualTo(review.rating)
+                assertThat(it.comment).isEqualTo(review.comment)
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun updateReviewComment_thenAccountIdInvalid() {
+        `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
+        `when`(tokenProvider.getAccountId(anyString())).thenReturn(null)
+
+        val returned = reviewService.updateReviewComment(dto, request)
+
+        verify(tokenProvider, times(1)).resolveToken(anyString())
+        verify(tokenProvider, times(1)).getAccountId(anyString())
+        verifyNoMoreInteractions(tokenProvider)
+
+        StepVerifier.create(returned)
+            .expectError(InvalidJwtToken::class.java)
+            .verify()
+    }
+
+    @Test
+    fun updateReviewComment_thenNotFound() {
+        `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
+        `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
+        `when`(pluginService.getPlugin(anyOrNull())).thenReturn(Mono.just(plugin))
+        `when`(reviewRepository.findByAccountIdAndPluginId(anyOrNull(), anyOrNull())).thenReturn(Mono.empty())
+
+        val returned = reviewService.updateReviewComment(dto, request)
+
+        verify(tokenProvider, times(1)).resolveToken(anyString())
+        verify(tokenProvider, times(1)).getAccountId(anyString())
+        verifyNoMoreInteractions(tokenProvider)
+
+        verify(pluginService, times(1)).getPlugin(anyOrNull())
+        verifyNoMoreInteractions(pluginService)
+
+        StepVerifier.create(returned)
+            .expectError(ReviewNotFound::class.java)
+            .verify()
+    }
+
+    @Test
+    fun updateReviewCommentTest() {
+        `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
+        `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
+        `when`(pluginService.getPlugin(anyOrNull())).thenReturn(Mono.just(plugin))
+        `when`(reviewRepository.findByAccountIdAndPluginId(anyOrNull(), anyOrNull())).thenReturn(Mono.just(review))
+        `when`(reviewRepository.save(anyOrNull())).thenReturn(Mono.just(review))
+
+        val returned = reviewService.updateReviewComment(dto, request)
 
         verify(tokenProvider, times(1)).resolveToken(anyString())
         verify(tokenProvider, times(1)).getAccountId(anyString())

@@ -32,14 +32,25 @@ class ReviewService @Autowired constructor(private val pluginService: PluginServ
             }
     }
 
-    fun updateReview(dto: PluginReviewDto, request: ServerHttpRequest): Mono<PluginReview> {
+    fun updateReviewRating(dto: PluginReviewDto, request: ServerHttpRequest): Mono<PluginReview> {
         val bearer = request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return Mono.error { InvalidJwtToken() }
         val token = tokenProvider.resolveToken(bearer)
         val accountId = tokenProvider.getAccountId(token) ?: return Mono.error { InvalidJwtToken() }
         return pluginService.getPlugin(dto.pluginId)
             .flatMap { plugin -> reviewRepository.findByAccountIdAndPluginId(accountId, plugin.id)
                 .switchIfEmpty(Mono.defer { Mono.error { ReviewNotFound() } })
-                .flatMap { reviewRepository.save(it.update(dto)) }
+                .flatMap { reviewRepository.save(it.updateRating(dto.rating)) }
+            }
+    }
+
+    fun updateReviewComment(dto: PluginReviewDto, request: ServerHttpRequest): Mono<PluginReview> {
+        val bearer = request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return Mono.error { InvalidJwtToken() }
+        val token = tokenProvider.resolveToken(bearer)
+        val accountId = tokenProvider.getAccountId(token) ?: return Mono.error { InvalidJwtToken() }
+        return pluginService.getPlugin(accountId)
+            .flatMap { plugin -> reviewRepository.findByAccountIdAndPluginId(accountId, plugin.id)
+                .switchIfEmpty(Mono.defer { Mono.error { ReviewNotFound() }})
+                .flatMap { reviewRepository.save(it.updateComment(dto.comment)) }
             }
     }
 

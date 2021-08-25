@@ -19,9 +19,14 @@ class ReviewController @Autowired constructor(private val reviewService: ReviewS
         return reviewService.insertReview(dto, request)
     }
 
-    @PutMapping
-    fun putReview(@RequestBody dto: PluginReviewDto, request: ServerHttpRequest): Mono<PluginReview> {
-        return reviewService.updateReview(dto, request)
+    @PutMapping("/rating")
+    fun putReviewRating(@RequestBody dto: PluginReviewDto, request: ServerHttpRequest): Mono<PluginReview> {
+        return reviewService.updateReviewRating(dto, request)
+    }
+
+    @PutMapping("/comment")
+    fun putReviewComment(@RequestBody dto: PluginReviewDto, request: ServerHttpRequest): Mono<PluginReview> {
+        return reviewService.updateReviewComment(dto, request)
     }
 
     @GetMapping("/{id}")

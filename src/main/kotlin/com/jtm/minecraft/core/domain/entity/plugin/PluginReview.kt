@@ -15,9 +15,13 @@ data class PluginReview(
     var updated: Long = System.currentTimeMillis(),
     val created: Long = System.currentTimeMillis()) {
 
-    fun update(dto: PluginReviewDto): PluginReview {
-        this.rating = dto.rating
-        this.comment = dto.comment
+    fun updateRating(rating: Double): PluginReview {
+        this.rating = rating
+        return this
+    }
+
+    fun updateComment(comment: String): PluginReview {
+        this.comment = comment
         return this
     }
 }
