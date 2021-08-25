@@ -1,12 +1,11 @@
 package com.jtm.minecraft.data.manager
 
 import com.jtm.minecraft.core.domain.entity.Profile
-import com.jtm.minecraft.core.domain.exceptions.plugin.PluginHeaderMissing
+import com.jtm.minecraft.core.domain.exceptions.plugin.PluginIdNotFound
 import com.jtm.minecraft.core.domain.exceptions.plugin.PluginUnauthorized
 import com.jtm.minecraft.core.domain.exceptions.token.BlacklistTokenFound
 import com.jtm.minecraft.core.domain.exceptions.token.InvalidJwtToken
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
-import com.jtm.minecraft.core.util.Logging
 import com.jtm.minecraft.data.service.BlacklistTokenService
 import com.jtm.minecraft.data.service.ProfileService
 import org.assertj.core.api.Assertions.assertThat
@@ -28,8 +27,7 @@ class AuthenticationManagerTest {
     private val tokenProvider: AccountTokenProvider = mock()
     private val tokenService: BlacklistTokenService = mock()
     private val profileService: ProfileService = mock()
-    private val logging: Logging = mock()
-    private val authenticationManager = AuthenticationManager(tokenProvider, tokenService, profileService, logging)
+    private val authenticationManager = AuthenticationManager(tokenProvider, tokenService, profileService)
 
     private val authentication: Authentication = mock()
     private val profile: Profile = mock()
@@ -60,7 +58,7 @@ class AuthenticationManagerTest {
         verifyNoMoreInteractions(authentication)
 
         StepVerifier.create(returned)
-            .expectError(PluginHeaderMissing::class.java)
+            .expectError(PluginIdNotFound::class.java)
             .verify()
     }
 

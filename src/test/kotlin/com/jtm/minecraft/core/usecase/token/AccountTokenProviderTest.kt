@@ -26,7 +26,7 @@ class AccountTokenProviderTest {
         tokenProvider.pluginKey = "pluginKey"
 
         access_token = createToken(tokenProvider.accessKey, uuid, "test@gmail.com", UUID.randomUUID())
-        api_token = createToken(tokenProvider.accessKey, uuid, "test@gmail.com", UUID.randomUUID())
+        api_token = createToken(tokenProvider.apiKey, uuid, "test@gmail.com", UUID.randomUUID())
         plugin_token = createToken(tokenProvider.pluginKey, uuid, "test@gmail.com", UUID.randomUUID())
     }
 
@@ -47,6 +47,20 @@ class AccountTokenProviderTest {
     @Test
     fun getAccountEmailTest() {
         val email = tokenProvider.getAccountEmail(access_token)
+
+        assertThat(email).isEqualTo("test@gmail.com")
+    }
+
+    @Test
+    fun getApiAccountIdTest() {
+        val id = tokenProvider.getApiAccountId(api_token)
+
+        assertThat(id).isEqualTo(uuid)
+    }
+
+    @Test
+    fun getApiAccountEmailTest() {
+        val email = tokenProvider.getApiAccountEmail(api_token)
 
         assertThat(email).isEqualTo("test@gmail.com")
     }

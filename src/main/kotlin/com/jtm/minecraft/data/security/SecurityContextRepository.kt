@@ -15,10 +15,17 @@ import reactor.core.publisher.Mono
 class SecurityContextRepository @Autowired constructor(private val authenticationManager: AuthenticationManager,
                                                        private val tokenProvider: AccountTokenProvider): ServerSecurityContextRepository {
 
-    override fun save(exchange: ServerWebExchange?, context: SecurityContext?): Mono<Void> {
-        return Mono.empty()
-    }
+    override fun save(exchange: ServerWebExchange?, context: SecurityContext?): Mono<Void> = Mono.empty()
 
+    /**
+     * Create Security Context converted from authenticating using
+     * {@link AuthenticationManager#authenticate} method, extracting the
+     * tokens from the exchange interaction to be used to authenticate
+     * the request.
+     *
+     * @param exchange - the web exchange
+     * @return the security context
+     */
     override fun load(exchange: ServerWebExchange): Mono<SecurityContext> {
         val request = exchange.request
         val pluginBearer = request.headers.getFirst("PLUGIN_AUTHORIZATION") ?: return Mono.empty()
