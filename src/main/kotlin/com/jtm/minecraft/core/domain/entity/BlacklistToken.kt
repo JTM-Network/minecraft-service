@@ -6,5 +6,4 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document("blacklisted_tokens")
 data class BlacklistToken(
     @Id val token: String,
-    val timestamp: Long = System.currentTimeMillis()
-)
+    val timestamp: Long = System.currentTimeMillis())

@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 import kotlin.math.max
 
-
 @Document("plugin_version")
 data class PluginVersion(
     @Id val id: UUID = UUID.randomUUID(),

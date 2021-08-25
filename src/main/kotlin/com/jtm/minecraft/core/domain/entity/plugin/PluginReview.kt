@@ -1,6 +1,5 @@
 package com.jtm.minecraft.core.domain.entity.plugin
 
-import com.jtm.minecraft.core.domain.dto.PluginReviewDto
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*

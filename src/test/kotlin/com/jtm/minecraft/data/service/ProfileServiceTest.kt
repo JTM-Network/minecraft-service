@@ -43,20 +43,6 @@ class ProfileServiceTest {
     }
 
     @Test
-    fun insertProfile_thenResolveTokenInvalid() {
-        `when`(tokenProvider.resolveToken(anyString())).thenReturn("")
-
-        val returned = profileService.insertProfile(request)
-
-        verify(tokenProvider, times(1)).resolveToken(anyString())
-        verifyNoMoreInteractions(tokenProvider)
-
-        StepVerifier.create(returned)
-            .expectError(InvalidJwtToken::class.java)
-            .verify()
-    }
-
-    @Test
     fun insertProfile_thenAccountIdInvalid() {
         `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
         `when`(tokenProvider.getAccountId(anyString())).thenReturn(null)
@@ -200,20 +186,6 @@ class ProfileServiceTest {
                 assertThat(it.email).isEqualTo(created.email)
             }
             .verifyComplete()
-    }
-
-    @Test
-    fun getProfileByBearer_thenResolveTokenEmpty() {
-        `when`(tokenProvider.resolveToken(anyString())).thenReturn("")
-
-        val returned = profileService.getProfileByBearer(request)
-
-        verify(tokenProvider, times(1)).resolveToken(anyString())
-        verifyNoMoreInteractions(tokenProvider)
-
-        StepVerifier.create(returned)
-            .expectError(InvalidJwtToken::class.java)
-            .verify()
     }
 
     @Test

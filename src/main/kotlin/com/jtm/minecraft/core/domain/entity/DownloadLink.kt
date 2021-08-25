@@ -10,15 +10,4 @@ data class DownloadLink(
     val pluginId: UUID,
     val version: String,
     val ipAddress: String,
-    var used: Boolean = false,
-    val created: Long = System.currentTimeMillis()) {
-
-    fun valid(): Boolean {
-        return !used && (System.currentTimeMillis() < (created + TimeUnit.DAYS.toMillis(1)))
-    }
-
-    fun invalidate(): DownloadLink {
-        this.used = true
-        return this
-    }
-}
+    val created: Long = System.currentTimeMillis())
