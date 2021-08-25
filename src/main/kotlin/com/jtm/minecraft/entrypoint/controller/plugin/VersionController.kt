@@ -28,14 +28,14 @@ class VersionController @Autowired constructor(private val versionService: Versi
         return versionService.insertVersion(PluginVersionDto(id, file, version, changelog), fileHandler)
     }
 
-    @PutMapping
-    fun putVersion(@RequestBody dto: PluginVersionDto): Mono<PluginVersion> {
-        return versionService.updateVersion(dto)
+    @PutMapping("/{id}")
+    fun putVersion(@PathVariable id: UUID, @RequestBody dto: PluginVersionDto): Mono<PluginVersion> {
+        return versionService.updateVersion(id, dto)
     }
 
     @GetMapping("/download/request")
     fun getDownloadRequest(@RequestParam("name") name: String, @RequestParam("version") version: String, request: ServerHttpRequest): Mono<String> {
-        return versionService.downloadVersionRequest(name, version, accessService, tokenProvider, request)
+        return versionService.downloadVersionRequest(name, version, accessService, request)
     }
 
     @GetMapping("/{id}")

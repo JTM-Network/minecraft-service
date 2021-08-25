@@ -3,18 +3,15 @@ package com.jtm.minecraft.data.service.plugin
 import com.jtm.minecraft.core.domain.dto.PluginVersionDto
 import com.jtm.minecraft.core.domain.entity.DownloadLink
 import com.jtm.minecraft.core.domain.entity.Plugin
-import com.jtm.minecraft.core.domain.entity.Profile
 import com.jtm.minecraft.core.domain.entity.plugin.PluginVersion
+import com.jtm.minecraft.core.domain.exceptions.RemoteAddressInvalid
 import com.jtm.minecraft.core.domain.exceptions.plugin.version.VersionFound
 import com.jtm.minecraft.core.domain.exceptions.plugin.version.VersionNotFound
-import com.jtm.minecraft.core.domain.exceptions.token.InvalidJwtToken
 import com.jtm.minecraft.core.usecase.file.FileHandler
 import com.jtm.minecraft.core.usecase.repository.DownloadLinkRepository
-import com.jtm.minecraft.core.usecase.repository.PluginRepository
 import com.jtm.minecraft.core.usecase.repository.plugin.PluginVersionRepository
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
 import com.jtm.minecraft.data.service.PluginService
-import com.jtm.minecraft.data.service.ProfileService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -31,19 +28,18 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import java.io.File
+import java.net.InetSocketAddress
 import java.util.*
 
 @RunWith(SpringRunner::class)
 class VersionServiceTest {
 
     private val pluginService: PluginService = mock()
-    private val pluginRepository: PluginRepository = mock()
     private val fileHandler: FileHandler = mock()
     private val downloadLinkRepository: DownloadLinkRepository = mock()
     private val versionRepository: PluginVersionRepository = mock()
     private val accessService: AccessService = mock()
-    private val tokenProvider: AccountTokenProvider = mock()
-    private val versionService = VersionService(pluginService, pluginRepository, versionRepository, downloadLinkRepository)
+    private val versionService = VersionService(pluginService, versionRepository, downloadLinkRepository)
 
     private val plugin = Plugin(name = "test", description = "desc")
     private val filePart: FilePart = mock()
@@ -53,6 +49,8 @@ class VersionServiceTest {
     private val headers: HttpHeaders = mock()
     private val file: File = mock()
     private val id = UUID.randomUUID()
+
+    private val remoteAddress: InetSocketAddress = InetSocketAddress("localhost", 3306)
 
     @Before
     fun setup() {
@@ -102,13 +100,12 @@ class VersionServiceTest {
 
     @Test
     fun updateVersion_thenNotFound() {
-        `when`(pluginService.getPlugin(anyOrNull())).thenReturn(Mono.just(plugin))
-        `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyOrNull())).thenReturn(Mono.empty())
+        `when`(versionRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
 
-        val returned = versionService.updateVersion(versionDto)
+        val returned = versionService.updateVersion(UUID.randomUUID(), versionDto)
 
-        verify(pluginService, times(1)).getPlugin(anyOrNull())
-        verifyNoMoreInteractions(pluginService)
+        verify(versionRepository, times(1)).findById(any(UUID::class.java))
+        verifyNoMoreInteractions(versionRepository)
 
         StepVerifier.create(returned)
             .expectError(VersionNotFound::class.java)
@@ -117,14 +114,13 @@ class VersionServiceTest {
 
     @Test
     fun updateVersionTest() {
-        `when`(pluginService.getPlugin(anyOrNull())).thenReturn(Mono.just(plugin))
-        `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyOrNull())).thenReturn(Mono.just(version))
+        `when`(versionRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(version))
         `when`(versionRepository.save(anyOrNull())).thenReturn(Mono.just(version))
 
-        val returned = versionService.updateVersion(versionDto)
+        val returned = versionService.updateVersion(UUID.randomUUID(), versionDto)
 
-        verify(pluginService, times(1)).getPlugin(anyOrNull())
-        verifyNoMoreInteractions(pluginService)
+        verify(versionRepository, times(1)).findById(any(UUID::class.java))
+        verifyNoMoreInteractions(versionRepository)
 
         StepVerifier.create(returned)
             .assertNext {
@@ -136,34 +132,30 @@ class VersionServiceTest {
     }
 
     @Test
-    fun downloadVersionRequest_invalidAccountId() {
-        `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
-        `when`(tokenProvider.getAccountId(anyString())).thenReturn(null)
+    fun downloadVersionRequest_thenRemoteAddressInvalid() {
+        `when`(request.remoteAddress).thenReturn(null)
 
-        val returned = versionService.downloadVersionRequest(plugin.name, "0.1", accessService, tokenProvider, request)
+        val returned = versionService.downloadVersionRequest(plugin.name, "0.1", accessService, request)
 
-        verify(tokenProvider, times(1)).resolveToken(anyString())
-        verify(tokenProvider, times(1)).getAccountId(anyString())
-        verifyNoMoreInteractions(tokenProvider)
+        verify(request, times(1)).remoteAddress
+        verifyNoMoreInteractions(request)
 
         StepVerifier.create(returned)
-            .expectError(InvalidJwtToken::class.java)
+            .expectError(RemoteAddressInvalid::class.java)
             .verify()
     }
 
     @Test
     fun downloadVersionRequest_thenNotFound() {
-        `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
-        `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
+        `when`(request.remoteAddress).thenReturn(remoteAddress)
         `when`(accessService.hasAccess(anyString(), anyOrNull())).thenReturn(Mono.empty())
         `when`(pluginService.getPluginByName(anyString())).thenReturn(Mono.just(plugin))
         `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyOrNull())).thenReturn(Mono.empty())
 
-        val returned = versionService.downloadVersionRequest(plugin.name, "0.1", accessService, tokenProvider, request)
+        val returned = versionService.downloadVersionRequest(plugin.name, "0.1", accessService, request)
 
-        verify(tokenProvider, times(1)).resolveToken(anyString())
-        verify(tokenProvider, times(1)).getAccountId(anyString())
-        verifyNoMoreInteractions(tokenProvider)
+        verify(request, times(1)).remoteAddress
+        verifyNoMoreInteractions(request)
 
         verify(accessService, times(1)).hasAccess(anyString(), anyOrNull())
         verifyNoMoreInteractions(accessService)
@@ -175,18 +167,16 @@ class VersionServiceTest {
 
     @Test
     fun downloadVersionRequestTest() {
-        `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
-        `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
+        `when`(request.remoteAddress).thenReturn(remoteAddress)
         `when`(accessService.hasAccess(anyString(), anyOrNull())).thenReturn(Mono.empty())
         `when`(pluginService.getPluginByName(anyString())).thenReturn(Mono.just(plugin))
         `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyString())).thenReturn(Mono.just(version))
-        `when`(downloadLinkRepository.save(anyOrNull())).thenReturn(Mono.just(DownloadLink(pluginId = plugin.id, version = version.version, accountId = UUID.randomUUID())))
+        `when`(downloadLinkRepository.save(anyOrNull())).thenReturn(Mono.just(DownloadLink(pluginId = plugin.id, version = version.version, ipAddress = "localhost")))
 
-        val returned = versionService.downloadVersionRequest(plugin.name, "0.1", accessService, tokenProvider, request)
+        val returned = versionService.downloadVersionRequest(plugin.name, "0.1", accessService, request)
 
-        verify(tokenProvider, times(1)).resolveToken(anyString())
-        verify(tokenProvider, times(1)).getAccountId(anyString())
-        verifyNoMoreInteractions(tokenProvider)
+        verify(request, times(1)).remoteAddress
+        verifyNoMoreInteractions(request)
 
         verify(accessService, times(1)).hasAccess(anyString(), anyOrNull())
         verifyNoMoreInteractions(accessService)

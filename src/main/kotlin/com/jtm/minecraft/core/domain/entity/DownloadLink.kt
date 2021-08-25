@@ -9,7 +9,7 @@ data class DownloadLink(
     val id: UUID = UUID.randomUUID(),
     val pluginId: UUID,
     val version: String,
-    val accountId: UUID,
+    val ipAddress: String,
     var used: Boolean = false,
     val created: Long = System.currentTimeMillis()) {
 

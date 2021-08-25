@@ -17,7 +17,7 @@ import java.util.*
 class DownloadController @Autowired constructor(private val downloadService: DownloadService) {
 
     @GetMapping("/{id}")
-    fun downloadVersion(@PathVariable id: UUID, response: ServerHttpResponse): Mono<Resource> {
-        return downloadService.downloadVersion(response, id)
+    fun downloadVersion(@PathVariable id: UUID, request: ServerHttpRequest, response: ServerHttpResponse): Mono<Resource> {
+        return downloadService.downloadVersion(request, response, id)
     }
 }

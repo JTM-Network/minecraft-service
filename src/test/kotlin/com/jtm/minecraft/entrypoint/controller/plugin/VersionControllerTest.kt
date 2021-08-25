@@ -11,7 +11,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,16 +18,10 @@ import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurity
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.core.io.buffer.DataBuffer
-import org.springframework.http.client.MultipartBodyBuilder
-import org.springframework.http.codec.multipart.FilePart
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.web.reactive.function.BodyInserter
-import org.springframework.web.reactive.function.BodyInserters
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.io.File
 import java.util.*
 
 @RunWith(SpringRunner::class)
@@ -44,15 +37,14 @@ class VersionControllerTest {
 
     private val dto = PluginVersionDto(pluginId = UUID.randomUUID(), file = null, version = "0.1", changelog = "Change log.")
     private val created = PluginVersion(pluginId = UUID.randomUUID(), pluginName = "test", version = "0.1", changelog = "Changelog")
-    private val file: File = mock()
 
 
     @Test
     fun putVersionTest() {
-        `when`(versionService.updateVersion(anyOrNull())).thenReturn(Mono.just(created))
+        `when`(versionService.updateVersion(anyOrNull(), anyOrNull())).thenReturn(Mono.just(created))
 
         testClient.put()
-            .uri("/version")
+            .uri("/version/${UUID.randomUUID()}")
             .bodyValue(dto)
             .exchange()
             .expectStatus().isOk
@@ -61,13 +53,13 @@ class VersionControllerTest {
             .jsonPath("$.pluginName").isEqualTo(created.pluginName)
             .jsonPath("$.version").isEqualTo(created.version)
 
-        verify(versionService, times(1)).updateVersion(anyOrNull())
+        verify(versionService, times(1)).updateVersion(anyOrNull(), anyOrNull())
         verifyNoMoreInteractions(versionService)
     }
 
     @Test
     fun getDownloadRequestTest() {
-        `when`(versionService.downloadVersionRequest(anyString(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(Mono.just("test"))
+        `when`(versionService.downloadVersionRequest(anyString(), anyOrNull(), anyOrNull(), anyOrNull())).thenReturn(Mono.just("test"))
 
         testClient.get()
             .uri("/version/download/request?name=test&version=0.1.1")
@@ -76,7 +68,7 @@ class VersionControllerTest {
             .expectBody()
             .jsonPath("$").isEqualTo("test")
 
-        verify(versionService, times(1)).downloadVersionRequest(anyString(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull())
+        verify(versionService, times(1)).downloadVersionRequest(anyString(), anyOrNull(), anyOrNull(), anyOrNull())
         verifyNoMoreInteractions(versionService)
     }
 
