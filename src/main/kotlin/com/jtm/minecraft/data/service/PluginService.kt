@@ -17,38 +17,86 @@ import java.util.stream.Collectors
 @Service
 class PluginService @Autowired constructor(private val pluginRepository: PluginRepository) {
 
+    /**
+     * Insert the plugin using values from {@link PluginDto}
+     *
+     * @param dto - the data transfer object
+     * @throws PluginFound - if the plugin has been found with the same name
+     * @return the inserted plugin
+     */
     fun insertPlugin(dto: PluginDto): Mono<Plugin> {
         return pluginRepository.findByName(dto.name)
             .flatMap<Plugin?> { Mono.defer { Mono.error(PluginFound()) } }.cast(Plugin::class.java)
             .switchIfEmpty(Mono.defer { pluginRepository.save(Plugin(name = dto.name, description = dto.description)) })
     }
 
+    /**
+     * Update the plugin values found from plugin identifier
+     *
+     * @param id - the plugin identifier
+     * @param dto - the data transfer object
+     * @throws PluginNotFound - if the plugin has not been found by the id
+     * @return the updated plugin
+     */
     fun updatePlugin(id: UUID, dto: PluginDto): Mono<Plugin> {
         return pluginRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
             .flatMap { pluginRepository.save(it.update(dto)) }
     }
 
+    /**
+     * Update the version for the plugin
+     *
+     * @param id - the plugin identifier
+     * @param version - the new plugin version
+     * @throws PluginNotFound - if the plugin has not been found by the id
+     * @return the updated plugin
+     */
     fun updateVersion(id: UUID, version: String): Mono<Plugin> {
         return pluginRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
             .flatMap { pluginRepository.save(it.updateVersion(version)) }
     }
 
+    /**
+     * Fetch the plugin found by the identifier
+     *
+     * @param id - the plugin identifier
+     * @throws PluginNotFound - if the plugin has not been found by the id
+     * @return the plugin
+     */
     fun getPlugin(id: UUID): Mono<Plugin> {
         return pluginRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
     }
 
+    /**
+     * Fetch the plugin found by the name
+     *
+     * @param name - the plugin name
+     * @throws PluginNotFound - if the plugin has not been found by the name
+     * @return the plugin
+     */
     fun getPluginByName(name: String): Mono<Plugin> {
         return pluginRepository.findByName(name)
             .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
     }
 
+    /**
+     * Fetch all the plugins
+     *
+     * @return list of the plugins
+     */
     fun getPlugins(): Flux<Plugin> {
         return pluginRepository.findAll()
     }
 
+    /**
+     * Add sorting and convert into paginated list of plugins using {@link Pageable}
+     *
+     * @param page - the pagination information to sort the plugins found
+     * @return the sorted paginated list of plugins
+     */
     fun getPluginsSortable(page: Pageable): Mono<PageSupport<Plugin>> {
         return pluginRepository.findAll(page.sort)
             .collectList()
@@ -62,6 +110,14 @@ class PluginService @Autowired constructor(private val pluginRepository: PluginR
                 it.size) }
     }
 
+    /**
+     * Search for plugins using their names and if it contains the text of the search parameter.
+     * Also adds pagination to the resulting list.
+     *
+     * @param search - the value in which to match plugin names with
+     * @param page - the pagination information to sort the plugins found
+     * @return the matching paginated list of plugins
+     */
     fun getPluginsBySearch(search: String, page: Pageable): Mono<PageSupport<Plugin>> {
         return pluginRepository.findAll(page.sort)
             .collectList()
@@ -75,6 +131,13 @@ class PluginService @Autowired constructor(private val pluginRepository: PluginR
             }
     }
 
+    /**
+     * Remove plugin using the identifier
+     *
+     * @param id - the plugin identifier
+     * @throws PluginNotFound - if the plugin has not been found
+     * @return the deleted plugin
+     */
     fun removePlugin(id: UUID): Mono<Plugin> {
         return pluginRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })

@@ -23,6 +23,29 @@ class AuthService @Autowired constructor(private val tokenProvider: AccountToken
     @Value("\${sentry.plugin:pluginDsn}")
     var pluginDsn: String = ""
 
+    /**
+     * Authentication logic used to allow minecraft servers to the plugin,
+     * it takes the api token from the Authorization header and parses it.
+     * Checks if the account id inside the token has access to the plugin,
+     * if account has access to the plugin, this will create a new token to
+     * be used by the plugin to access protected endpoints using this services
+     * security protocols. Also sending a sentry dsn to log errors for continuous
+     * monitoring.
+     *
+     * TODO: Currently this does not capture multiple uses of the same account
+     *       when using the plugin, so will need to add that in the future.
+     *
+     * @param request - the http client request
+     * @param profileService - the profile service
+     * @param plugin - the name of the plugin
+     * @throws InvalidJwtToken - if the Authorization header returns a null or empty value, or
+     *                           if the token is invalid or account id or email is not found,
+     *                           inside the token
+     * @throws PluginNotFound - if the plugin has not been found by name
+     * @throws ProfileNotFound - if the profile has not been found by the account id
+     * @throws PluginUnauthorized - if the profile does not have access to the resource
+     * @return - an {@link AuthToken} which provides a JWT token and the plugin Sentry DSN
+     */
     fun authenticate(request: ServerHttpRequest, profileService: ProfileService, plugin: String): Mono<AuthToken> {
         val bearer = request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return Mono.error { InvalidJwtToken() }
         val token = tokenProvider.resolveToken(bearer)
@@ -41,6 +64,16 @@ class AuthService @Autowired constructor(private val tokenProvider: AccountToken
             }
     }
 
+    /**
+     * When the minecraft server stops the plugin will release the token given using
+     * {@link AuthService#authenticate} and to keep the token dead after use, we will
+     * have it stored in the blacklist to keep a record.
+     *
+     * @param request - the http client request
+     * @throws InvalidJwtToken -  if the Plugin Authorization header is empty or null
+     * @throws BlacklistTokenFound - if the token has already been stored
+     * @return the blacklisted token.
+     */
     fun blacklistToken(request: ServerHttpRequest): Mono<BlacklistToken> {
         val bearer = request.headers.getFirst("PLUGIN_AUTHORIZATION") ?: return Mono.error { InvalidJwtToken() }
         val token = tokenProvider.resolveToken(bearer)

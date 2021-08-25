@@ -20,6 +20,17 @@ class AccessService @Autowired constructor(private val profileService: ProfileSe
                                            private val pluginService: PluginService,
                                            private val tokenProvider: AccountTokenProvider) {
 
+    /**
+     * Grants the user access to a plugin using the plugin's identifier
+     *
+     * @param id - the plugin identifier
+     * @param request - the client side request
+     * @throws InvalidJwtToken - if the Authorization header is empty or null, or
+     *                           if the token is invalid or has no account id provided
+     * @throws ProfileAlreadyHasAccess - if the user already has access to the plugin
+     * @return an empty Mono publisher if successful
+     *
+     */
     fun addAccess(id: UUID, request: ServerHttpRequest): Mono<Void> {
         val bearer = request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return Mono.error { InvalidJwtToken() }
         val token = tokenProvider.resolveToken(bearer)
@@ -29,11 +40,22 @@ class AccessService @Autowired constructor(private val profileService: ProfileSe
                 profileService.getProfile(accountId)
                     .flatMap { profile ->
                         if (profile.isAuthenticated(it.id)) return@flatMap Mono.error { ProfileAlreadyHasAccess() }
-                        profileService.updateProfile(profile.addAccess(it.id))
-                    }.then()
+                        profileService.updateProfile(profile.addAccess(it.id)).then()
+                    }
+
             }
     }
 
+    /**
+     * Returns if the user has access to the plugin using the name.
+     *
+     * @param name - the name of the plugin
+     * @param request - the http client request
+     * @throws InvalidJwtToken - if the Authorization header is empty or null, or
+     *                           if the token is invalid or has no account id provided
+     * @throws PluginUnauthorized - if the user doesn't have access to the plugin
+     * @return an empty Mono publisher if user has access
+     */
     fun hasAccess(name: String, request: ServerHttpRequest): Mono<Void> {
         val bearer = request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return Mono.error { InvalidJwtToken() }
         val token = tokenProvider.resolveToken(bearer)
@@ -48,6 +70,14 @@ class AccessService @Autowired constructor(private val profileService: ProfileSe
             }
     }
 
+    /**
+     * Removes plugin access from a user using the plugin's identifier
+     *
+     * @param pluginId - the plugin identifier
+     * @param accountId - the users account identifier
+     * @throws ProfileNoAccess - if the user already has no access to the plugin
+     * @return - the profile the access has been removed from.
+     */
     fun removeAccess(pluginId: UUID, accountId: UUID): Mono<Profile> {
         return profileService.getProfile(accountId)
             .flatMap { profile ->
