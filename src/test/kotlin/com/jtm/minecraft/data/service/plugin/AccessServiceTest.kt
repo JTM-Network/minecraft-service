@@ -2,9 +2,11 @@ package com.jtm.minecraft.data.service.plugin
 
 import com.jtm.minecraft.core.domain.entity.Plugin
 import com.jtm.minecraft.core.domain.entity.Profile
+import com.jtm.minecraft.core.domain.exceptions.plugin.PluginIsPremium
 import com.jtm.minecraft.core.domain.exceptions.plugin.PluginUnauthorized
 import com.jtm.minecraft.core.domain.exceptions.profile.ProfileAlreadyHasAccess
 import com.jtm.minecraft.core.domain.exceptions.profile.ProfileNoAccess
+import com.jtm.minecraft.core.domain.exceptions.profile.ProfileNotFound
 import com.jtm.minecraft.core.domain.exceptions.token.InvalidJwtToken
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
 import com.jtm.minecraft.data.service.PluginService
@@ -61,6 +63,28 @@ class AccessServiceTest {
     }
 
     @Test
+    fun addAccess_thenPluginIsPremium() {
+        plugin.premium = true
+
+        `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
+        `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
+        `when`(pluginService.getPlugin(anyOrNull())).thenReturn(Mono.just(plugin))
+
+        val returned = accessService.addAccess(UUID.randomUUID(), request)
+
+        verify(tokenProvider, times(1)).resolveToken(anyString())
+        verify(tokenProvider, times(1)).getAccountId(anyString())
+        verifyNoMoreInteractions(tokenProvider)
+
+        verify(pluginService, times(1)).getPlugin(anyOrNull())
+        verifyNoMoreInteractions(pluginService)
+
+        StepVerifier.create(returned)
+            .expectError(PluginIsPremium::class.java)
+            .verify()
+    }
+
+    @Test
     fun addAccess_thenProfileAlreadyHasAccess() {
         `when`(tokenProvider.resolveToken(anyString())).thenReturn("test")
         `when`(tokenProvider.getAccountId(anyString())).thenReturn(UUID.randomUUID())
@@ -99,6 +123,35 @@ class AccessServiceTest {
         verifyNoMoreInteractions(pluginService)
 
         StepVerifier.create(returned)
+            .verifyComplete()
+    }
+
+    @Test
+    fun addPremiumAccess_thenProfileNotFound() {
+        `when`(profileService.getProfile(anyOrNull())).thenReturn(Mono.error { ProfileNotFound() })
+
+        val returned = accessService.addPremiumAccess(UUID.randomUUID(), arrayOf(UUID.randomUUID()))
+
+        verify(profileService, times(1)).getProfile(anyOrNull())
+        verifyNoMoreInteractions(profileService)
+
+        StepVerifier.create(returned)
+            .expectError(ProfileNotFound::class.java)
+            .verify()
+    }
+
+    @Test
+    fun addPremiumAccessTest() {
+        `when`(profileService.getProfile(anyOrNull())).thenReturn(Mono.just(profile))
+        `when`(profileService.updateProfile(anyOrNull())).thenReturn(Mono.just(profile.addAccess(arrayOf(plugin.id))))
+
+        val returned = accessService.addPremiumAccess(UUID.randomUUID(), arrayOf(plugin.id))
+
+        verify(profileService, times(1)).getProfile(anyOrNull())
+        verifyNoMoreInteractions(profileService)
+
+        StepVerifier.create(returned)
+            .assertNext { assertThat(it.isAuthenticated(plugin.id)).isTrue }
             .verifyComplete()
     }
 

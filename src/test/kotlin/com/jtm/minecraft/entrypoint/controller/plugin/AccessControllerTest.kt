@@ -1,9 +1,11 @@
 package com.jtm.minecraft.entrypoint.controller.plugin
 
 import com.jtm.minecraft.core.domain.entity.Profile
+import com.jtm.minecraft.core.domain.model.PremiumDto
 import com.jtm.minecraft.data.service.plugin.AccessService
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.mockito.Mockito.*
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.verify
@@ -38,6 +40,23 @@ class AccessControllerTest {
 
         verify(accessService, times(1)).addAccess(anyOrNull(), anyOrNull())
         verifyNoMoreInteractions(accessService)
+    }
+
+    @Test
+    fun addPremiumAccessTest() {
+        `when`(accessService.addPremiumAccess(anyOrNull(), anyOrNull())).thenReturn(Mono.just(profile))
+
+        testClient.post()
+            .uri("/access/premium")
+            .bodyValue(PremiumDto(UUID.randomUUID(), arrayOf(UUID.randomUUID())))
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.email").isEqualTo(profile.email)
+            .jsonPath("$.id").isEqualTo(profile.id.toString())
+
+        verify(accessService, times(1)).addPremiumAccess(anyOrNull(), anyOrNull())
+        Mockito.verifyNoMoreInteractions(accessService)
     }
 
     @Test

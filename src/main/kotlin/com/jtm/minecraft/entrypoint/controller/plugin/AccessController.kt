@@ -1,6 +1,7 @@
 package com.jtm.minecraft.entrypoint.controller.plugin
 
 import com.jtm.minecraft.core.domain.entity.Profile
+import com.jtm.minecraft.core.domain.model.PremiumDto
 import com.jtm.minecraft.data.service.plugin.AccessService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.server.reactive.ServerHttpRequest
@@ -15,6 +16,11 @@ class AccessController @Autowired constructor(private val accessService: AccessS
     @GetMapping("/{id}")
     fun addAccess(@PathVariable id: UUID, request: ServerHttpRequest): Mono<Void> {
         return accessService.addAccess(id, request)
+    }
+
+    @PostMapping("/premium")
+    fun addPremiumAccess(@RequestBody dto: PremiumDto): Mono<Profile> {
+        return accessService.addPremiumAccess(dto.accountId, dto.plugins)
     }
 
     @GetMapping("/check/{name}")

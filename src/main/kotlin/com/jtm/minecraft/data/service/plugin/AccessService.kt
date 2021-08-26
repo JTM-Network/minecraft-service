@@ -1,6 +1,7 @@
 package com.jtm.minecraft.data.service.plugin
 
 import com.jtm.minecraft.core.domain.entity.Profile
+import com.jtm.minecraft.core.domain.exceptions.plugin.PluginIsPremium
 import com.jtm.minecraft.core.domain.exceptions.plugin.PluginUnauthorized
 import com.jtm.minecraft.core.domain.exceptions.profile.ProfileAlreadyHasAccess
 import com.jtm.minecraft.core.domain.exceptions.profile.ProfileNoAccess
@@ -29,7 +30,6 @@ class AccessService @Autowired constructor(private val profileService: ProfileSe
      *                           if the token is invalid or has no account id provided
      * @throws ProfileAlreadyHasAccess - if the user already has access to the plugin
      * @return an empty Mono publisher if successful
-     *
      */
     fun addAccess(id: UUID, request: ServerHttpRequest): Mono<Void> {
         val bearer = request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return Mono.error { InvalidJwtToken() }
@@ -37,6 +37,7 @@ class AccessService @Autowired constructor(private val profileService: ProfileSe
         val accountId = tokenProvider.getAccountId(token) ?: return Mono.error { InvalidJwtToken() }
         return pluginService.getPlugin(id)
             .flatMap {
+                if (it.premium) return@flatMap Mono.error { PluginIsPremium() }
                 profileService.getProfile(accountId)
                     .flatMap { profile ->
                         if (profile.isAuthenticated(it.id)) return@flatMap Mono.error { ProfileAlreadyHasAccess() }
@@ -44,6 +45,18 @@ class AccessService @Autowired constructor(private val profileService: ProfileSe
                     }
 
             }
+    }
+
+    /**
+     * Grants the user access to a premium plugin
+     *
+     * @param accountId - the accounts identifier
+     * @param plugins - the plugins to be authenticated
+     * @return an empty Mono publisher if successful
+     */
+    fun addPremiumAccess(accountId: UUID, plugins: Array<UUID>): Mono<Profile> {
+        return profileService.getProfile(accountId)
+            .flatMap { profileService.updateProfile(it.addAccess(plugins))}
     }
 
     /**
