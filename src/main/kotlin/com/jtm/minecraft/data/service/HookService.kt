@@ -1,5 +1,6 @@
 package com.jtm.minecraft.data.service
 
+import com.jtm.minecraft.core.domain.exceptions.FailedDeserialization
 import com.jtm.minecraft.core.domain.exceptions.InvalidPaymentIntent
 import com.jtm.minecraft.core.domain.exceptions.InvalidSignature
 import com.jtm.minecraft.core.util.UtilString
@@ -22,6 +23,7 @@ class HookService @Autowired constructor(private val accessService: AccessServic
 
     fun addAccess(event: Event): Mono<Void> {
         val dataObjectDeserializer = event.dataObjectDeserializer
+        if (!dataObjectDeserializer.`object`.isPresent) return Mono.error { FailedDeserialization() }
         val stripeObject = dataObjectDeserializer.`object`.get()
         val intent = stripeObject as PaymentIntent
         val accountId = UUID.fromString(intent.metadata["accountId"]) ?: return Mono.error { InvalidPaymentIntent() }
