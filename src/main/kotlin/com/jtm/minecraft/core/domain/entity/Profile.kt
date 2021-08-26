@@ -19,6 +19,11 @@ data class Profile(
         return this
     }
 
+    fun addAccess(plugins: Array<UUID>): Profile {
+        pluginsAuthenticated.addAll(plugins)
+        return this
+    }
+
     fun removeAccess(id: UUID): Profile {
         pluginsAuthenticated.remove(id)
         return this

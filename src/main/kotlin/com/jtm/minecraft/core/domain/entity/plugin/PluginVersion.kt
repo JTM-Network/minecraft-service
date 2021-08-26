@@ -13,6 +13,7 @@ data class PluginVersion(
     val pluginName: String,
     var version: String,
     var changelog: String,
+    var downloads: Int = 0,
     val uploaded: Long = System.currentTimeMillis(),
     var updated: Long = System.currentTimeMillis()): Comparable<PluginVersion> {
 
@@ -20,6 +21,11 @@ data class PluginVersion(
         this.version = dto.version
         this.changelog = dto.changelog
         this.updated = System.currentTimeMillis()
+        return this
+    }
+
+    fun addDownload(): PluginVersion {
+        downloads += 1
         return this
     }
 

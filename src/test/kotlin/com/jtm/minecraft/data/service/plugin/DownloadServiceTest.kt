@@ -45,7 +45,6 @@ class DownloadServiceTest {
 
     @Before
     fun setup() {
-
         `when`(response.headers).thenReturn(headers)
         `when`(headers.getFirst(anyString())).thenReturn("Bearer test")
         `when`(file.name).thenReturn("test.jar")
@@ -109,6 +108,8 @@ class DownloadServiceTest {
         `when`(request.remoteAddress).thenReturn(remoteAddress)
         `when`(linkRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(link))
         `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyString())).thenReturn(Mono.just(version))
+        `when`(versionRepository.save(anyOrNull())).thenReturn(Mono.just(version.addDownload()))
+        `when`(linkRepository.delete(anyOrNull())).thenReturn(Mono.empty())
         `when`(fileHandler.fetch(anyString())).thenReturn(Mono.just(file))
         `when`(file.exists()).thenReturn(true)
 

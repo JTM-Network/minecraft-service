@@ -44,13 +44,14 @@ class DownloadService @Autowired constructor(private val linkRepository: Downloa
             .flatMap { link ->
                 if (link.ipAddress != ipAddress) return@flatMap Mono.error { InvalidUserDownload() }
                 versionRepository.findByPluginIdAndVersion(link.pluginId, link.version)
-                    .flatMap { fileHandler.fetch("/versions/${link.pluginId}/${it.pluginName}-${link.version}.jar")
+                    .flatMap { pluginVersion -> fileHandler.fetch("/versions/${link.pluginId}/${pluginVersion.pluginName}-${link.version}.jar")
                         .flatMap { file ->
                             if (!file.exists()) return@flatMap Mono.error { VersionFileNotFound() }
                             response.headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=${file.name}")
                             return@flatMap Mono.just(FileSystemResource(file))
                         }
-                        .doOnSuccess { linkRepository.delete(link) }
+                        .flatMap { resource -> versionRepository.save(pluginVersion.addDownload()).thenReturn(resource) }
+                        .flatMap { resource -> linkRepository.delete(link).thenReturn(resource) }
                 }
             }
     }
