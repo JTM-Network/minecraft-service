@@ -11,6 +11,7 @@ data class Plugin(
     var name: String,
     var description: String,
     var version: String? = null,
+    var active: Boolean = false,
     var premium: Boolean = false,
     var price: Double = 0.0,
     val createdTime: Long = System.currentTimeMillis(),
@@ -20,6 +21,11 @@ data class Plugin(
         this.name = dto.name
         this.description = dto.description
         this.lastUpdated = System.currentTimeMillis()
+        return this
+    }
+
+    fun updateActive(active: Boolean): Plugin {
+        this.active = active
         return this
     }
 

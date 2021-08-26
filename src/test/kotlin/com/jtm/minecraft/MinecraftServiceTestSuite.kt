@@ -13,10 +13,7 @@ import com.jtm.minecraft.data.service.plugin.*
 import com.jtm.minecraft.entrypoint.controller.AuthControllerTest
 import com.jtm.minecraft.entrypoint.controller.PluginControllerTest
 import com.jtm.minecraft.entrypoint.controller.ProfileControllerTest
-import com.jtm.minecraft.entrypoint.controller.plugin.AccessControllerTest
-import com.jtm.minecraft.entrypoint.controller.plugin.ImageControllerTest
-import com.jtm.minecraft.entrypoint.controller.plugin.ReviewControllerTest
-import com.jtm.minecraft.entrypoint.controller.plugin.VersionControllerTest
+import com.jtm.minecraft.entrypoint.controller.plugin.*
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 
@@ -35,6 +32,7 @@ import org.junit.runners.Suite
     DownloadServiceTest::class,
     ReviewServiceTest::class,
     ImageServiceTest::class,
+    IntentServiceTest::class,
 
     SecurityContextRepositoryTest::class,
     AuthenticationManagerTest::class,
@@ -46,6 +44,7 @@ import org.junit.runners.Suite
     AccessControllerTest::class,
     VersionControllerTest::class,
     ImageControllerTest::class,
-    ReviewControllerTest::class
+    ReviewControllerTest::class,
+    IntentControllerTest::class
 ])
 class MinecraftServiceTestSuite
