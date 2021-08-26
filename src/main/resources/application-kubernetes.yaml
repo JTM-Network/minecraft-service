@@ -12,6 +12,8 @@ security:
   stripe:
     pb-key: ${STRIPE_PB_KEY}
     secret-key: ${STRIPE_SECRET_KEY}
+  webhook:
+    plugin: ${PLUGIN_HOOK_SECRET}
 
 sentry:
   service: ${SERVICE_DSN}

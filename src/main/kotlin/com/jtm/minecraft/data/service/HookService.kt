@@ -1,17 +1,24 @@
 package com.jtm.minecraft.data.service
 
 import com.jtm.minecraft.core.domain.exceptions.InvalidPaymentIntent
+import com.jtm.minecraft.core.domain.exceptions.InvalidSignature
 import com.jtm.minecraft.core.util.UtilString
 import com.jtm.minecraft.data.service.plugin.AccessService
 import com.stripe.model.Event
 import com.stripe.model.PaymentIntent
+import com.stripe.net.Webhook
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.util.*
 
 @Service
 class HookService @Autowired constructor(private val accessService: AccessService) {
+
+    @Value("\${security.webhook.plugin:hook-secret:hook-secret}")
+    lateinit var hookSecret: String
 
     fun addAccess(event: Event): Mono<Void> {
         val dataObjectDeserializer = event.dataObjectDeserializer
