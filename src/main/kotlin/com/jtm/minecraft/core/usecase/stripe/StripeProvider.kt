@@ -20,6 +20,7 @@ class StripeProvider @Autowired constructor(private val logging: Logging) {
 
     @PostConstruct
     fun init() {
+        println("Secret Key: $secretKey")
         Stripe.apiKey = secretKey
     }
 

@@ -16,13 +16,9 @@ import java.util.*
 @Service
 class HookService @Autowired constructor(private val accessService: AccessService) {
 
-    @Value("\${security.webhook.plugin:hook-secret:hook-secret}")
-    lateinit var hookSecret: String
-
     fun addAccess(event: Event): Mono<Void> {
         val dataObjectDeserializer = event.dataObjectDeserializer
-        if (!dataObjectDeserializer.`object`.isPresent) return Mono.error { FailedDeserialization() }
-        val stripeObject: StripeObject = dataObjectDeserializer.`object`.get()
+        val stripeObject = dataObjectDeserializer.deserializeUnsafe()
         val intent: PaymentIntent = stripeObject as PaymentIntent
         val accountId = UUID.fromString(intent.metadata["accountId"]) ?: return Mono.error { InvalidPaymentIntent() }
         val plugins = intent.metadata["plugins"] ?: return Mono.error { InvalidPaymentIntent() }
