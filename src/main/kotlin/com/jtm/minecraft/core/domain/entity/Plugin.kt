@@ -17,15 +17,28 @@ data class Plugin(
     val createdTime: Long = System.currentTimeMillis(),
     var lastUpdated: Long = System.currentTimeMillis()) {
 
-    fun update(dto: PluginDto): Plugin {
+    fun updateName(dto: PluginDto): Plugin {
         this.name = dto.name
+        this.lastUpdated = System.currentTimeMillis()
+        return this
+    }
+
+    fun updateDesc(dto: PluginDto): Plugin {
         this.description = dto.description
+        this.lastUpdated = System.currentTimeMillis()
+        return this
+    }
+
+    fun updatePrice(price: Double): Plugin {
+        this.premium = price > 0.0
+        this.price = price
         this.lastUpdated = System.currentTimeMillis()
         return this
     }
 
     fun updateActive(active: Boolean): Plugin {
         this.active = active
+        this.lastUpdated = System.currentTimeMillis()
         return this
     }
 

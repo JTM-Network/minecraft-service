@@ -19,8 +19,17 @@ class PluginController @Autowired constructor(private val pluginService: PluginS
     @PostMapping
     fun postPlugin(@RequestBody dto: PluginDto): Mono<Plugin> = pluginService.insertPlugin(dto)
 
-    @PutMapping("/{id}")
-    fun putPlugin(@PathVariable id: UUID, @RequestBody dto: PluginDto): Mono<Plugin> = pluginService.updatePlugin(id, dto)
+    @PutMapping("/{id}/name")
+    fun putPluginName(@PathVariable id: UUID, @RequestBody dto: PluginDto): Mono<Plugin> = pluginService.updateName(id, dto)
+
+    @PutMapping("/{id}/desc")
+    fun putPluginDesc(@PathVariable id: UUID, @RequestBody dto: PluginDto): Mono<Plugin> = pluginService.updateDesc(id, dto)
+
+    @PutMapping("/{id}/price")
+    fun putPluginPrice(@PathVariable id: UUID, @RequestBody dto: PluginDto): Mono<Plugin> = pluginService.updatePrice(id, dto)
+
+    @PutMapping("/{id}/active")
+    fun putPluginActive(@PathVariable id: UUID, @RequestBody dto: PluginDto): Mono<Plugin> = pluginService.updateActive(id, dto)
 
     @GetMapping("/{id}")
     fun getPlugin(@PathVariable id: UUID): Mono<Plugin> = pluginService.getPlugin(id)

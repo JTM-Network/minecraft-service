@@ -31,17 +31,59 @@ class PluginService @Autowired constructor(private val pluginRepository: PluginR
     }
 
     /**
-     * Update the plugin values found from plugin identifier
+     * Update the plugin name found by identifier
      *
      * @param id - the plugin identifier
      * @param dto - the data transfer object
      * @throws PluginNotFound - if the plugin has not been found by the id
      * @return the updated plugin
      */
-    fun updatePlugin(id: UUID, dto: PluginDto): Mono<Plugin> {
+    fun updateName(id: UUID, dto: PluginDto): Mono<Plugin> {
+        return pluginRepository.findById(id)
+            .switchIfEmpty(Mono.defer { Mono.error { PluginNotFound() } })
+            .flatMap { pluginRepository.save(it.updateName(dto)) }
+    }
+
+    /**
+     * Update the plugin description found by identifier
+     *
+     * @param id - the plugin identifier
+     * @param dto - the data transfer object
+     * @throws PluginNotFound - if the plugin has not been found by the id
+     * @return the updated plugin
+     */
+    fun updateDesc(id: UUID, dto: PluginDto): Mono<Plugin> {
         return pluginRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
-            .flatMap { pluginRepository.save(it.update(dto)) }
+            .flatMap { pluginRepository.save(it.updateDesc(dto)) }
+    }
+
+    /**
+     * Update the price of the plugin found by identifier
+     *
+     * @param id - the plugin identifier
+     * @param dto - the data transfer object
+     * @throws PluginNotFound - if the plugin has not been found by the id
+     * @return the updated plugin
+     */
+    fun updatePrice(id: UUID, dto: PluginDto): Mono<Plugin> {
+        return pluginRepository.findById(id)
+            .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
+            .flatMap { pluginRepository.save(it.updatePrice(dto.price)) }
+    }
+
+    /**
+     * Update the status of the plugin found by identifier
+     *
+     * @param id - the plugin identifier
+     * @param dto - the data transfer object
+     * @throws PluginNotFound - if the plugin has not been found by the id
+     * @return the updated plugin
+     */
+    fun updateActive(id: UUID, dto: PluginDto): Mono<Plugin> {
+        return pluginRepository.findById(id)
+            .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
+            .flatMap { pluginRepository.save(it.updateActive(dto.active)) }
     }
 
     /**

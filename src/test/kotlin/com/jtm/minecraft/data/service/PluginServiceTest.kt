@@ -13,6 +13,7 @@ import org.mockito.Mockito.*
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
+import org.springframework.boot.runApplication
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -29,13 +30,28 @@ class PluginServiceTest {
     private val pluginService = PluginService(pluginRepository)
 
     private val created = Plugin(name = "test", description = "test")
+    private val dto = PluginDto("test", "test", 20.0, false)
+
+    @Test
+    fun insertPlugin_thenFoundTest() {
+        `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.just(created))
+
+        val returned = pluginService.insertPlugin(dto)
+
+        verify(pluginRepository, times(1)).findByName(anyString())
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .expectError(PluginFound::class.java)
+            .verify()
+    }
 
     @Test
     fun insertPluginTest() {
         `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.empty())
         `when`(pluginRepository.save(any(Plugin::class.java))).thenReturn(Mono.just(created))
 
-        val returned = pluginService.insertPlugin(PluginDto("test", "test"))
+        val returned = pluginService.insertPlugin(dto)
 
         verify(pluginRepository, times(1)).findByName(anyString())
         verifyNoMoreInteractions(pluginRepository)
@@ -50,25 +66,25 @@ class PluginServiceTest {
     }
 
     @Test
-    fun insertPlugin_thenFoundTest() {
-        `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.just(created))
+    fun updateName_thenNotFound() {
+        `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
 
-        val returned = pluginService.insertPlugin(PluginDto("test", "test"))
+        val returned = pluginService.updateName(UUID.randomUUID(), dto)
 
-        verify(pluginRepository, times(1)).findByName(anyString())
+        verify(pluginRepository, times(1)).findById(any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
 
         StepVerifier.create(returned)
-            .expectError(PluginFound::class.java)
+            .expectError(PluginNotFound::class.java)
             .verify()
     }
 
     @Test
-    fun updatePluginTest() {
+    fun updateNameTest() {
         `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(created))
-        `when`(pluginRepository.save(any(Plugin::class.java))).thenReturn(Mono.just(created))
+        `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(created))
 
-        val returned = pluginService.updatePlugin(UUID.randomUUID(), PluginDto("test", "test"))
+        val returned = pluginService.updateName(UUID.randomUUID(), dto)
 
         verify(pluginRepository, times(1)).findById(any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
@@ -82,10 +98,10 @@ class PluginServiceTest {
     }
 
     @Test
-    fun updatePlugin_thenNotFoundTest() {
+    fun updateDesc_thenNotFoundTest() {
         `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
 
-        val returned = pluginService.updatePlugin(UUID.randomUUID(), PluginDto("test", "test"))
+        val returned = pluginService.updateDesc(UUID.randomUUID(), dto)
 
         verify(pluginRepository, times(1)).findById(any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
@@ -93,6 +109,88 @@ class PluginServiceTest {
         StepVerifier.create(returned)
             .expectError(PluginNotFound::class.java)
             .verify()
+    }
+
+    @Test
+    fun updateDescTest() {
+        `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(created))
+        `when`(pluginRepository.save(any(Plugin::class.java))).thenReturn(Mono.just(created))
+
+        val returned = pluginService.updateDesc(UUID.randomUUID(), dto)
+
+        verify(pluginRepository, times(1)).findById(any(UUID::class.java))
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.name).isEqualTo("test")
+                assertThat(it.description).isEqualTo("test")
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun updatePrice_thenNotFound() {
+        `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
+
+        val returned = pluginService.updatePrice(UUID.randomUUID(), dto)
+
+        verify(pluginRepository, times(1)).findById(any(UUID::class.java))
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .expectError(PluginNotFound::class.java)
+            .verify()
+    }
+
+    @Test
+    fun updatePriceTest() {
+        `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(created))
+        `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(created))
+
+        val returned = pluginService.updatePrice(UUID.randomUUID(), dto)
+
+        verify(pluginRepository, times(1)).findById(any(UUID::class.java))
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.name).isEqualTo("test")
+                assertThat(it.description).isEqualTo("test")
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun updateActive_thenNotFound() {
+        `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
+
+        val returned = pluginService.updateActive(UUID.randomUUID(), dto)
+
+        verify(pluginRepository, times(1)).findById(any(UUID::class.java))
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .expectError(PluginNotFound::class.java)
+            .verify()
+    }
+
+    @Test
+    fun updateActiveTest() {
+        `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(created))
+        `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(created))
+
+        val returned = pluginService.updateActive(UUID.randomUUID(), dto)
+
+        verify(pluginRepository, times(1)).findById(any(UUID::class.java))
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.name).isEqualTo("test")
+                assertThat(it.description).isEqualTo("test")
+            }
+            .verifyComplete()
     }
 
     @Test

@@ -35,13 +35,15 @@ class PluginControllerTest {
     lateinit var pluginService: PluginService
     private val created = Plugin(name = "test", description = "test")
     private val createdTwo = Plugin(name = "test #2", description = "desc #2")
+    private val dto = PluginDto("test", "test", 20.0, false)
 
-    @Test fun postPluginTest() {
+    @Test
+    fun postPluginTest() {
         `when`(pluginService.insertPlugin(anyOrNull())).thenReturn(Mono.just(created))
 
         testClient.post()
             .uri("/plugin")
-            .bodyValue(PluginDto("test", "test"))
+            .bodyValue(dto)
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -52,23 +54,76 @@ class PluginControllerTest {
         verifyNoMoreInteractions(pluginService)
     }
 
-    @Test fun putPluginTest() {
-        `when`(pluginService.updatePlugin(anyOrNull(), anyOrNull())).thenReturn(Mono.just(created))
+    @Test
+    fun putPluginNameTest() {
+        `when`(pluginService.updateName(anyOrNull(), anyOrNull())).thenReturn(Mono.just(created))
 
         testClient.put()
-            .uri("/plugin/${UUID.randomUUID()}")
-            .bodyValue(PluginDto("test", "test"))
+            .uri("/plugin/${UUID.randomUUID()}/name")
+            .bodyValue(dto)
             .exchange()
             .expectStatus().isOk
             .expectBody()
             .jsonPath("$.name").isEqualTo("test")
             .jsonPath("$.description").isEqualTo("test")
 
-        verify(pluginService, times(1)).updatePlugin(anyOrNull(), anyOrNull())
+        verify(pluginService, times(1)).updateName(anyOrNull(), anyOrNull())
         verifyNoMoreInteractions(pluginService)
     }
 
-    @Test fun getPluginTest() {
+    @Test
+    fun putPluginDescTest() {
+        `when`(pluginService.updateDesc(anyOrNull(), anyOrNull())).thenReturn(Mono.just(created))
+
+        testClient.put()
+            .uri("/plugin/${UUID.randomUUID()}/desc")
+            .bodyValue(dto)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.name").isEqualTo("test")
+            .jsonPath("$.description").isEqualTo("test")
+
+        verify(pluginService, times(1)).updateDesc(anyOrNull(), anyOrNull())
+        verifyNoMoreInteractions(pluginService)
+    }
+
+    @Test
+    fun putPluginPriceTest() {
+        `when`(pluginService.updatePrice(anyOrNull(), anyOrNull())).thenReturn(Mono.just(created))
+
+        testClient.put()
+            .uri("/plugin/${UUID.randomUUID()}/price")
+            .bodyValue(dto)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.name").isEqualTo("test")
+            .jsonPath("$.description").isEqualTo("test")
+
+        verify(pluginService, times(1)).updatePrice(anyOrNull(), anyOrNull())
+        verifyNoMoreInteractions(pluginService)
+    }
+
+    @Test
+    fun putPluginActiveTest() {
+        `when`(pluginService.updateActive(anyOrNull(), anyOrNull())).thenReturn(Mono.just(created))
+
+        testClient.put()
+            .uri("/plugin/${UUID.randomUUID()}/active")
+            .bodyValue(dto)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.name").isEqualTo("test")
+            .jsonPath("$.description").isEqualTo("test")
+
+        verify(pluginService, times(1)).updateActive(anyOrNull(), anyOrNull())
+        verifyNoMoreInteractions(pluginService)
+    }
+
+    @Test
+    fun getPluginTest() {
         `when`(pluginService.getPlugin(anyOrNull())).thenReturn(Mono.just(created))
 
         testClient.get()
@@ -83,7 +138,8 @@ class PluginControllerTest {
         verifyNoMoreInteractions(pluginService)
     }
 
-    @Test fun getPluginByNameTest() {
+    @Test
+    fun getPluginByNameTest() {
         `when`(pluginService.getPluginByName(anyString())).thenReturn(Mono.just(created))
 
         testClient.get()
@@ -98,7 +154,8 @@ class PluginControllerTest {
         verifyNoMoreInteractions(pluginService)
     }
 
-    @Test fun getPluginsTest() {
+    @Test
+    fun getPluginsTest() {
         `when`(pluginService.getPlugins()).thenReturn(Flux.just(created, Plugin(name = "test #1", description = "desc #1")))
 
         testClient.get()
@@ -153,7 +210,8 @@ class PluginControllerTest {
         verifyNoMoreInteractions(pluginService)
     }
 
-    @Test fun deletePluginTest() {
+    @Test
+    fun deletePluginTest() {
         `when`(pluginService.removePlugin(anyOrNull())).thenReturn(Mono.just(created))
 
         testClient.delete()
