@@ -37,6 +37,7 @@ import org.junit.runners.Suite
     IntentServiceTest::class,
     WikiServiceTest::class,
     SuggestionServiceTest::class,
+    BugServiceTest::class,
 
     DomainServiceTest::class,
     AddressServiceTest::class,
@@ -55,6 +56,7 @@ import org.junit.runners.Suite
     IntentControllerTest::class,
     WikiControllerTest::class,
     SuggestionControllerTest::class,
+    BugControllerTest::class,
 
     AddressControllerTest::class,
     DomainControllerTest::class

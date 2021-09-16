@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Repository
-interface PluginSuggestionRepository: ReactiveMongoRepository<Suggestion, UUID> {
+interface SuggestionRepository: ReactiveMongoRepository<Suggestion, UUID> {
 
     fun findByPluginId(pluginId: UUID): Flux<Suggestion>
 

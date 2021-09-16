@@ -5,7 +5,7 @@ import com.jtm.minecraft.core.domain.entity.plugin.Suggestion
 import com.jtm.minecraft.core.domain.exceptions.plugin.suggestion.SuggestionFound
 import com.jtm.minecraft.core.domain.exceptions.plugin.suggestion.SuggestionNotFound
 import com.jtm.minecraft.core.domain.exceptions.token.InvalidJwtToken
-import com.jtm.minecraft.core.usecase.repository.plugin.PluginSuggestionRepository
+import com.jtm.minecraft.core.usecase.repository.plugin.SuggestionRepository
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Service
-class SuggestionService @Autowired constructor(private val suggestionRepository: PluginSuggestionRepository, private val tokenProvider: AccountTokenProvider) {
+class SuggestionService @Autowired constructor(private val suggestionRepository: SuggestionRepository, private val tokenProvider: AccountTokenProvider) {
 
     fun addSuggestion(request: ServerHttpRequest, dto: SuggestionDto): Mono<Suggestion> {
         val bearer = request.headers.getFirst(HttpHeaders.AUTHORIZATION) ?: return Mono.error(InvalidJwtToken())

@@ -5,7 +5,7 @@ import com.jtm.minecraft.core.domain.entity.plugin.Suggestion
 import com.jtm.minecraft.core.domain.exceptions.plugin.suggestion.SuggestionFound
 import com.jtm.minecraft.core.domain.exceptions.plugin.suggestion.SuggestionNotFound
 import com.jtm.minecraft.core.domain.exceptions.token.InvalidJwtToken
-import com.jtm.minecraft.core.usecase.repository.plugin.PluginSuggestionRepository
+import com.jtm.minecraft.core.usecase.repository.plugin.SuggestionRepository
 import com.jtm.minecraft.core.usecase.token.AccountTokenProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -26,7 +26,7 @@ import java.util.*
 @RunWith(SpringRunner::class)
 class SuggestionServiceTest {
 
-    private val suggestionRepository: PluginSuggestionRepository = mock()
+    private val suggestionRepository: SuggestionRepository = mock()
     private val tokenProvider: AccountTokenProvider = mock()
     private val suggestionService = SuggestionService(suggestionRepository, tokenProvider)
 
