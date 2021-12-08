@@ -19,5 +19,3 @@ reactor:
     netty:
       workerCount: 1
 
-disk:
-  path: /disk

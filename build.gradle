@@ -29,6 +29,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.cloud:spring-cloud-starter-kubernetes-client'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
     implementation 'com.stripe:stripe-java:20.41.0'
     implementation 'com.google.guava:guava:28.1-jre'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'

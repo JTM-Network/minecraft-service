@@ -18,3 +18,10 @@ security:
 sentry:
   service: ${SERVICE_DSN}
   plugin: ${PLUGIN_DSN}
+
+redis:
+  host: ${REDIS_HOST}
+  port: ${REDIS_PORT}
+
+disk:
+  path: /disk

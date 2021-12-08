@@ -27,7 +27,7 @@ class PluginService @Autowired constructor(private val pluginRepository: PluginR
     fun insertPlugin(dto: PluginDto): Mono<Plugin> {
         return pluginRepository.findByName(dto.name)
             .flatMap<Plugin?> { Mono.defer { Mono.error(PluginFound()) } }.cast(Plugin::class.java)
-            .switchIfEmpty(Mono.defer { pluginRepository.save(Plugin(name = dto.name, description = dto.description)) })
+            .switchIfEmpty(Mono.defer { pluginRepository.save(Plugin(name = dto.name, description = dto.description).updatePrice(dto.price).updateActive(dto.active)) })
     }
 
     /**
