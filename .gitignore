@@ -25,6 +25,9 @@
 hs_err_pid*
 
 .idea
-.gradle
-build
-src/main/resources/application-dev.yaml
+minecraft-service/.gradle
+minecraft-service/build
+minecraft-service/src/main/resources/application-dev.yaml
+
+plugin-service/.gradle
+plugin-service/build
