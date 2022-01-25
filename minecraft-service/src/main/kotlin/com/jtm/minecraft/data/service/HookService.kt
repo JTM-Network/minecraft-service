@@ -15,6 +15,10 @@ import java.util.*
 @Service
 class HookService @Autowired constructor(private val accessService: AccessService) {
 
+    /**
+     * Add access to the plugin when bought through stripe.
+     *
+     */
     fun addAccess(event: Event): Mono<Void> {
         val dataObjectDeserializer = event.dataObjectDeserializer
         if (!dataObjectDeserializer.`object`.isPresent) return Mono.error { FailedDeserialization() }
@@ -23,7 +27,6 @@ class HookService @Autowired constructor(private val accessService: AccessServic
         val accountId = UUID.fromString(intent.metadata["accountId"]) ?: return Mono.error { InvalidPaymentIntent() }
         val plugins = intent.metadata["plugins"] ?: return Mono.error { InvalidPaymentIntent() }
         val pluginIds = UtilString.stringToPlugins(plugins)
-        return accessService.addPremiumAccess(accountId, pluginIds)
-            .then()
+        return accessService.addPremiumAccess(accountId, pluginIds).then()
     }
 }
