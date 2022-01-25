@@ -31,3 +31,4 @@ minecraft-service/src/main/resources/application-dev.yaml
 
 plugin-service/.gradle
 plugin-service/build
+plugin-service/src/main/resources/application-dev.yaml

@@ -1,0 +1,15 @@
+server:
+  port: 8221
+  error:
+    include-message: Always
+
+spring:
+  application:
+    name: mc-plugin
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+    profiles:
+      active: ${PROFILE}
