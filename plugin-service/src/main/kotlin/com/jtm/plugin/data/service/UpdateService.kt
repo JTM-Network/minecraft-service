@@ -3,6 +3,7 @@ package com.jtm.plugin.data.service
 import com.jtm.plugin.core.domain.dto.PluginDto
 import com.jtm.plugin.core.domain.entity.Plugin
 import com.jtm.plugin.core.domain.exception.plugin.FailedUpdatePlugin
+import com.jtm.plugin.core.domain.exception.plugin.PluginFound
 import com.jtm.plugin.core.domain.exception.plugin.PluginNotFound
 import com.jtm.plugin.core.usecase.repository.PluginRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,14 +19,20 @@ class UpdateService @Autowired constructor(private val pluginRepository: PluginR
      * @param dto   data transfer object to update plugin
      * @return      the updated plugin
      * @see         Plugin
+     * @throws PluginFound if the value name of the data transfer object is found
+     *                     already stored on another plugin
      * @throws FailedUpdatePlugin if data transfer object value to update is null
      * @throws PluginNotFound if plugin is not found by identifier
      */
     fun updateName(dto: PluginDto): Mono<Plugin> {
         val name = dto.name ?: return Mono.error(FailedUpdatePlugin())
-        return pluginRepository.findById(dto.id)
-            .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
-            .flatMap { pluginRepository.save(it.updateName(name)) }
+        return pluginRepository.findByName(name)
+            .flatMap<Plugin> { Mono.error(PluginFound()) }
+            .switchIfEmpty(Mono.defer {
+                pluginRepository.findById(dto.id)
+                    .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
+                    .flatMap { pluginRepository.save(it.updateName(name)) }
+            })
     }
 
     /**

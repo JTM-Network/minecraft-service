@@ -3,13 +3,14 @@ package com.jtm.plugin.data.service
 import com.jtm.plugin.core.domain.dto.PluginDto
 import com.jtm.plugin.core.domain.entity.Plugin
 import com.jtm.plugin.core.domain.exception.plugin.FailedUpdatePlugin
+import com.jtm.plugin.core.domain.exception.plugin.PluginFound
 import com.jtm.plugin.core.domain.exception.plugin.PluginNotFound
 import com.jtm.plugin.core.usecase.repository.PluginRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito
+import org.mockito.Mockito.*
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -38,12 +39,27 @@ class UpdateServiceTest {
     }
 
     @Test
-    fun updateName_thenNotFound() {
-        Mockito.`when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
+    fun updateName_thenUpdatedNameFound() {
+        `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.just(plugin))
 
         val returned = updateService.updateName(dto)
 
-        verify(pluginRepository, Mockito.times(1)).findById(ArgumentMatchers.any(UUID::class.java))
+        verify(pluginRepository, times(1)).findByName(anyString())
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .expectError(PluginFound::class.java)
+            .verify()
+    }
+
+    @Test
+    fun updateName_thenNotFound() {
+        `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.empty())
+        `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
+
+        val returned = updateService.updateName(dto)
+
+        verify(pluginRepository, times(1)).findByName(anyString())
         verifyNoMoreInteractions(pluginRepository)
 
         StepVerifier.create(returned)
@@ -53,12 +69,13 @@ class UpdateServiceTest {
 
     @Test
     fun updateName() {
-        Mockito.`when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
-        Mockito.`when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
+        `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.empty())
+        `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
+        `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
 
         val returned = updateService.updateName(dto)
 
-        verify(pluginRepository, Mockito.times(1)).findById(ArgumentMatchers.any(UUID::class.java))
+        verify(pluginRepository, times(1)).findByName(anyString())
         verifyNoMoreInteractions(pluginRepository)
 
         StepVerifier.create(returned)
@@ -81,11 +98,11 @@ class UpdateServiceTest {
 
     @Test
     fun updateBasicDesc_thenNotFound() {
-        Mockito.`when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
+        `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
 
         val returned = updateService.updateBasicDesc(dto)
 
-        verify(pluginRepository, Mockito.times(1)).findById(ArgumentMatchers.any(UUID::class.java))
+        verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
 
         StepVerifier.create(returned)
@@ -95,12 +112,12 @@ class UpdateServiceTest {
 
     @Test
     fun updateBasicDesc() {
-        Mockito.`when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
-        Mockito.`when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
+        `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
+        `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
 
         val returned = updateService.updateBasicDesc(dto)
 
-        verify(pluginRepository, Mockito.times(1)).findById(ArgumentMatchers.any(UUID::class.java))
+        verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
 
         StepVerifier.create(returned)
@@ -123,11 +140,11 @@ class UpdateServiceTest {
 
     @Test
     fun updateDesc_thenNotFound() {
-        Mockito.`when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
+        `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
 
         val returned = updateService.updateDesc(dto)
 
-        verify(pluginRepository, Mockito.times(1)).findById(ArgumentMatchers.any(UUID::class.java))
+        verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
 
         StepVerifier.create(returned)
@@ -137,12 +154,12 @@ class UpdateServiceTest {
 
     @Test
     fun updateDesc() {
-        Mockito.`when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
-        Mockito.`when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
+        `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
+        `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
 
         val returned = updateService.updateDesc(dto)
 
-        verify(pluginRepository, Mockito.times(1)).findById(ArgumentMatchers.any(UUID::class.java))
+        verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
 
         StepVerifier.create(returned)
@@ -165,11 +182,11 @@ class UpdateServiceTest {
 
     @Test
     fun updateVersion_thenNotFound() {
-        Mockito.`when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
+        `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
 
         val returned = updateService.updateVersion(dto)
 
-        verify(pluginRepository, Mockito.times(1)).findById(ArgumentMatchers.any(UUID::class.java))
+        verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
 
         StepVerifier.create(returned)
@@ -179,12 +196,12 @@ class UpdateServiceTest {
 
     @Test
     fun updateVersion() {
-        Mockito.`when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
-        Mockito.`when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
+        `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
+        `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
 
         val returned = updateService.updateVersion(dto)
 
-        verify(pluginRepository, Mockito.times(1)).findById(ArgumentMatchers.any(UUID::class.java))
+        verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
 
         StepVerifier.create(returned)
@@ -208,11 +225,11 @@ class UpdateServiceTest {
 
     @Test
     fun updateActive_thenNotFound() {
-        Mockito.`when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
+        `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
 
         val returned = updateService.updateActive(dto)
 
-        verify(pluginRepository, Mockito.times(1)).findById(ArgumentMatchers.any(UUID::class.java))
+        verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
 
         StepVerifier.create(returned)
@@ -222,12 +239,12 @@ class UpdateServiceTest {
 
     @Test
     fun updateActive() {
-        Mockito.`when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
-        Mockito.`when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
+        `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
+        `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
 
         val returned = updateService.updateActive(dto)
 
-        verify(pluginRepository, Mockito.times(1)).findById(ArgumentMatchers.any(UUID::class.java))
+        verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
 
         StepVerifier.create(returned)
@@ -252,11 +269,11 @@ class UpdateServiceTest {
 
     @Test
     fun updatePrice_thenNotFound() {
-        Mockito.`when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
+        `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
 
         val returned = updateService.updatePrice(dto)
 
-        verify(pluginRepository, Mockito.times(1)).findById(ArgumentMatchers.any(UUID::class.java))
+        verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
 
         StepVerifier.create(returned)
@@ -266,12 +283,12 @@ class UpdateServiceTest {
 
     @Test
     fun updatePrice() {
-        Mockito.`when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
-        Mockito.`when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
+        `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
+        `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
 
         val returned = updateService.updatePrice(dto)
 
-        verify(pluginRepository, Mockito.times(1)).findById(ArgumentMatchers.any(UUID::class.java))
+        verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
 
         StepVerifier.create(returned)
