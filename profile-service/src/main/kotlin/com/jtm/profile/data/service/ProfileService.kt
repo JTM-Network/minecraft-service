@@ -2,6 +2,8 @@ package com.jtm.profile.data.service
 
 import com.jtm.profile.core.domain.entity.Profile
 import com.jtm.profile.core.domain.exceptions.FailedFetchingClient
+import com.jtm.profile.core.domain.exceptions.ProfileAlreadyBanned
+import com.jtm.profile.core.domain.exceptions.ProfileNotBanned
 import com.jtm.profile.core.domain.exceptions.ProfileNotFound
 import com.jtm.profile.core.usecase.repository.ProfileRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,17 +30,39 @@ class ProfileService @Autowired constructor(private val profileRepository: Profi
     }
 
     /**
-     * This will allow a user to be banned, aimed at policing bad actors trying to abuse the
+     * This will ban a user, aimed at policing bad actors trying to abuse the
      * system, or for breaking a rule provided in the terms.
      *
      * @param id        the user id
      * @return          the user profile
      * @see             Profile
-     * @throws ProfileNotFound if the user id is not found.
+     * @throws ProfileNotFound if the user profile is not found.
+     * @throws ProfileAlreadyBanned if the user is already banned.
      */
     fun banProfile(id: String): Mono<Profile> {
         return profileRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(ProfileNotFound()) })
-            .flatMap { profileRepository.save(it.addBan()) }
+            .flatMap {
+                if (it.banned) return@flatMap Mono.error(ProfileAlreadyBanned())
+                profileRepository.save(it.ban())
+            }
+    }
+
+    /**
+     * This will unban a user, in case of accidental bans.
+     *
+     * @param id        the user id
+     * @return          the user profile
+     * @see             Profile
+     * @throws ProfileNotFound if the user profile is not found.
+     * @throws ProfileNotBanned if the user is not banned.
+     */
+    fun unbanProfile(id: String): Mono<Profile> {
+        return profileRepository.findById(id)
+            .switchIfEmpty(Mono.defer { Mono.error(ProfileNotFound()) })
+            .flatMap {
+                if (!it.banned) return@flatMap Mono.error(ProfileNotBanned())
+                profileRepository.save(it.unban())
+            }
     }
 }

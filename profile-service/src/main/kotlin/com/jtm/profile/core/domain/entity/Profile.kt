@@ -31,8 +31,17 @@ data class Profile(@Id val id: String, var subscription: Boolean = false, val pl
         return this
     }
 
-    fun addBan(): Profile {
+    fun ban(): Profile {
         this.banned = true;
+        return this
+    }
+
+    fun isBanned(): Boolean {
+        return this.banned
+    }
+
+    fun unban(): Profile {
+        this.banned = false;
         return this
     }
 }

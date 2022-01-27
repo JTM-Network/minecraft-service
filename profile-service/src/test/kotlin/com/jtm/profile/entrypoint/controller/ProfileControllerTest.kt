@@ -59,4 +59,19 @@ class ProfileControllerTest {
         verify(profileService, times(1)).banProfile(anyString())
         verifyNoMoreInteractions(profileService)
     }
+
+    @Test
+    fun unbanProfile() {
+        `when`(profileService.unbanProfile(anyString())).thenReturn(Mono.just(profile))
+
+        testClient.put()
+            .uri("/unban/test")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.id").isEqualTo("user_id")
+
+        verify(profileService, times(1)).unbanProfile(anyString())
+        verifyNoMoreInteractions(profileService)
+    }
 }
