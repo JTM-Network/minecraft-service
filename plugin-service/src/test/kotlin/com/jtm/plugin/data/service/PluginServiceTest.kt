@@ -6,6 +6,7 @@ import com.jtm.plugin.core.domain.exception.plugin.FailedUpdatePlugin
 import com.jtm.plugin.core.domain.exception.plugin.PluginFound
 import com.jtm.plugin.core.domain.exception.plugin.PluginInformationNull
 import com.jtm.plugin.core.domain.exception.plugin.PluginNotFound
+import com.jtm.plugin.core.usecase.currency.PriceConverter
 import com.jtm.plugin.core.usecase.repository.PluginRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -28,7 +29,8 @@ import java.util.*
 class PluginServiceTest {
 
     private val pluginRepository: PluginRepository = mock()
-    private val pluginService = PluginService(pluginRepository)
+    private val converter: PriceConverter = mock()
+    private val pluginService = PluginService(pluginRepository, converter)
     private val plugin = Plugin(name = "Test", basic_description = "Basic", description = "Desc")
     private val dto = PluginDto(id = UUID.randomUUID(), name = "Test #1", basic_description = "Basic description", description = "Description", version = "0.1", active = true, price = 10.50)
     private val nullDto = PluginDto(id = UUID.randomUUID(), name = null, basic_description = null, description = null, version = null, active = null, price = null)
@@ -79,7 +81,7 @@ class PluginServiceTest {
     fun getPlugin_thenNotFound() {
         `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
 
-        val returned = pluginService.getPlugin(UUID.randomUUID())
+        val returned = pluginService.getPlugin(UUID.randomUUID(), null)
 
         verify(pluginRepository, times(1)).findById(any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
@@ -93,7 +95,7 @@ class PluginServiceTest {
     fun getPlugin() {
         `when`(pluginRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(plugin))
 
-        val returned = pluginService.getPlugin(UUID.randomUUID())
+        val returned = pluginService.getPlugin(UUID.randomUUID(), null)
 
         verify(pluginRepository, times(1)).findById(any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
@@ -113,7 +115,7 @@ class PluginServiceTest {
     fun getPlugins() {
         `when`(pluginRepository.findAll()).thenReturn(Flux.just(plugin, Plugin(name = "Test #2", basic_description = "Basic Desc #2", description = "Desc #2", version = "0.1", active = true)))
 
-        val returned = pluginService.getPlugins()
+        val returned = pluginService.getPlugins(null)
 
         verify(pluginRepository, times(1)).findAll()
         verifyNoMoreInteractions(pluginRepository)

@@ -7,3 +7,6 @@ spring:
 redis:
   host: ${REDIS_HOST}
   port: ${REDIS_PORT}
+
+rapidapi:
+  key: ${RAPID_KEY}

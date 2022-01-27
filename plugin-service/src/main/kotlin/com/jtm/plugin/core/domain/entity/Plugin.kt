@@ -1,6 +1,7 @@
 package com.jtm.plugin.core.domain.entity
 
 import com.jtm.plugin.core.domain.dto.PluginDto
+import com.jtm.plugin.core.usecase.currency.PriceConverter
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
@@ -47,6 +48,11 @@ data class Plugin(@Id val id: UUID = UUID.randomUUID(), var name: String = "", v
         this.premium = this.price > 0.0
         this.price = if (price <= 0.0) 0.0 else price
         this.lastUpdated = System.currentTimeMillis()
+        return this
+    }
+
+    fun convertPrice(converter: PriceConverter, currency: String): Plugin {
+        this.price = converter.convert(this.price, currency)
         return this
     }
 }

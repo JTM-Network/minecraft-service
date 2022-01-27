@@ -55,7 +55,7 @@ class PluginControllerTest {
 
     @Test
     fun getPlugin() {
-        `when`(pluginService.getPlugin(anyOrNull())).thenReturn(Mono.just(plugin))
+        `when`(pluginService.getPlugin(anyOrNull(), anyOrNull())).thenReturn(Mono.just(plugin))
 
         testClient.get()
             .uri("/${UUID.randomUUID()}")
@@ -66,13 +66,13 @@ class PluginControllerTest {
             .jsonPath("$.basic_description").isEqualTo("Basic")
             .jsonPath("$.description").isEqualTo("Desc")
 
-        verify(pluginService, times(1)).getPlugin(anyOrNull())
+        verify(pluginService, times(1)).getPlugin(anyOrNull(), anyOrNull())
         verifyNoMoreInteractions(pluginService)
     }
 
     @Test
     fun getPlugins() {
-        `when`(pluginService.getPlugins()).thenReturn(Flux.just(plugin, Plugin(name = "Test #2", basic_description = "Basic Desc #2", description = "Desc #2")))
+        `when`(pluginService.getPlugins(anyOrNull())).thenReturn(Flux.just(plugin, Plugin(name = "Test #2", basic_description = "Basic Desc #2", description = "Desc #2")))
 
         testClient.get()
             .uri("/all")
@@ -86,7 +86,7 @@ class PluginControllerTest {
             .jsonPath("$[1].basic_description").isEqualTo("Basic Desc #2")
             .jsonPath("$[1].description").isEqualTo("Desc #2")
 
-        verify(pluginService, times(1)).getPlugins()
+        verify(pluginService, times(1)).getPlugins(anyOrNull())
         verifyNoMoreInteractions(pluginService)
     }
 
