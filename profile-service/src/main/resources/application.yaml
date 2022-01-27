@@ -1,0 +1,15 @@
+server:
+  port: 8222
+  error:
+    include-message: Always
+
+spring:
+  application:
+    name: mc-profile
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+    profiles:
+      active: ${PROFILE}
