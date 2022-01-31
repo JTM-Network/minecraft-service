@@ -1,6 +1,7 @@
 package com.jtm.plugin.entrypoint.controller
 
 import com.jtm.plugin.core.domain.dto.PluginDto
+import com.jtm.plugin.core.domain.dto.update.*
 import com.jtm.plugin.core.domain.entity.Plugin
 import com.jtm.plugin.data.service.UpdateService
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,20 +14,20 @@ import java.util.*
 class UpdateController @Autowired constructor(private val updateService: UpdateService) {
 
     @PutMapping("/{id}/name")
-    fun putName(@PathVariable id: UUID, @RequestBody dto: PluginDto): Mono<Plugin> = updateService.updateName(id, dto)
+    fun putName(@PathVariable id: UUID, @RequestBody dto: NameDto): Mono<Plugin> = updateService.updateName(id, dto)
 
     @PutMapping("/{id}/basic-desc")
-    fun putBasicDesc(@PathVariable id: UUID, @RequestBody dto: PluginDto): Mono<Plugin> = updateService.updateBasicDesc(id, dto)
+    fun putBasicDesc(@PathVariable id: UUID, @RequestBody dto: BasicDescDto): Mono<Plugin> = updateService.updateBasicDesc(id, dto)
 
     @PutMapping("/{id}/desc")
-    fun putDesc(@PathVariable id: UUID, @RequestBody dto: PluginDto): Mono<Plugin> = updateService.updateDesc(id, dto)
+    fun putDesc(@PathVariable id: UUID, @RequestBody dto: DescDto): Mono<Plugin> = updateService.updateDesc(id, dto)
 
     @PutMapping("/{id}/version")
-    fun putVersion(@PathVariable id: UUID, @RequestBody dto: PluginDto): Mono<Plugin> = updateService.updateVersion(id, dto)
+    fun putVersion(@PathVariable id: UUID, @RequestBody dto: VersionDto): Mono<Plugin> = updateService.updateVersion(id, dto)
 
     @PutMapping("/{id}/active")
-    fun putActive(@PathVariable id: UUID, @RequestBody dto: PluginDto): Mono<Plugin> = updateService.updateActive(id, dto)
+    fun putActive(@PathVariable id: UUID, @RequestBody dto: ActiveDto): Mono<Plugin> = updateService.updateActive(id, dto)
 
     @PutMapping("/{id}/price")
-    fun putPrice(@PathVariable id: UUID, @RequestBody dto: PluginDto): Mono<Plugin> = updateService.updatePrice(id, dto)
+    fun putPrice(@PathVariable id: UUID, @RequestBody dto: PriceDto): Mono<Plugin> = updateService.updatePrice(id, dto)
 }

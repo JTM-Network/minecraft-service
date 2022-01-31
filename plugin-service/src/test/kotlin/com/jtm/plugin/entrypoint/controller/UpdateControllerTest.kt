@@ -1,6 +1,7 @@
 package com.jtm.plugin.entrypoint.controller
 
 import com.jtm.plugin.core.domain.dto.PluginDto
+import com.jtm.plugin.core.domain.dto.update.*
 import com.jtm.plugin.core.domain.entity.Plugin
 import com.jtm.plugin.data.service.UpdateService
 import org.junit.Test
@@ -31,7 +32,13 @@ class UpdateControllerTest {
     lateinit var updateService: UpdateService
 
     private val plugin = Plugin(name = "Test", basic_description = "Basic", description = "Desc")
-    private val dto = PluginDto(name = "Test #1", basic_description = "Basic description", description = "Description", version = "0.1", active = true, price = 10.50)
+    private val nameDto = NameDto("Test #1")
+    private val basicDescDto = BasicDescDto("Basic description")
+    private val descDto = DescDto(description = "Description")
+    private val versionDto = VersionDto(version = "0.1")
+    private val activeDto = ActiveDto(active = true)
+    private val priceDto = PriceDto(10.50)
+
 
     @Test
     fun putName() {
@@ -39,7 +46,7 @@ class UpdateControllerTest {
 
         testClient.put()
             .uri("/update/${UUID.randomUUID()}/name")
-            .bodyValue(dto)
+            .bodyValue(nameDto)
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -57,7 +64,7 @@ class UpdateControllerTest {
 
         testClient.put()
             .uri("/update/${UUID.randomUUID()}/basic-desc")
-            .bodyValue(dto)
+            .bodyValue(basicDescDto)
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -75,7 +82,7 @@ class UpdateControllerTest {
 
         testClient.put()
             .uri("/update/${UUID.randomUUID()}/desc")
-            .bodyValue(dto)
+            .bodyValue(descDto)
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -93,7 +100,7 @@ class UpdateControllerTest {
 
         testClient.put()
             .uri("/update/${UUID.randomUUID()}/version")
-            .bodyValue(dto)
+            .bodyValue(versionDto)
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -111,7 +118,7 @@ class UpdateControllerTest {
 
         testClient.put()
             .uri("/update/${UUID.randomUUID()}/active")
-            .bodyValue(dto)
+            .bodyValue(activeDto)
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -129,7 +136,7 @@ class UpdateControllerTest {
 
         testClient.put()
             .uri("/update/${UUID.randomUUID()}/price")
-            .bodyValue(dto)
+            .bodyValue(priceDto)
             .exchange()
             .expectStatus().isOk
             .expectBody()
