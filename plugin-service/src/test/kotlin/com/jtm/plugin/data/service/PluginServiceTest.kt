@@ -32,8 +32,8 @@ class PluginServiceTest {
     private val converter: PriceConverter = mock()
     private val pluginService = PluginService(pluginRepository, converter)
     private val plugin = Plugin(name = "Test", basic_description = "Basic", description = "Desc")
-    private val dto = PluginDto(id = UUID.randomUUID(), name = "Test #1", basic_description = "Basic description", description = "Description", version = "0.1", active = true, price = 10.50)
-    private val nullDto = PluginDto(id = UUID.randomUUID(), name = null, basic_description = null, description = null, version = null, active = null, price = null)
+    private val dto = PluginDto(name = "Test #1", basic_description = "Basic description", description = "Description", version = "0.1", active = true, price = 10.50)
+    private val nullDto = PluginDto(name = null, basic_description = null, description = null, version = null, active = null, price = null)
 
     @Test
     fun insertPlugin_thenPluginInfoNull() {

@@ -26,12 +26,13 @@ class UpdateServiceTest {
     private val pluginRepository: PluginRepository = mock()
     private val updateService = UpdateService(pluginRepository)
     private val plugin = Plugin(name = "Test", basic_description = "Basic", description = "Desc")
-    private val dto = PluginDto(id = UUID.randomUUID(), name = "Test #1", basic_description = "Basic description", description = "Description", version = "0.1", active = true, price = 10.50)
-    private val nullDto = PluginDto(id = UUID.randomUUID(), name = null, basic_description = null, description = null, version = null, active = null, price = null)
+    private val dto = PluginDto(name = "Test #1", basic_description = "Basic description", description = "Description", version = "0.1", active = true, price = 10.50)
+    private val nullDto = PluginDto(name = null, basic_description = null, description = null, version = null, active = null, price = null)
+    private val id = UUID.randomUUID()
 
     @Test
     fun updateName_thenFailedUpdate() {
-        val returned = updateService.updateName(nullDto)
+        val returned = updateService.updateName(id, nullDto)
 
         StepVerifier.create(returned)
             .expectError(FailedUpdatePlugin::class.java)
@@ -42,7 +43,7 @@ class UpdateServiceTest {
     fun updateName_thenUpdatedNameFound() {
         `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.just(plugin))
 
-        val returned = updateService.updateName(dto)
+        val returned = updateService.updateName(id, dto)
 
         verify(pluginRepository, times(1)).findByName(anyString())
         verifyNoMoreInteractions(pluginRepository)
@@ -57,7 +58,7 @@ class UpdateServiceTest {
         `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.empty())
         `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
 
-        val returned = updateService.updateName(dto)
+        val returned = updateService.updateName(id, dto)
 
         verify(pluginRepository, times(1)).findByName(anyString())
         verifyNoMoreInteractions(pluginRepository)
@@ -73,7 +74,7 @@ class UpdateServiceTest {
         `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
         `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
 
-        val returned = updateService.updateName(dto)
+        val returned = updateService.updateName(id, dto)
 
         verify(pluginRepository, times(1)).findByName(anyString())
         verifyNoMoreInteractions(pluginRepository)
@@ -89,7 +90,7 @@ class UpdateServiceTest {
 
     @Test
     fun updateBasicDesc_thenFailedUpdate() {
-        val returned = updateService.updateBasicDesc(nullDto)
+        val returned = updateService.updateBasicDesc(id, nullDto)
 
         StepVerifier.create(returned)
             .expectError(FailedUpdatePlugin::class.java)
@@ -100,7 +101,7 @@ class UpdateServiceTest {
     fun updateBasicDesc_thenNotFound() {
         `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
 
-        val returned = updateService.updateBasicDesc(dto)
+        val returned = updateService.updateBasicDesc(id, dto)
 
         verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
@@ -115,7 +116,7 @@ class UpdateServiceTest {
         `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
         `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
 
-        val returned = updateService.updateBasicDesc(dto)
+        val returned = updateService.updateBasicDesc(id, dto)
 
         verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
@@ -131,7 +132,7 @@ class UpdateServiceTest {
 
     @Test
     fun updateDesc_thenFailedUpdate() {
-        val returned = updateService.updateDesc(nullDto)
+        val returned = updateService.updateDesc(id, nullDto)
 
         StepVerifier.create(returned)
             .expectError(FailedUpdatePlugin::class.java)
@@ -142,7 +143,7 @@ class UpdateServiceTest {
     fun updateDesc_thenNotFound() {
         `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
 
-        val returned = updateService.updateDesc(dto)
+        val returned = updateService.updateDesc(id, dto)
 
         verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
@@ -157,7 +158,7 @@ class UpdateServiceTest {
         `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
         `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
 
-        val returned = updateService.updateDesc(dto)
+        val returned = updateService.updateDesc(id, dto)
 
         verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
@@ -173,7 +174,7 @@ class UpdateServiceTest {
 
     @Test
     fun updateVersion_thenFailedUpdate() {
-        val returned = updateService.updateVersion(nullDto)
+        val returned = updateService.updateVersion(id, nullDto)
 
         StepVerifier.create(returned)
             .expectError(FailedUpdatePlugin::class.java)
@@ -184,7 +185,7 @@ class UpdateServiceTest {
     fun updateVersion_thenNotFound() {
         `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
 
-        val returned = updateService.updateVersion(dto)
+        val returned = updateService.updateVersion(id, dto)
 
         verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
@@ -199,7 +200,7 @@ class UpdateServiceTest {
         `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
         `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
 
-        val returned = updateService.updateVersion(dto)
+        val returned = updateService.updateVersion(id, dto)
 
         verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
@@ -216,7 +217,7 @@ class UpdateServiceTest {
 
     @Test
     fun updateActive_thenFailedUpdate() {
-        val returned = updateService.updateActive(nullDto)
+        val returned = updateService.updateActive(id, nullDto)
 
         StepVerifier.create(returned)
             .expectError(FailedUpdatePlugin::class.java)
@@ -227,7 +228,7 @@ class UpdateServiceTest {
     fun updateActive_thenNotFound() {
         `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
 
-        val returned = updateService.updateActive(dto)
+        val returned = updateService.updateActive(id, dto)
 
         verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
@@ -242,7 +243,7 @@ class UpdateServiceTest {
         `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
         `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
 
-        val returned = updateService.updateActive(dto)
+        val returned = updateService.updateActive(id, dto)
 
         verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
@@ -260,7 +261,7 @@ class UpdateServiceTest {
 
     @Test
     fun updatePrice_thenFailedUpdate() {
-        val returned = updateService.updatePrice(nullDto)
+        val returned = updateService.updatePrice(id, nullDto)
 
         StepVerifier.create(returned)
             .expectError(FailedUpdatePlugin::class.java)
@@ -271,7 +272,7 @@ class UpdateServiceTest {
     fun updatePrice_thenNotFound() {
         `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.empty())
 
-        val returned = updateService.updatePrice(dto)
+        val returned = updateService.updatePrice(id, dto)
 
         verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)
@@ -286,7 +287,7 @@ class UpdateServiceTest {
         `when`(pluginRepository.findById(ArgumentMatchers.any(UUID::class.java))).thenReturn(Mono.just(plugin))
         `when`(pluginRepository.save(anyOrNull())).thenReturn(Mono.just(plugin))
 
-        val returned = updateService.updatePrice(dto)
+        val returned = updateService.updatePrice(id, dto)
 
         verify(pluginRepository, times(1)).findById(ArgumentMatchers.any(UUID::class.java))
         verifyNoMoreInteractions(pluginRepository)

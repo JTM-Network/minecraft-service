@@ -33,7 +33,7 @@ class PluginControllerTest {
     lateinit var pluginService: PluginService
 
     private val plugin = Plugin(name = "Test", basic_description = "Basic", description = "Desc")
-    private val dto = PluginDto(id = UUID.randomUUID(), name = "Test #1", basic_description = "Basic description", description = "Description", version = "0.1", active = true, price = 10.50)
+    private val dto = PluginDto(name = "Test #1", basic_description = "Basic description", description = "Description", version = "0.1", active = true, price = 10.50)
 
     @Test
     fun postPlugin() {

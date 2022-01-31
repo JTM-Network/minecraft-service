@@ -9,6 +9,7 @@ import com.jtm.plugin.core.usecase.repository.PluginRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
+import java.util.*
 
 @Service
 class UpdateService @Autowired constructor(private val pluginRepository: PluginRepository) {
@@ -16,6 +17,7 @@ class UpdateService @Autowired constructor(private val pluginRepository: PluginR
     /**
      * This will update plugin name.
      *
+     * @param id    the identifier to find the plugin
      * @param dto   data transfer object to update plugin
      * @return      the updated plugin
      * @see         Plugin
@@ -24,12 +26,12 @@ class UpdateService @Autowired constructor(private val pluginRepository: PluginR
      * @throws FailedUpdatePlugin if data transfer object value to update is null
      * @throws PluginNotFound if plugin is not found by identifier
      */
-    fun updateName(dto: PluginDto): Mono<Plugin> {
+    fun updateName(id: UUID, dto: PluginDto): Mono<Plugin> {
         val name = dto.name ?: return Mono.error(FailedUpdatePlugin())
         return pluginRepository.findByName(name)
             .flatMap<Plugin> { Mono.error(PluginFound()) }
             .switchIfEmpty(Mono.defer {
-                pluginRepository.findById(dto.id)
+                pluginRepository.findById(id)
                     .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
                     .flatMap { pluginRepository.save(it.updateName(name)) }
             })
@@ -38,15 +40,16 @@ class UpdateService @Autowired constructor(private val pluginRepository: PluginR
     /**
      * This will update plugin basic description
      *
+     * @param id    the identifier to find the plugin
      * @param dto   data transfer object to update plugin
      * @return      the updated plugin
      * @see         Plugin
      * @throws FailedUpdatePlugin if data transfer object value to update is null
      * @throws PluginNotFound if plugin is not found by identifier
      */
-    fun updateBasicDesc(dto: PluginDto): Mono<Plugin> {
+    fun updateBasicDesc(id: UUID, dto: PluginDto): Mono<Plugin> {
         val basicDescription = dto.basic_description ?: return Mono.error(FailedUpdatePlugin())
-        return pluginRepository.findById(dto.id)
+        return pluginRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
             .flatMap { pluginRepository.save(it.updateBasicDesc(basicDescription)) }
     }
@@ -54,15 +57,16 @@ class UpdateService @Autowired constructor(private val pluginRepository: PluginR
     /**
      * This will update plugin description
      *
+     * @param id    the identifier to find the plugin
      * @param dto   data transfer object to update plugin
      * @return      the updated plugin
      * @see         Plugin
      * @throws FailedUpdatePlugin if data transfer object value to update is null
      * @throws PluginNotFound if plugin is not found by identifier
      */
-    fun updateDesc(dto: PluginDto): Mono<Plugin> {
+    fun updateDesc(id: UUID, dto: PluginDto): Mono<Plugin> {
         val description = dto.description ?: return Mono.error(FailedUpdatePlugin())
-        return pluginRepository.findById(dto.id)
+        return pluginRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
             .flatMap { pluginRepository.save(it.updateDesc(description)) }
     }
@@ -70,15 +74,16 @@ class UpdateService @Autowired constructor(private val pluginRepository: PluginR
     /**
      * This will update the plugin's latest version
      *
+     * @param id    the identifier to find the plugin
      * @param dto   data transfer object to update plugin
      * @return      the updated plugin
      * @see         Plugin
      * @throws FailedUpdatePlugin if data transfer object value to update is null
      * @throws PluginNotFound if plugin is not found by identifier
      */
-    fun updateVersion(dto: PluginDto): Mono<Plugin> {
+    fun updateVersion(id: UUID, dto: PluginDto): Mono<Plugin> {
         val version = dto.version ?: return Mono.error(FailedUpdatePlugin())
-        return pluginRepository.findById(dto.id)
+        return pluginRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
             .flatMap { pluginRepository.save(it.updateVersion(version)) }
     }
@@ -86,15 +91,16 @@ class UpdateService @Autowired constructor(private val pluginRepository: PluginR
     /**
      * This will update if the plugin will be shown to users or not.
      *
+     * @param id    the identifier to find the plugin
      * @param dto   data transfer object to update plugin
      * @return      the updated plugin
      * @see         Plugin
      * @throws FailedUpdatePlugin if data transfer object value to update is null
      * @throws PluginNotFound if plugin is not found by identifier
      */
-    fun updateActive(dto: PluginDto): Mono<Plugin> {
+    fun updateActive(id: UUID, dto: PluginDto): Mono<Plugin> {
         val active = dto.active ?: return Mono.error(FailedUpdatePlugin())
-        return pluginRepository.findById(dto.id)
+        return pluginRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
             .flatMap { pluginRepository.save(it.updateActive(active)) }
     }
@@ -103,15 +109,16 @@ class UpdateService @Autowired constructor(private val pluginRepository: PluginR
      * This will update the plugin's price & also update the premium boolean value
      * to true if greater than 0.0
      *
+     * @param id    the identifier to find the plugin
      * @param dto   data transfer object to update plugin
      * @return      the updated plugin
      * @see         Plugin
      * @throws FailedUpdatePlugin if data transfer object value to update is null
      * @throws PluginNotFound if plugin is not found by identifier
      */
-    fun updatePrice(dto: PluginDto): Mono<Plugin> {
+    fun updatePrice(id: UUID, dto: PluginDto): Mono<Plugin> {
         val price = dto.price ?: return Mono.error(FailedUpdatePlugin())
-        return pluginRepository.findById(dto.id)
+        return pluginRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
             .flatMap { pluginRepository.save(it.updatePrice(price)) }
     }
