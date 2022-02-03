@@ -36,3 +36,7 @@ plugin-service/src/main/resources/application-dev.yaml
 profile-service/.gradle
 profile-service/build
 profile-service/src/main/resources/application-dev.yaml
+
+version-service/.gradle
+version-service/build
+version-service/src/main/resources/application-dev.yaml
