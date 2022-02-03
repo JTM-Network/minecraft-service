@@ -1,0 +1,18 @@
+server:
+  port: 9675
+  error:
+    include-message: Always
+
+spring:
+  application:
+    name: version-service
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+    profiles:
+      active: ${PROFILE}
+
+storage:
+  disk: /versions
