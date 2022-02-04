@@ -15,6 +15,11 @@ class VersionController @Autowired constructor(private val versionService: Versi
     @GetMapping("/{id}")
     fun getVersion(@PathVariable id: UUID): Mono<Version> = versionService.getVersion(id)
 
+    @GetMapping("/plugin/{id}/{version}")
+    fun getPluginVersion(@PathVariable id: UUID, @PathVariable version: String): Mono<Version> {
+        return versionService.getPluginVersion(id, version)
+    }
+
     @GetMapping("/plugin/{id}")
     fun getVersionByPluginId(@PathVariable id: UUID): Flux<Version> = versionService.getVersionsByPlugin(id)
 

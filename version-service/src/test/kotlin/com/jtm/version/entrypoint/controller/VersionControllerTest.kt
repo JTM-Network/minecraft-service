@@ -4,8 +4,7 @@ import com.jtm.version.core.domain.entity.Version
 import com.jtm.version.data.service.VersionService
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.times
+import org.mockito.Mockito.*
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
@@ -17,7 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.reactive.server.WebTestClient
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import reactor.test.StepVerifier
 import java.util.*
 
 @RunWith(SpringRunner::class)
@@ -31,7 +29,7 @@ class VersionControllerTest {
     @MockBean
     lateinit var versionService: VersionService
 
-    private val version = Version(pluginId = UUID.randomUUID(), version = "1.0")
+    private val version = Version(pluginId = UUID.randomUUID(), version = "1.0", changelog = "Changelog")
 
     @Test
     fun getVersion() {
@@ -46,6 +44,22 @@ class VersionControllerTest {
             .jsonPath("$.pluginId").isEqualTo(version.pluginId.toString())
 
         verify(versionService, times(1)).getVersion(anyOrNull())
+        verifyNoMoreInteractions(versionService)
+    }
+
+    @Test
+    fun getPluginVersion() {
+        `when`(versionService.getPluginVersion(anyOrNull(), anyString())).thenReturn(Mono.just(version))
+
+        testClient.get()
+            .uri("/plugin/${UUID.randomUUID()}/1.0")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.id").isEqualTo(version.id.toString())
+            .jsonPath("$.pluginId").isEqualTo(version.pluginId.toString())
+
+        verify(versionService, times(1)).getPluginVersion(anyOrNull(), anyString())
         verifyNoMoreInteractions(versionService)
     }
 

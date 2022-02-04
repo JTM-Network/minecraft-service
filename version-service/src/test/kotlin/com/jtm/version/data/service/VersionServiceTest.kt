@@ -26,7 +26,7 @@ class VersionServiceTest {
 
     private val versionRepository: VersionRepository = mock()
     private val versionService = VersionService(versionRepository)
-    private val version = Version(pluginId = UUID.randomUUID(), version = "1.0")
+    private val version = Version(pluginId = UUID.randomUUID(), version = "1.0", changelog = "Changelog")
 
     @Test
     fun getVersion_thenNotFound() {
@@ -55,6 +55,39 @@ class VersionServiceTest {
             .assertNext {
                 assertThat(it.pluginId).isEqualTo(version.pluginId)
                 assertThat(it.version).isEqualTo("1.0")
+                assertThat(it.changelog).isEqualTo("Changelog")
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun getPluginVersion_thenNotFound() {
+        `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyString())).thenReturn(Mono.empty())
+
+        val returned = versionService.getPluginVersion(UUID.randomUUID(), "1.0")
+
+        verify(versionRepository, times(1)).findByPluginIdAndVersion(anyOrNull(), anyString())
+        verifyNoMoreInteractions(versionRepository)
+
+        StepVerifier.create(returned)
+            .expectError(VersionNotFound::class.java)
+            .verify()
+    }
+
+    @Test
+    fun getPluginVersion() {
+        `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyString())).thenReturn(Mono.just(version))
+
+        val returned = versionService.getPluginVersion(UUID.randomUUID(), "1.0")
+
+        verify(versionRepository, times(1)).findByPluginIdAndVersion(anyOrNull(), anyString())
+        verifyNoMoreInteractions(versionRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.pluginId).isEqualTo(version.pluginId)
+                assertThat(it.version).isEqualTo("1.0")
+                assertThat(it.changelog).isEqualTo("Changelog")
             }
             .verifyComplete()
     }
@@ -72,6 +105,7 @@ class VersionServiceTest {
             .assertNext {
                 assertThat(it.pluginId).isEqualTo(version.pluginId)
                 assertThat(it.version).isEqualTo("1.0")
+                assertThat(it.changelog).isEqualTo("Changelog")
             }
             .verifyComplete()
     }
@@ -89,6 +123,7 @@ class VersionServiceTest {
             .assertNext {
                 assertThat(it.pluginId).isEqualTo(version.pluginId)
                 assertThat(it.version).isEqualTo("1.0")
+                assertThat(it.changelog).isEqualTo("Changelog")
             }
             .verifyComplete()
     }
@@ -121,6 +156,7 @@ class VersionServiceTest {
             .assertNext {
                 assertThat(it.pluginId).isEqualTo(version.pluginId)
                 assertThat(it.version).isEqualTo("1.0")
+                assertThat(it.changelog).isEqualTo("Changelog")
             }
             .verifyComplete()
     }
