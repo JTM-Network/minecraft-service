@@ -1,8 +1,7 @@
 package com.jtm.version.data.service
 
 import com.jtm.version.core.domain.entity.Version
-import com.jtm.version.core.domain.exceptions.VersionFound
-import com.jtm.version.core.domain.exceptions.VersionNotFound
+import com.jtm.version.core.domain.exceptions.version.VersionNotFound
 import com.jtm.version.core.usecase.repository.VersionRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test

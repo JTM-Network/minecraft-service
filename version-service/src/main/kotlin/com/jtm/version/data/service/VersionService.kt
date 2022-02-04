@@ -1,7 +1,7 @@
 package com.jtm.version.data.service
 
 import com.jtm.version.core.domain.entity.Version
-import com.jtm.version.core.domain.exceptions.VersionNotFound
+import com.jtm.version.core.domain.exceptions.version.VersionNotFound
 import com.jtm.version.core.usecase.repository.VersionRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service

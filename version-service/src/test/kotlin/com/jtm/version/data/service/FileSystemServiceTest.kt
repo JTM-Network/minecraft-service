@@ -1,7 +1,7 @@
 package com.jtm.version.data.service
 
-import com.jtm.version.core.domain.exceptions.FileNotFound
-import com.jtm.version.core.domain.exceptions.FolderNotFound
+import com.jtm.version.core.domain.exceptions.filesystem.FileNotFound
+import com.jtm.version.core.domain.exceptions.filesystem.FolderNotFound
 import com.jtm.version.core.usecase.file.FileSystemHandler
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before

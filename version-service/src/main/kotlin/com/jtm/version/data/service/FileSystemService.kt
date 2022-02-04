@@ -1,7 +1,7 @@
 package com.jtm.version.data.service
 
-import com.jtm.version.core.domain.exceptions.FileNotFound
-import com.jtm.version.core.domain.exceptions.FolderNotFound
+import com.jtm.version.core.domain.exceptions.filesystem.FileNotFound
+import com.jtm.version.core.domain.exceptions.filesystem.FolderNotFound
 import com.jtm.version.core.domain.model.FileInfo
 import com.jtm.version.core.domain.model.FolderInfo
 import com.jtm.version.core.usecase.file.FileSystemHandler

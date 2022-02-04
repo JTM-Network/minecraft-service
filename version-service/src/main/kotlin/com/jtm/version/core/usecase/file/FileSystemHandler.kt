@@ -1,8 +1,8 @@
 package com.jtm.version.core.usecase.file
 
-import com.jtm.version.core.domain.exceptions.FileNotFound
-import com.jtm.version.core.domain.exceptions.FilesNotFound
-import com.jtm.version.core.domain.exceptions.FolderNotFound
+import com.jtm.version.core.domain.exceptions.filesystem.FileNotFound
+import com.jtm.version.core.domain.exceptions.filesystem.FilesNotFound
+import com.jtm.version.core.domain.exceptions.filesystem.FolderNotFound
 import org.apache.commons.io.FileUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
