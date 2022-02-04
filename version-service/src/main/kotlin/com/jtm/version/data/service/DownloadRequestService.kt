@@ -18,6 +18,14 @@ class DownloadRequestService @Autowired constructor(private val downloadReposito
                                                     private val versionRepository: VersionRepository,
                                                     private val authorization: ProfileAuthorization) {
 
+    /**
+     * This will request a download link for the plugin version resource
+     *
+     * @param request       the request made by the client
+     * @param dto           the data transfer object containing the plugin identifier & version
+     * @return              the identifier of the download link
+     * @see                 UUID
+     */
     fun requestDownload(request: ServerHttpRequest, dto: DownloadRequestDto): Mono<UUID> {
         val id = request.headers.getFirst("CLIENT_ID") ?: return Mono.error { ClientIdNotFound() }
         return versionRepository.findByPluginIdAndVersion(dto.pluginId, dto.version)
