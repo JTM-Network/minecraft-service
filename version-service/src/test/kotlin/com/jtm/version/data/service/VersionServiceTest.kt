@@ -25,7 +25,7 @@ class VersionServiceTest {
 
     private val versionRepository: VersionRepository = mock()
     private val versionService = VersionService(versionRepository)
-    private val version = Version(pluginId = UUID.randomUUID(), version = "1.0", changelog = "Changelog")
+    private val version = Version(pluginId = UUID.randomUUID(), pluginName = "test", version = "1.0", changelog = "Changelog")
 
     @Test
     fun getVersion_thenNotFound() {

@@ -33,7 +33,7 @@ class DownloadRequestServiceTest {
     private val downloadRequestService = DownloadRequestService(downloadRepository, versionRepository, authorization)
 
     private val dto = DownloadRequestDto(UUID.randomUUID(), "1.0")
-    private val version = Version(pluginId = UUID.randomUUID(), version = "1.0", changelog = "Changelog")
+    private val version = Version(pluginId = UUID.randomUUID(), pluginName = "test", version = "1.0", changelog = "Changelog")
     private val downloadLink = DownloadLink(pluginId = version.pluginId, version = version.version, clientId = "id")
 
     private val request: ServerHttpRequest = mock()

@@ -29,7 +29,7 @@ class VersionControllerTest {
     @MockBean
     lateinit var versionService: VersionService
 
-    private val version = Version(pluginId = UUID.randomUUID(), version = "1.0", changelog = "Changelog")
+    private val version = Version(pluginId = UUID.randomUUID(), pluginName = "test", version = "1.0", changelog = "Changelog")
 
     @Test
     fun getVersion() {
