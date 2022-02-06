@@ -3,6 +3,7 @@ package com.jtm.version.data.service
 import com.jtm.version.core.domain.dto.DownloadRequestDto
 import com.jtm.version.core.domain.entity.DownloadLink
 import com.jtm.version.core.domain.exceptions.download.ClientIdNotFound
+import com.jtm.version.core.domain.exceptions.download.DownloadLinkNotFound
 import com.jtm.version.core.domain.exceptions.version.VersionNotFound
 import com.jtm.version.core.usecase.auth.ProfileAuthorization
 import com.jtm.version.core.usecase.repository.DownloadRepository
@@ -35,5 +36,19 @@ class DownloadRequestService @Autowired constructor(private val downloadReposito
                     .map { it.id }
                 }
             }
+    }
+
+    /**
+     * This will remove the download request.
+     *
+     * @param id        the download request identifier
+     * @return          the download request removed
+     * @see             DownloadLink
+     * @throws DownloadLinkNotFound     if the request is not found.
+     */
+    fun removeDownload(id: UUID): Mono<DownloadLink> {
+        return downloadRepository.findById(id)
+            .switchIfEmpty(Mono.defer { Mono.error(DownloadLinkNotFound()) })
+            .flatMap { downloadRepository.delete(it).thenReturn(it) }
     }
 }

@@ -1,9 +1,11 @@
 package com.jtm.version.entrypoint.controller
 
 import com.jtm.version.core.domain.dto.DownloadRequestDto
+import com.jtm.version.core.domain.entity.DownloadLink
 import com.jtm.version.data.service.DownloadRequestService
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.times
 import org.mockito.kotlin.anyOrNull
@@ -31,6 +33,7 @@ class DownloadRequestControllerTest {
 
     private val id = UUID.randomUUID()
     private val dto = DownloadRequestDto(UUID.randomUUID(), "1.0")
+    private val link = DownloadLink(pluginId = UUID.randomUUID(), version = "0.1", clientId = "ID")
 
     @Test
     fun requestDownload() {
@@ -46,5 +49,21 @@ class DownloadRequestControllerTest {
 
         verify(requestService, times(1)).requestDownload(anyOrNull(), anyOrNull())
         verifyNoMoreInteractions(requestService)
+    }
+
+    @Test
+    fun deleteDownload() {
+        `when`(requestService.removeDownload(anyOrNull())).thenReturn(Mono.just(link))
+
+        testClient.delete()
+            .uri("/request/${UUID.randomUUID()}")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.id").isEqualTo(link.id.toString())
+            .jsonPath("$.pluginId").isEqualTo(link.pluginId.toString())
+
+        Mockito.verify(requestService, times(1)).removeDownload(anyOrNull())
+        Mockito.verifyNoMoreInteractions(requestService)
     }
 }

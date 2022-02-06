@@ -5,10 +5,13 @@ import com.jtm.version.core.domain.entity.DownloadLink
 import com.jtm.version.core.domain.entity.Version
 import com.jtm.version.core.domain.exceptions.authentication.ProfileUnauthorized
 import com.jtm.version.core.domain.exceptions.download.ClientIdNotFound
+import com.jtm.version.core.domain.exceptions.download.DownloadLinkNotFound
 import com.jtm.version.core.domain.exceptions.version.VersionNotFound
 import com.jtm.version.core.usecase.auth.ProfileAuthorization
 import com.jtm.version.core.usecase.repository.DownloadRepository
 import com.jtm.version.core.usecase.repository.VersionRepository
+import com.mongodb.internal.connection.tlschannel.util.Util
+import com.mongodb.internal.connection.tlschannel.util.Util.assertTrue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -101,6 +104,40 @@ class DownloadRequestServiceTest {
 
         StepVerifier.create(returned)
             .assertNext { assertThat(it).isEqualTo(downloadLink.id) }
+            .verifyComplete()
+    }
+
+    @Test
+    fun removeDownload_thenNotFound() {
+        `when`(downloadRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
+
+        val returned = downloadRequestService.removeDownload(UUID.randomUUID())
+
+        verify(downloadRepository, times(1)).findById(any(UUID::class.java))
+        verifyNoMoreInteractions(downloadRepository)
+
+        StepVerifier.create(returned)
+            .expectError(DownloadLinkNotFound::class.java)
+            .verify()
+    }
+
+    @Test
+    fun removeDownload() {
+        `when`(downloadRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(downloadLink))
+        `when`(downloadRepository.delete(anyOrNull())).thenReturn(Mono.empty())
+
+        val returned = downloadRequestService.removeDownload(UUID.randomUUID())
+
+        verify(downloadRepository, times(1)).findById(any(UUID::class.java))
+        verifyNoMoreInteractions(downloadRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.id).isEqualTo(downloadLink.id)
+                assertThat(it.pluginId).isEqualTo(downloadLink.pluginId)
+                assertThat(it.version).isEqualTo(downloadLink.version)
+                assertTrue(it.available)
+            }
             .verifyComplete()
     }
 }
