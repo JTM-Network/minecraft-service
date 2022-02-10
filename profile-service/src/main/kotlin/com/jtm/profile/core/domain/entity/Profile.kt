@@ -22,12 +22,22 @@ data class Profile(@Id val id: String, var subscription: Boolean = false, val pl
         return this
     }
 
+    fun addPlugins(plugins: List<UUID>): Profile {
+        plugins.forEach { this.plugins.add(it) }
+        return this
+    }
+
     fun hasPlugin(id: UUID): Boolean {
         return this.plugins.contains(id)
     }
 
     fun removePlugin(id: UUID): Profile {
         this.plugins.remove(id)
+        return this
+    }
+
+    fun removePlugins(plugins: List<UUID>): Profile {
+        plugins.forEach { this.plugins.remove(it) }
         return this
     }
 
