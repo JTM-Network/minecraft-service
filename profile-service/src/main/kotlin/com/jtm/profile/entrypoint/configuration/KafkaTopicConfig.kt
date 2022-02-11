@@ -21,7 +21,7 @@ open class KafkaTopicConfig {
     }
 
     @Bean
-    fun notificationTopic(): NewTopic {
+    open fun notificationTopic(): NewTopic {
         return NewTopic("notification", 1, 1)
     }
 }

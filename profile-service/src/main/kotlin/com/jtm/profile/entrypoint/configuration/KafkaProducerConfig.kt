@@ -16,7 +16,7 @@ open class KafkaProducerConfig {
     lateinit var bootstrapAddress: String
 
     @Bean
-    fun producerFactory(): ProducerFactory<String, String> {
+    open fun producerFactory(): ProducerFactory<String, String> {
         val configProps: MutableMap<String, Any> = HashMap()
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress)
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class)
@@ -25,7 +25,7 @@ open class KafkaProducerConfig {
     }
 
     @Bean
-    fun kafkaTemplate(): KafkaTemplate<String, String> {
+    open fun kafkaTemplate(): KafkaTemplate<String, String> {
         return KafkaTemplate(producerFactory())
     }
 }
