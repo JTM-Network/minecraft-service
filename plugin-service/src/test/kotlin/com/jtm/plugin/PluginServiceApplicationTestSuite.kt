@@ -1,11 +1,7 @@
 package com.jtm.plugin
 
-import com.jtm.plugin.data.service.PluginServiceTest
-import com.jtm.plugin.data.service.UpdateServiceTest
-import com.jtm.plugin.data.service.WikiServiceTest
-import com.jtm.plugin.entrypoint.controller.PluginControllerTest
-import com.jtm.plugin.entrypoint.controller.UpdateControllerTest
-import com.jtm.plugin.entrypoint.controller.WikiControllerTest
+import com.jtm.plugin.data.service.*
+import com.jtm.plugin.entrypoint.controller.*
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 
@@ -18,6 +14,14 @@ import org.junit.runners.Suite
     PluginControllerTest::class,
 
     WikiServiceTest::class,
-    WikiControllerTest::class
+    WikiControllerTest::class,
+
+    SuggestionServiceTest::class,
+    BugServiceTest::class,
+    ReviewServiceTest::class,
+
+    SuggestionControllerTest::class,
+    BugControllerTest::class,
+    ReviewControllerTest::class,
 ])
 class PluginServiceApplicationTestSuite
