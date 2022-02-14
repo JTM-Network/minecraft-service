@@ -8,6 +8,7 @@ import okhttp3.Request
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import java.util.*
 import javax.annotation.PostConstruct
 
 @Component
@@ -57,7 +58,7 @@ class PriceConverter {
         }
         val currencies = current ?: return price
         logger.info("Currencies found.")
-        val value = currencies.rates[currency] ?: return price
+        val value = currencies.rates[currency.uppercase(Locale.getDefault())] ?: return price
         logger.info("Found right currency.")
         val rate = "%.2f".format(value).toDouble()
         logger.info("Found right rate.")
