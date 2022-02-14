@@ -19,6 +19,8 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.test.context.junit4.SpringRunner
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -32,6 +34,7 @@ class PluginServiceTest {
     private val converter: PriceConverter = mock()
     private val pluginService = PluginService(pluginRepository, converter)
     private val plugin = Plugin(name = "Test", basic_description = "Basic", description = "Desc")
+    private val pluginTwo = Plugin(name = "plugin #3", basic_description = "Basic description #3", description = "description #3")
     private val dto = PluginDto(name = "Test #1", basic_description = "Basic description", description = "Description", version = "0.1", active = true, price = 10.50)
     private val nullDto = PluginDto(name = null, basic_description = null, description = null, version = null, active = null, price = null)
 
@@ -134,6 +137,58 @@ class PluginServiceTest {
                 assertThat(it.description).isEqualTo("Desc #2")
                 assertThat(it.version).isEqualTo("0.1")
                 assertThat(it.active).isTrue
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun getPluginsPaginated() {
+        val pageable = PageRequest.of(1, 5, Sort.by(Sort.Direction.ASC, "createdTime"))
+
+        `when`(pluginRepository.findAll(anyOrNull())).thenReturn(Flux.just(plugin, pluginTwo))
+
+        val returned = pluginService.getPluginsPaginated(null, pageable)
+
+        verify(pluginRepository, times(1)).findAll(anyOrNull())
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.content[0].name).isEqualTo("Test")
+                assertThat(it.content[0].basic_description).isEqualTo("Basic")
+                assertThat(it.content[0].description).isEqualTo("Desc")
+
+                assertThat(it.content[1].name).isEqualTo("plugin #3")
+                assertThat(it.content[1].basic_description).isEqualTo("Basic description #3")
+                assertThat(it.content[1].description).isEqualTo("description #3")
+
+                assertThat(it.pageSize).isEqualTo(5)
+                assertThat(it.pageNumber).isEqualTo(1)
+                assertThat(it.totalElements).isEqualTo(2)
+            }
+            .verifyComplete()
+    }
+
+    @Test
+    fun getPluginsBySearch() {
+        val pageable = PageRequest.of(1, 5)
+
+        `when`(pluginRepository.findAll(anyOrNull())).thenReturn(Flux.just(plugin, pluginTwo))
+
+        val returned = pluginService.getPluginsBySearch("plu", null, pageable)
+
+        verify(pluginRepository, times(1)).findAll(anyOrNull())
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.content[0].name).isEqualTo("plugin #3")
+                assertThat(it.content[0].basic_description).isEqualTo("Basic description #3")
+                assertThat(it.content[0].description).isEqualTo("description #3")
+
+                assertThat(it.pageSize).isEqualTo(5)
+                assertThat(it.pageNumber).isEqualTo(1)
+                assertThat(it.totalElements).isEqualTo(1)
             }
             .verifyComplete()
     }
