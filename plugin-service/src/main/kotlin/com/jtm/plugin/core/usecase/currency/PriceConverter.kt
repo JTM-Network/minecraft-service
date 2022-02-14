@@ -48,20 +48,11 @@ class PriceConverter {
     }
 
     fun convert(price: Double, currency: String): Double {
-        if (current == null) {
-            logger.error("Current was null.")
-            return price
-        }
-        if (currency.equals("gbp", true)) {
-            logger.error("currency was equal to gbp")
-            return price
-        }
+        if (current == null) return price
+        if (currency.equals("gbp", true)) return price
         val currencies = current ?: return price
-        logger.info("Currencies found.")
         val value = currencies.rates[currency.uppercase(Locale.getDefault())] ?: return price
-        logger.info("Found right currency.")
         val rate = "%.2f".format(value).toDouble()
-        logger.info("Found right rate.")
         return price * rate
     }
 }
