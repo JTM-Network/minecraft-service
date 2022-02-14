@@ -102,7 +102,7 @@ class PluginControllerTest {
             .expectBody()
             .jsonPath("$.content[0].name").isEqualTo("Test")
             .jsonPath("$.content[0].basic_description").isEqualTo("Basic")
-            .jsonPath("$.content[0].description").isEqualTo("Description")
+            .jsonPath("$.content[0].description").isEqualTo("Desc")
             .jsonPath("$.content[1].name").isEqualTo("Test #2")
             .jsonPath("$.content[1].basic_description").isEqualTo("Basic Desc #2")
             .jsonPath("$.content[1].description").isEqualTo("Desc #2")
