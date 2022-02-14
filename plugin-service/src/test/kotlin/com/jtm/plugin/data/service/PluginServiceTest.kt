@@ -33,8 +33,8 @@ class PluginServiceTest {
     private val pluginRepository: PluginRepository = mock()
     private val converter: PriceConverter = mock()
     private val pluginService = PluginService(pluginRepository, converter)
-    private val plugin = Plugin(name = "Test", basic_description = "Basic", description = "Desc")
-    private val pluginTwo = Plugin(name = "plugin #3", basic_description = "Basic description #3", description = "description #3")
+    private val plugin = Plugin(name = "Test", basic_description = "Basic", description = "Desc", active = true)
+    private val pluginTwo = Plugin(name = "plugin #3", basic_description = "Basic description #3", description = "description #3", active = true)
     private val dto = PluginDto(name = "Test #1", basic_description = "Basic description", description = "Description", version = "0.1", active = true, price = 10.50)
     private val nullDto = PluginDto(name = null, basic_description = null, description = null, version = null, active = null, price = null)
 
@@ -109,7 +109,7 @@ class PluginServiceTest {
                 assertThat(it.basic_description).isEqualTo("Basic")
                 assertThat(it.description).isEqualTo("Desc")
                 assertThat(it.version).isNull()
-                assertThat(it.active).isFalse
+                assertThat(it.active).isTrue()
             }
             .verifyComplete()
     }
@@ -129,7 +129,7 @@ class PluginServiceTest {
                 assertThat(it.basic_description).isEqualTo("Basic")
                 assertThat(it.description).isEqualTo("Desc")
                 assertThat(it.version).isNull()
-                assertThat(it.active).isFalse
+                assertThat(it.active).isTrue()
             }
             .assertNext {
                 assertThat(it.name).isEqualTo("Test #2")
@@ -223,7 +223,7 @@ class PluginServiceTest {
                 assertThat(it.basic_description).isEqualTo("Basic")
                 assertThat(it.description).isEqualTo("Desc")
                 assertThat(it.version).isNull()
-                assertThat(it.active).isFalse
+                assertThat(it.active).isTrue()
             }
             .verifyComplete()
     }

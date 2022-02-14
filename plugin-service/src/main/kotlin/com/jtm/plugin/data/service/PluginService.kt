@@ -81,6 +81,7 @@ class PluginService @Autowired constructor(private val pluginRepository: PluginR
      */
     fun getPluginsPaginated(currency: String?, page: Pageable): Mono<PageSupport<Plugin>> {
         return pluginRepository.findAll(page.sort)
+            .filter { it.active }
             .map {
                 if (currency == null) return@map it
                 it.convertPrice(priceConverter, currency)
@@ -108,6 +109,7 @@ class PluginService @Autowired constructor(private val pluginRepository: PluginR
      */
     fun getPluginsBySearch(search: String, currency: String?, page: Pageable): Mono<PageSupport<Plugin>> {
         return pluginRepository.findAll(page.sort)
+            .filter { it.active }
             .map {
                 if (currency == null) return@map it
                 it.convertPrice(priceConverter, currency)
