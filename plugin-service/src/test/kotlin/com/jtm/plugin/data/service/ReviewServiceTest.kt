@@ -279,7 +279,7 @@ class ReviewServiceTest {
         verifyNoMoreInteractions(reviewRepository)
 
         StepVerifier.create(returned)
-            .assertNext { assertThat(it).isEqualTo(0.0) }
+            .assertNext { assertThat(it).isEqualTo(0) }
             .verifyComplete()
     }
 
@@ -293,7 +293,7 @@ class ReviewServiceTest {
         verifyNoMoreInteractions(reviewRepository)
 
         StepVerifier.create(returned)
-            .assertNext { assertThat(it).isEqualTo(4.25) }
+            .assertNext { assertThat(it).isEqualTo(4) }
             .verifyComplete()
     }
 

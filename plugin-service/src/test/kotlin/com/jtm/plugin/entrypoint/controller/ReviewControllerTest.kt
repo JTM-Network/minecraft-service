@@ -134,14 +134,14 @@ class ReviewControllerTest {
 
     @Test
     fun getRatingByPlugin() {
-        `when`(reviewService.getRatingByPlugin(anyOrNull())).thenReturn(Mono.just(4.5))
+        `when`(reviewService.getRatingByPlugin(anyOrNull())).thenReturn(Mono.just(4))
 
         testClient.get()
             .uri("/review/rating/${UUID.randomUUID()}")
             .exchange()
             .expectStatus().isOk
-            .expectBody(Double::class.java)
-            .isEqualTo(4.5)
+            .expectBody(Int::class.java)
+            .isEqualTo(4)
 
         verify(reviewService, times(1)).getRatingByPlugin(anyOrNull())
         verifyNoMoreInteractions(reviewService)

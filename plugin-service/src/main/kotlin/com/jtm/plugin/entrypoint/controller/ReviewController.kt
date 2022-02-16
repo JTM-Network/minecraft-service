@@ -40,7 +40,7 @@ class ReviewController @Autowired constructor(private val reviewService: ReviewS
     }
 
     @GetMapping("/rating/{pluginId}")
-    fun getRatingByPlugin(@PathVariable pluginId: UUID): Mono<Double> {
+    fun getRatingByPlugin(@PathVariable pluginId: UUID): Mono<Int> {
         return reviewService.getRatingByPlugin(pluginId)
     }
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.util.*
+import kotlin.math.roundToInt
 
 @Service
 class ReviewService @Autowired constructor(private val reviewRepository: ReviewRepository) {
@@ -46,12 +47,12 @@ class ReviewService @Autowired constructor(private val reviewRepository: ReviewR
         return reviewRepository.findByPluginId(pluginId)
     }
 
-    fun getRatingByPlugin(pluginId: UUID): Mono<Double> {
+    fun getRatingByPlugin(pluginId: UUID): Mono<Int> {
         return reviewRepository.findByPluginId(pluginId)
             .map { it.rating }
             .reduce { d, d2 -> d + d2 }
-            .map { total -> total / 2.0 }
-            .defaultIfEmpty(0.0)
+            .map { total -> (total / 2.0).roundToInt() }
+            .defaultIfEmpty(0)
     }
 
     fun getReviewsByPoster(req: ServerHttpRequest): Flux<Review> {
