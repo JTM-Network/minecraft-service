@@ -133,6 +133,21 @@ class ReviewControllerTest {
     }
 
     @Test
+    fun getRatingByPlugin() {
+        `when`(reviewService.getRatingByPlugin(anyOrNull())).thenReturn(Mono.just(4.5))
+
+        testClient.get()
+            .uri("/review/rating/${UUID.randomUUID()}")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody(Double::class.java)
+            .isEqualTo(4.5)
+
+        verify(reviewService, times(1)).getRatingByPlugin(anyOrNull())
+        verifyNoMoreInteractions(reviewService)
+    }
+
+    @Test
     fun getReviewsByPoster() {
         `when`(reviewService.getReviewsByPoster(anyOrNull())).thenReturn(Flux.just(review, reviewTwo))
 

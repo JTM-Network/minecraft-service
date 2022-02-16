@@ -270,6 +270,34 @@ class ReviewServiceTest {
     }
 
     @Test
+    fun getRatingByPlugin_thenEmpty() {
+        `when`(reviewRepository.findByPluginId(anyOrNull())).thenReturn(Flux.empty())
+
+        val returned = reviewService.getRatingByPlugin(UUID.randomUUID())
+
+        verify(reviewRepository, times(1)).findByPluginId(anyOrNull())
+        verifyNoMoreInteractions(reviewRepository)
+
+        StepVerifier.create(returned)
+            .assertNext { assertThat(it).isEqualTo(0.0) }
+            .verifyComplete()
+    }
+
+    @Test
+    fun getRatingByPlugin() {
+        `when`(reviewRepository.findByPluginId(anyOrNull())).thenReturn(Flux.just(review, reviewTwo))
+
+        val returned = reviewService.getRatingByPlugin(UUID.randomUUID())
+
+        verify(reviewRepository, times(1)).findByPluginId(anyOrNull())
+        verifyNoMoreInteractions(reviewRepository)
+
+        StepVerifier.create(returned)
+            .assertNext { assertThat(it).isEqualTo(4.25) }
+            .verifyComplete()
+    }
+
+    @Test
     fun getReviewsByPoster_thenClientIdNotFound() {
         `when`(headers.getFirst(anyString())).thenReturn(null)
 

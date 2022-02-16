@@ -46,6 +46,14 @@ class ReviewService @Autowired constructor(private val reviewRepository: ReviewR
         return reviewRepository.findByPluginId(pluginId)
     }
 
+    fun getRatingByPlugin(pluginId: UUID): Mono<Double> {
+        return reviewRepository.findByPluginId(pluginId)
+            .map { it.rating }
+            .reduce { d, d2 -> d + d2 }
+            .map { total -> total / 2.0 }
+            .defaultIfEmpty(0.0)
+    }
+
     fun getReviewsByPoster(req: ServerHttpRequest): Flux<Review> {
         val id = req.headers.getFirst("CLIENT_ID") ?: return Flux.error(ClientIdNotFound())
         return reviewRepository.findByPoster(id)
