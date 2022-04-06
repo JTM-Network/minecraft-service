@@ -27,6 +27,10 @@ class PriceConverter {
         request()
     }
 
+    /**
+     * Requesting most up-to-date information about the exchange rates of all currencies. Logging
+     * if successful or not successful.
+     */
     private fun request() {
         val request = Request.Builder()
             .url("https://exchangerate-api.p.rapidapi.com/rapid/latest/gbp")
@@ -47,6 +51,13 @@ class PriceConverter {
         logger.info("Failed to fetch currencies.")
     }
 
+    /**
+     * Will convert the price using the exchange rate of the currency to GBP to get the right price.
+     *
+     * @param price         the price in GBP
+     * @param currency      the currency we are exchanging to.
+     * @return              the price in the requested currency.
+     */
     fun convert(price: Double, currency: String): Double {
         if (current == null) return price
         if (currency.equals("gbp", true)) return price
