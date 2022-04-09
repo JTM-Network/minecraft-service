@@ -9,12 +9,14 @@ import java.util.*
 data class Review(@Id val id: UUID = UUID.randomUUID(),
                   val pluginId: UUID,
                   val poster: String,
+                  val poster_username: String,
+                  val poster_picture: String,
                   var rating: Double,
                   var comment: String,
                   var updated: Long = System.currentTimeMillis(),
                   val posted: Long = System.currentTimeMillis()) {
 
-    constructor(poster: String, dto: ReviewDto): this(poster = poster, pluginId = dto.pluginId, rating = dto.rating, comment = dto.comment)
+    constructor(poster: String, poster_username: String, poster_picture: String, dto: ReviewDto): this(poster = poster, poster_username = poster_username, poster_picture = poster_picture, pluginId = dto.pluginId, rating = dto.rating, comment = dto.comment)
 
     fun updateRating(rating: Double): Review {
         this.rating = rating

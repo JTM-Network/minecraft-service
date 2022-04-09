@@ -1,10 +1,13 @@
 package com.jtm.plugin.data.service
 
+import com.google.gson.GsonBuilder
 import com.jtm.plugin.core.domain.dto.ReviewDto
 import com.jtm.plugin.core.domain.entity.Review
+import com.jtm.plugin.core.domain.exception.BasicInfoNotFound
 import com.jtm.plugin.core.domain.exception.profile.ClientIdNotFound
 import com.jtm.plugin.core.domain.exception.review.OnlyOneReview
 import com.jtm.plugin.core.domain.exception.review.ReviewNotFound
+import com.jtm.plugin.core.domain.model.BasicInfo
 import com.jtm.plugin.core.usecase.repository.ReviewRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.server.reactive.ServerHttpRequest
@@ -17,6 +20,8 @@ import kotlin.math.roundToInt
 
 @Service
 class ReviewService @Autowired constructor(private val reviewRepository: ReviewRepository) {
+
+    private val gson = GsonBuilder().create()
 
     /**
      * Allow a user to post a review for a plugin.
@@ -31,9 +36,12 @@ class ReviewService @Autowired constructor(private val reviewRepository: ReviewR
     fun addReview(req: ServerHttpRequest, dto: ReviewDto): Mono<Review> {
         val id = req.headers.getFirst("CLIENT_ID")
         if (id.isNullOrBlank()) return Mono.error { ClientIdNotFound() }
+        val info = req.headers.getFirst("BASIC_INFO")
+        if (info.isNullOrBlank()) return Mono.error { BasicInfoNotFound() }
+        val basic: BasicInfo = gson.fromJson(info, BasicInfo::class.java)
         return reviewRepository.findByPluginIdAndPoster(dto.pluginId, id)
             .flatMap<Review> { Mono.error(OnlyOneReview()) }
-            .switchIfEmpty(Mono.defer { reviewRepository.save(Review(id, dto)) })
+            .switchIfEmpty(Mono.defer { reviewRepository.save(Review(id, basic.username ?: "", basic.picture ?: "", dto)) })
     }
 
     /**
