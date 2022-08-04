@@ -23,9 +23,7 @@ class PriceConverter {
     lateinit var rapidKey: String
 
     @PostConstruct
-    fun init() {
-        request()
-    }
+    fun init() { request() }
 
     /**
      * Requesting most up-to-date information about the exchange rates of all currencies. Logging
@@ -42,13 +40,13 @@ class PriceConverter {
         val response = call.execute()
 
         if (response.isSuccessful) {
-            val body: Currencies = gson.fromJson(response.body()?.string(), Currencies::class.java)
+            val body: Currencies = gson.fromJson(response.body?.string(), Currencies::class.java)
             if (body.result.equals("success", true)) current = body
             logger.info("Successfully fetched all currencies conversions.")
             return
         }
 
-        logger.info("Failed to fetch currencies.")
+        logger.error("Failed to fetch currencies.")
     }
 
     /**

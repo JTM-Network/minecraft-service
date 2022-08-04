@@ -30,8 +30,8 @@ class ReviewControllerTest {
     @MockBean
     lateinit var reviewService: ReviewService
 
-    private val review = Review(pluginId = UUID.randomUUID(), poster = "poster", rating = 3.5, comment = "Review comment")
-    private val reviewTwo = Review(pluginId = UUID.randomUUID(), poster = "posterTwo", rating = 5.0, comment = "Review comment Two")
+    private val review = Review(pluginId = UUID.randomUUID(), poster = "poster", rating = 3.5, comment = "Review comment", poster_username = "", poster_picture = "", posted = System.currentTimeMillis())
+    private val reviewTwo = Review(pluginId = UUID.randomUUID(), poster = "posterTwo", rating = 5.0, comment = "Review comment Two", poster_username = "", poster_picture = "", posted = System.currentTimeMillis())
     private val dto = ReviewDto(pluginId = UUID.randomUUID(), rating = 4.5, comment = "Test comment")
 
     @Test

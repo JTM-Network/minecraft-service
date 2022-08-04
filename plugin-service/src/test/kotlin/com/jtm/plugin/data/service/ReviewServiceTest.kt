@@ -1,10 +1,12 @@
 package com.jtm.plugin.data.service
 
+import com.google.gson.GsonBuilder
 import com.jtm.plugin.core.domain.dto.ReviewDto
 import com.jtm.plugin.core.domain.entity.Review
 import com.jtm.plugin.core.domain.exception.profile.ClientIdNotFound
 import com.jtm.plugin.core.domain.exception.review.OnlyOneReview
 import com.jtm.plugin.core.domain.exception.review.ReviewNotFound
+import com.jtm.plugin.core.domain.model.BasicInfo
 import com.jtm.plugin.core.usecase.repository.ReviewRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -27,17 +29,19 @@ class ReviewServiceTest {
 
     private val reviewRepository: ReviewRepository = mock()
     private val reviewService = ReviewService(reviewRepository)
-    private val review = Review(pluginId = UUID.randomUUID(), poster = "poster", rating = 3.5, comment = "Review comment")
-    private val reviewTwo = Review(pluginId = UUID.randomUUID(), poster = "posterTwo", rating = 5.0, comment = "Review comment Two")
+    private val review = Review(pluginId = UUID.randomUUID(), poster = "poster", rating = 3.5, comment = "Review comment", poster_username = "", poster_picture = "", posted = System.currentTimeMillis())
+    private val reviewTwo = Review(pluginId = UUID.randomUUID(), poster = "posterTwo", rating = 5.0, comment = "Review comment Two", poster_username = "", poster_picture = "", posted = System.currentTimeMillis())
     private val dto = ReviewDto(pluginId = UUID.randomUUID(), rating = 4.5, comment = "Test comment")
 
     private val req: ServerHttpRequest = mock()
     private val headers: HttpHeaders = mock()
+    private val gson = GsonBuilder().setPrettyPrinting().create()
 
     @Before
     fun setup() {
         `when`(req.headers).thenReturn(headers)
-        `when`(headers.getFirst(anyString())).thenReturn("CLIENT_ID")
+        `when`(headers.getFirst("CLIENT_ID")).thenReturn("CLIENT_ID")
+        `when`(headers.getFirst("BASIC_INFO")).thenReturn(gson.toJson(BasicInfo()))
     }
 
     @Test
@@ -63,10 +67,10 @@ class ReviewServiceTest {
 
         val returned = reviewService.addReview(req, dto)
 
-        verify(req, times(1)).headers
+        verify(req, times(2)).headers
         verifyNoMoreInteractions(req)
 
-        verify(headers, times(1)).getFirst(anyString())
+        verify(headers, times(2)).getFirst(anyString())
         verifyNoMoreInteractions(headers)
 
         verify(reviewRepository, times(1)).findByPluginIdAndPoster(anyOrNull(), anyString())
@@ -84,10 +88,10 @@ class ReviewServiceTest {
 
         val returned = reviewService.addReview(req, dto)
 
-        verify(req, times(1)).headers
+        verify(req, times(2)).headers
         verifyNoMoreInteractions(req)
 
-        verify(headers, times(1)).getFirst(anyString())
+        verify(headers, times(2)).getFirst(anyString())
         verifyNoMoreInteractions(headers)
 
         verify(reviewRepository, times(1)).findByPluginIdAndPoster(anyOrNull(), anyString())
