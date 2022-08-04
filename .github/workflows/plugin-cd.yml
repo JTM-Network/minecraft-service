@@ -1,14 +1,16 @@
 name: Plugin Service CD
 
 on:
-  push:
+  pull_request:
     branches: [ 'main' ]
+    types:
+      - closed
     paths:
       - plugin-service/**
     
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GKE_CLUSTER: main-cluster
+  GKE_CLUSTER: main-1
   GKE_ZONE: europe-west1-b
   IMAGE: mc-plugin
   NAME: mc-plugin
@@ -16,6 +18,7 @@ env:
 
 jobs:
   docker-build-publish:
+    if: github.event.pull_request.merged
     runs-on: ubuntu-latest
     
     steps:
