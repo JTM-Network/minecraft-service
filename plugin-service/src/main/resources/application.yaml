@@ -13,3 +13,6 @@ spring:
       FAIL_ON_EMPTY_BEANS: false
     profiles:
       active: ${PROFILE}
+
+rapidapi:
+  key: ${RAPID_KEY}

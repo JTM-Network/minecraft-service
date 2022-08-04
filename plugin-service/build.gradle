@@ -2,6 +2,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.6.10'
     id 'org.springframework.boot' version '2.4.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "com.palantir.docker" version "0.28.0"
 }
 
 group 'com.jtm.plugin'
@@ -26,9 +27,11 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation 'org.springframework.cloud:spring-cloud-starter-kubernetes-client'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-kubernetes-client'
+
     implementation 'com.google.guava:guava:28.1-jre'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'io.sentry:sentry:5.1.0'
@@ -37,6 +40,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3'
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'commons-io:commons-io:2.8.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
 
     runtimeOnly 'org.jetbrains.kotlin:kotlin-reflect:1.5.0'
     compileOnly 'org.projectlombok:lombok:1.18.8'
@@ -49,4 +53,12 @@ dependencies {
     testImplementation "org.mockito.kotlin:mockito-kotlin:3.2.0"
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+}
+
+docker {
+    name "drennydev/${project.name}:${project.version}"
+    tags "latest"
+    tag 'DockerHub', "drennydev/${project.name}:${project.version}"
+    files tasks.testClasses.outputs, tasks.bootJar.outputs, "build/libs/${bootJar.archiveFileName.get()}"
+    buildArgs([JAR_FILE: bootJar.archiveFileName.get()])
 }

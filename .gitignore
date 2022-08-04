@@ -27,10 +27,12 @@ hs_err_pid*
 .idea
 minecraft-service/.gradle
 minecraft-service/build
+minecraft-service/bin
 minecraft-service/src/main/resources/application-dev.yaml
 
 plugin-service/.gradle
 plugin-service/build
+plugin-service/bin
 plugin-service/src/main/resources/application-dev.yaml
 
 profile-service/.gradle
@@ -39,4 +41,5 @@ profile-service/src/main/resources/application-dev.yaml
 
 version-service/.gradle
 version-service/build
+version-service/bin
 version-service/src/main/resources/application-dev.yaml
