@@ -12,8 +12,8 @@ env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GKE_CLUSTER: main-1
   GKE_ZONE: europe-west1-b
-  IMAGE: mc-plugin
-  NAME: mc-plugin
+  IMAGE: plugin
+  NAME: plugin
   FOLDER: plugin-service
 
 jobs:
