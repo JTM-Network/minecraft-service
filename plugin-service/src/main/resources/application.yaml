@@ -5,7 +5,7 @@ server:
 
 spring:
   application:
-    name: mc-plugin
+    name: plugin
   main:
     allow-bean-definition-overriding: true
   jackson:
