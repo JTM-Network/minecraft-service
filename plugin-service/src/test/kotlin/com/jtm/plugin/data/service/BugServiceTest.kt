@@ -42,7 +42,7 @@ class BugServiceTest {
     }
 
     @Test
-    fun addBug_thenClientIdNotFound() {
+    fun addBug_shouldThrowClientIdNotFound() {
         `when`(headers.getFirst(anyString())).thenReturn(null)
 
         val returned = bugService.addBug(req, dto)
@@ -59,7 +59,7 @@ class BugServiceTest {
     }
 
     @Test
-    fun addBug_thenNotAllowedToPost() {
+    fun addBug_shouldThrowNotAllowedToPost() {
         `when`(bugRepository.findByPluginIdAndPoster(anyOrNull(), anyString())).thenReturn(Flux.just(bug, bugTwo))
 
         val returned = bugService.addBug(req, dto)
@@ -79,7 +79,7 @@ class BugServiceTest {
     }
 
     @Test
-    fun addBug() {
+    fun addBug_shouldReturnCreatedBug() {
         `when`(mockBug.posted).thenReturn(System.currentTimeMillis())
         `when`(mockBug.canPost()).thenReturn(true)
         `when`(bugRepository.findByPluginIdAndPoster(anyOrNull(), anyString())).thenReturn(Flux.just(mockBug))
@@ -107,7 +107,7 @@ class BugServiceTest {
     }
 
     @Test
-    fun getBug_thenNotFound() {
+    fun getBug_shouldThrowNotFound() {
         `when`(bugRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
 
         val returned = bugService.getBug(UUID.randomUUID())
@@ -121,7 +121,7 @@ class BugServiceTest {
     }
 
     @Test
-    fun getBug() {
+    fun getBug_shouldReturnBug() {
         `when`(bugRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(bug))
 
         val returned = bugService.getBug(UUID.randomUUID())
@@ -140,7 +140,7 @@ class BugServiceTest {
     }
 
     @Test
-    fun getBugsByPluginId() {
+    fun getBugsByPluginId_shouldReturnBugs() {
         `when`(bugRepository.findByPluginId(anyOrNull())).thenReturn(Flux.just(bug, bugTwo))
 
         val returned = bugService.getBugsByPluginId(UUID.randomUUID())
@@ -165,7 +165,7 @@ class BugServiceTest {
     }
 
     @Test
-    fun getBugsByPoster_thenClientIdNotFound() {
+    fun getBugsByPoster_shouldThrowClientIdNotFound() {
         `when`(headers.getFirst(anyString())).thenReturn(null)
 
         val returned = bugService.getBugsByPoster(req)
@@ -182,7 +182,7 @@ class BugServiceTest {
     }
 
     @Test
-    fun getBugsByPoster() {
+    fun getBugsByPoster_shouldReturnBugs() {
         `when`(bugRepository.findByPoster(anyString())).thenReturn(Flux.just(bug, bugTwo))
 
         val returned = bugService.getBugsByPoster(req)
@@ -213,7 +213,7 @@ class BugServiceTest {
     }
 
     @Test
-    fun getBugsByPosterId() {
+    fun getBugsByPosterId_shouldReturnBugs() {
         `when`(bugRepository.findByPoster(anyString())).thenReturn(Flux.just(bug, bugTwo))
 
         val returned = bugService.getBugsByPosterId("test")
@@ -238,7 +238,7 @@ class BugServiceTest {
     }
 
     @Test
-    fun getBugs() {
+    fun getBugs_shouldReturnBugs() {
         `when`(bugRepository.findAll()).thenReturn(Flux.just(bug, bugTwo))
 
         val returned = bugService.getBugs()
@@ -263,7 +263,7 @@ class BugServiceTest {
     }
 
     @Test
-    fun removeBug_thenNotFound() {
+    fun removeBug_shouldThrowNotFound() {
         `when`(bugRepository.findById(any(UUID::class.java))).thenReturn(Mono.empty())
 
         val returned = bugService.removeBug(UUID.randomUUID())
@@ -277,7 +277,7 @@ class BugServiceTest {
     }
 
     @Test
-    fun removeBug() {
+    fun removeBug_shouldReturnDeletedBug() {
         `when`(bugRepository.findById(any(UUID::class.java))).thenReturn(Mono.just(bug))
         `when`(bugRepository.delete(anyOrNull())).thenReturn(Mono.empty())
 
