@@ -9,7 +9,6 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @RestController
-@RequestMapping("/version")
 class VersionController @Autowired constructor(private val versionService: VersionService) {
 
     @GetMapping("/{id}")
