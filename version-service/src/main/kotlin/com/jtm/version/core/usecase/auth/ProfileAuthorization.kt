@@ -17,7 +17,7 @@ class ProfileAuthorization(@Value("\${host.profile}") var profileHost: String) {
 
     fun authorize(clientId: String, plugin: UUID): Mono<Boolean> {
         return client.post()
-            .uri("/authorize/check")
+            .uri("/authorize/plugin")
             .bodyValue(AuthDto(clientId, plugin))
             .retrieve()
             .onStatus({ code -> code.is4xxClientError }, { Mono.error(ProfileUnauthorized()) })
