@@ -1,5 +1,5 @@
 server:
-  port: 9675
+  port: 8223
   error:
     include-message: Always
 
@@ -11,8 +11,8 @@ spring:
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
-    profiles:
-      active: ${PROFILE}
+  profiles:
+    active: ${PROFILE}
 
 storage:
   disk: /versions

@@ -5,8 +5,9 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 
+
 @Document("versions")
-data class Version(@Id val id: UUID = UUID.randomUUID(), val pluginId: UUID, val pluginName: String, var version: String, var changelog: String, var downloads: Int = 0, var updatedTime: Long = System.currentTimeMillis(), val addedTime: Long = System.currentTimeMillis()) {
+data class Version(@Id val id: UUID = UUID.randomUUID(), val pluginId: UUID, val pluginName: String, var version: String, var changelog: String, var downloads: Int = 0, var updatedTime: Long = System.currentTimeMillis(), val addedTime: Long = System.currentTimeMillis()): Comparable<Version> {
 
     constructor(dto: VersionDto): this(pluginId = dto.pluginId, pluginName = dto.name, version = dto.version, changelog = dto.changelog)
 
@@ -25,5 +26,19 @@ data class Version(@Id val id: UUID = UUID.randomUUID(), val pluginId: UUID, val
     fun addDownload(): Version {
         this.downloads++
         return this
+    }
+
+    override fun compareTo(other: Version): Int {
+        val thisParts: List<String> = version.split("\\.")
+        val thatParts: List<String> = other.version.split("\\.")
+        val length = thisParts.size.coerceAtLeast(thatParts.size)
+        for (i in 0 until length) {
+            val thisPart = if (i < thisParts.size) thisParts[i].toInt() else 0
+            val thatPart = if (i < thatParts.size) thatParts[i].toInt() else 0
+            if (thisPart < thatPart) return -1
+            if (thisPart > thatPart) return 1
+        }
+
+        return 0
     }
 }

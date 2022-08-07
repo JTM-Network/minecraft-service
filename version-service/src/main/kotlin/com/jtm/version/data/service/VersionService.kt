@@ -41,6 +41,14 @@ class VersionService @Autowired constructor(private val versionRepository: Versi
         return versionRepository.findByPluginId(id)
     }
 
+    fun getLatestVersion(id: UUID): Mono<Version> {
+        return versionRepository.findByPluginId(id)
+            .switchIfEmpty(Mono.defer { Mono.error(VersionNotFound()) })
+            .sort { version, version2 -> version.compareTo(version2) }
+            .take(1)
+            .next()
+    }
+
     /**
      * This will get all versions found in the database.
      *

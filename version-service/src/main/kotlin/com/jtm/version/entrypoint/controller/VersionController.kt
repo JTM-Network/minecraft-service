@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @RestController
-@RequestMapping
+@RequestMapping("/version")
 class VersionController @Autowired constructor(private val versionService: VersionService) {
 
     @GetMapping("/{id}")
@@ -22,6 +22,9 @@ class VersionController @Autowired constructor(private val versionService: Versi
 
     @GetMapping("/plugin/{id}")
     fun getVersionByPluginId(@PathVariable id: UUID): Flux<Version> = versionService.getVersionsByPlugin(id)
+
+    @GetMapping("/plugin/{id}/latest")
+    fun getLatestVersion(@PathVariable id: UUID): Mono<Version> = versionService.getLatestVersion(id)
 
     @GetMapping("/all")
     fun getVersions(): Flux<Version> = versionService.getVersions()

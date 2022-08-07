@@ -5,4 +5,4 @@ spring:
       database: ${MONGO_DATABASE}
 
 host:
-  profile: ${PROFILE_HOST}
+  profile: ${PROFILE_HOST}:${PROFILE_PORT}
