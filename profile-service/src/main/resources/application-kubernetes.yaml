@@ -7,6 +7,3 @@ spring:
 stripe:
   pb-key: ${STRIPE_PB_KEY}
   secret-key: ${STRIPE_SECRET_KEY}
-
-kafka:
-  bootstrapAddress: ${KAFKA_BOOTSTRAP_ADDRESS}
