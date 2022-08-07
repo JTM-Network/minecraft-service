@@ -20,7 +20,7 @@ class UploadService @Autowired constructor(private val versionRepository: Versio
             .switchIfEmpty(Mono.defer {
                 if (dto.file == null) return@defer Mono.error { FileNotFound() }
                 versionRepository.save(Version(dto))
-                    .flatMap { version -> systemHandler.save("/${dto.pluginId}", dto.file!!, dto.name)
+                    .flatMap { version -> systemHandler.save("/${dto.pluginId}", dto.file, dto.name)
                         .thenReturn(version)
                     }
             })
