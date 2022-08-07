@@ -1,0 +1,49 @@
+name: Version Service CI
+
+on:
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - version-service/**
+      
+env:
+  FOLDER: version-service
+  
+jobs:
+  build:
+    name: Gradle build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: JDK 16 Set up
+      uses: actions/setup-java@v1
+      with:
+        java-version: 16
+    
+    - name: Grant execute permissions for gradlew
+      run: |
+        cd $FOLDER
+        chmod +x gradlew
+    
+    - name: Cache gradle packages
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+    
+    - name: Gradle build
+      run: |
+        cd $FOLDER
+        ./gradlew build
+        
+    - name: Cleanup Gradle cache
+      run: |
+        rm -f ~/.gradle/caches/modules-2/modules-2.lock
+        rm -f ~/.gradle/caches/modules-2/gc.properties
