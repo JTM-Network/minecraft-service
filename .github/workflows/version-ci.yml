@@ -1,24 +1,31 @@
-name: CI
+name: Version Service CI
 
 on:
   push:
-    branches: [ 'main' ]
-
+    branches-ignore:
+      - main
+    paths:
+      - version-service/**
+      
+env:
+  FOLDER: version-service
+  
 jobs:
   build:
-    if: github.ref == 'refs/heads/main'
+    name: Gradle build
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v2
     
-    - name: JDK 1.8 Set up
+    - name: JDK 16 Set up
       uses: actions/setup-java@v1
       with:
-        java-version: 1.8
+        java-version: 16
     
     - name: Grant execute permissions for gradlew
-      run: |-
+      run: |
+        cd $FOLDER
         chmod +x gradlew
     
     - name: Cache gradle packages
@@ -32,7 +39,8 @@ jobs:
           ${{ runner.os }}-gradle-
     
     - name: Gradle build
-      run: |-
+      run: |
+        cd $FOLDER
         ./gradlew build
         
     - name: Cleanup Gradle cache
