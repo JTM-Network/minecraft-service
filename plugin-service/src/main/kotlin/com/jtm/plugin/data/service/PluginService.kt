@@ -57,6 +57,19 @@ class PluginService @Autowired constructor(private val pluginRepository: PluginR
     }
 
     /**
+     * THis will find the plugin by the name.
+     *
+     * @param name          the name of the plugin
+     * @return              the plugin found
+     * @see                 Plugin
+     * @throws              PluginNotFound if plugin is not found by the name
+     */
+    fun getPluginByName(name: String): Mono<Plugin> {
+        return pluginRepository.findByName(name)
+            .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
+    }
+
+    /**
      * This will find all the plugins stored.
      *
      * @param currency      the currency it will use as the price converted from GBP
