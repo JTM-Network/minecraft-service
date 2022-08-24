@@ -24,6 +24,9 @@ class PluginController @Autowired constructor(private val pluginService: PluginS
     @GetMapping("/all")
     fun getPlugins(@RequestParam("currency", required = false) currency: String?): Flux<Plugin> = pluginService.getPlugins(currency)
 
+    @GetMapping("/name/{name}")
+    fun getPluginByName(@PathVariable name: String): Mono<Plugin> = pluginService.getPluginByName(name)
+
     @GetMapping("/paginated")
     fun getPluginsPaginated(@RequestParam(name = "currency", required = false) currency: String?,
                             @RequestParam(name = "page", defaultValue = "1") page: Int,

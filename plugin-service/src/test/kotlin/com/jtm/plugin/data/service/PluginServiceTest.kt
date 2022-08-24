@@ -115,6 +115,40 @@ class PluginServiceTest {
     }
 
     @Test
+    fun getPluginByName_thenNotFound() {
+        `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.empty())
+
+        val returned = pluginService.getPluginByName("test")
+
+        verify(pluginRepository, times(1)).findByName(anyString())
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .expectError(PluginNotFound::class.java)
+            .verify()
+    }
+
+    @Test
+    fun getPluginByName() {
+        `when`(pluginRepository.findByName(anyString())).thenReturn(Mono.just(plugin))
+
+        val returned = pluginService.getPluginByName("test")
+
+        verify(pluginRepository, times(1)).findByName(anyString())
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.name).isEqualTo("Test")
+                assertThat(it.basic_description).isEqualTo("Basic")
+                assertThat(it.description).isEqualTo("Desc")
+                assertThat(it.version).isNull()
+                assertThat(it.active).isTrue()
+            }
+            .verifyComplete()
+    }
+
+    @Test
     fun getPlugins() {
         `when`(pluginRepository.findAll()).thenReturn(Flux.just(plugin, Plugin(name = "Test #2", basic_description = "Basic Desc #2", description = "Desc #2", version = "0.1", active = true)))
 

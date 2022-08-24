@@ -72,6 +72,23 @@ class PluginControllerTest {
     }
 
     @Test
+    fun getPluginByName() {
+        `when`(pluginService.getPluginByName(anyString())).thenReturn(Mono.just(plugin))
+
+        testClient.get()
+            .uri("/name/test")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$.name").isEqualTo("Test")
+            .jsonPath("$.basic_description").isEqualTo("Basic")
+            .jsonPath("$.description").isEqualTo("Desc")
+
+        verify(pluginService, times(1)).getPluginByName(anyString())
+        verifyNoMoreInteractions(pluginService)
+    }
+
+    @Test
     fun getPlugins() {
         `when`(pluginService.getPlugins(anyOrNull())).thenReturn(Flux.just(plugin, pluginTwo))
 
