@@ -36,7 +36,7 @@ class VersionControllerTest {
         `when`(versionService.getVersion(anyOrNull())).thenReturn(Mono.just(version))
 
         testClient.get()
-            .uri("/${UUID.randomUUID()}")
+            .uri("/version/${UUID.randomUUID()}")
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -52,7 +52,7 @@ class VersionControllerTest {
         `when`(versionService.getPluginVersion(anyOrNull(), anyString())).thenReturn(Mono.just(version))
 
         testClient.get()
-            .uri("/plugin/${UUID.randomUUID()}/1.0")
+            .uri("/version/plugin/${UUID.randomUUID()}/1.0")
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -68,7 +68,7 @@ class VersionControllerTest {
         `when`(versionService.getVersionsByPlugin(anyOrNull())).thenReturn(Flux.just(version))
 
         testClient.get()
-            .uri("/plugin/${UUID.randomUUID()}")
+            .uri("/version/plugin/${UUID.randomUUID()}")
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -84,7 +84,7 @@ class VersionControllerTest {
         `when`(versionService.getVersions()).thenReturn(Flux.just(version))
 
         testClient.get()
-            .uri("/all")
+            .uri("/version/all")
             .exchange()
             .expectStatus().isOk
             .expectBody()
@@ -100,7 +100,7 @@ class VersionControllerTest {
         `when`(versionService.deleteVersion(anyOrNull())).thenReturn(Mono.just(version))
 
         testClient.delete()
-            .uri("/${UUID.randomUUID()}")
+            .uri("/version/${UUID.randomUUID()}")
             .exchange()
             .expectStatus().isOk
             .expectBody()
