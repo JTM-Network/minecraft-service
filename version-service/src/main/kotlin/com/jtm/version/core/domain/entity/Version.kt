@@ -1,6 +1,8 @@
 package com.jtm.version.core.domain.entity
 
 import com.jtm.version.core.domain.dto.VersionDto
+import org.apache.maven.artifact.DefaultArtifact
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
@@ -28,17 +30,23 @@ data class Version(@Id val id: UUID = UUID.randomUUID(), val pluginId: UUID, val
         return this
     }
 
-    override fun compareTo(other: Version): Int {
-        val thisParts: List<String> = version.split("\\.")
-        val thatParts: List<String> = other.version.split("\\.")
-        val length = thisParts.size.coerceAtLeast(thatParts.size)
-        for (i in 0 until length) {
-            val thisPart = if (i < thisParts.size) thisParts[i].toInt() else 0
-            val thatPart = if (i < thatParts.size) thatParts[i].toInt() else 0
-            if (thisPart < thatPart) return -1
-            if (thisPart > thatPart) return 1
-        }
+//    override fun compareTo(other: Version): Int {
+//        val thisParts: List<String> = version.split("\\.")
+//        val thatParts: List<String> = other.version.split("\\.")
+//        val length = thisParts.size.coerceAtLeast(thatParts.size)
+//        for (i in 0 until length) {
+//            val thisPart = if (i < thisParts.size) thisParts[i].toInt() else 0
+//            val thatPart = if (i < thatParts.size) thatParts[i].toInt() else 0
+//            if (thisPart < thatPart) return -1
+//            if (thisPart > thatPart) return 1
+//        }
+//
+//        return 0
+//    }
 
-        return 0
+    override fun compareTo(that: Version): Int {
+        val current = DefaultArtifactVersion(version)
+        val other = DefaultArtifactVersion(that.version)
+        return current.compareTo(other)
     }
 }
