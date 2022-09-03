@@ -110,6 +110,25 @@ class VersionServiceTest {
     }
 
     @Test
+    fun getLatestVersion() {
+        val versionTwo = Version(pluginId = UUID.randomUUID(), pluginName = "test", version = "1.1", changelog = "Changelog")
+        val versionThree = Version(pluginId = UUID.randomUUID(), pluginName = "test", version = "1.2", changelog = "Changelog")
+
+        `when`(versionRepository.findByPluginId(anyOrNull())).thenReturn(Flux.just(version, versionTwo, versionThree))
+
+        val returned = versionService.getLatestVersion(UUID.randomUUID())
+
+        verify(versionRepository, times(1)).findByPluginId(anyOrNull())
+        verifyNoMoreInteractions(versionRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.version).isEqualTo("1.2")
+            }
+            .verifyComplete()
+    }
+
+    @Test
     fun getVersions() {
         `when`(versionRepository.findAll()).thenReturn(Flux.just(version))
 

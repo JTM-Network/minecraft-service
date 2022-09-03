@@ -1,7 +1,6 @@
 package com.jtm.version.core.domain.entity
 
 import com.jtm.version.core.domain.dto.VersionDto
-import org.apache.maven.artifact.DefaultArtifact
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -44,9 +43,9 @@ data class Version(@Id val id: UUID = UUID.randomUUID(), val pluginId: UUID, val
 //        return 0
 //    }
 
-    override fun compareTo(that: Version): Int {
+    override fun compareTo(other: Version): Int {
         val current = DefaultArtifactVersion(version)
-        val other = DefaultArtifactVersion(that.version)
-        return current.compareTo(other)
+        val that = DefaultArtifactVersion(other.version)
+        return current.compareTo(that)
     }
 }
