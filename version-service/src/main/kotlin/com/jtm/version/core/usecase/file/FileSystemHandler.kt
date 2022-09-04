@@ -33,6 +33,7 @@ class FileSystemHandler {
      */
     fun save(path: String, filePart: FilePart, name: String): Mono<File> {
         val folder = File(disk + path)
+        if (!folder.parentFile.exists() && folder.parentFile.mkdirs()) logger.info("Created parent directories: $disk")
         if (!folder.exists() && folder.mkdirs()) logger.info("Created directories: $path")
         val file = File(disk + path, "$name.jar")
         return filePart.transferTo(file).thenReturn(file)
