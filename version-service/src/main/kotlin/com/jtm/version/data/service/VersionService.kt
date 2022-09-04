@@ -39,6 +39,7 @@ class VersionService @Autowired constructor(private val versionRepository: Versi
      */
     fun getVersionsByPlugin(id: UUID): Flux<Version> {
         return versionRepository.findByPluginId(id)
+            .sort { version, version2 -> version2.compareTo(version)  }
     }
 
     fun getLatestVersion(id: UUID): Mono<Version> {
