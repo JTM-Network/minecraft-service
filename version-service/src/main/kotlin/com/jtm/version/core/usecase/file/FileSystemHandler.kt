@@ -39,7 +39,7 @@ class FileSystemHandler {
     }
 
     fun updateFileName(path: String, name: String): Mono<Void> {
-        val source = Paths.get(path)
+        val source = Paths.get(disk + path)
         Files.move(source, source.resolveSibling(name))
         return Mono.empty()
     }
