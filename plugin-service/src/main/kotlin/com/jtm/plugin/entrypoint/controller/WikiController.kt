@@ -23,8 +23,8 @@ class WikiController @Autowired constructor(private val wikiService: WikiService
         return wikiService.updateTopic(id, dto)
     }
 
-    @GetMapping("/{id}/{name}")
-    fun getTopic(@PathVariable id: UUID, @PathVariable name: String): Mono<WikiTopic> {
+    @GetMapping("/{id}")
+    fun getTopic(@PathVariable id: UUID, @RequestParam("name") name: String): Mono<WikiTopic> {
         return wikiService.getTopic(id, name)
     }
 
