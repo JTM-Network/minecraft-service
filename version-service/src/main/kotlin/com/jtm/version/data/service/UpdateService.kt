@@ -16,10 +16,9 @@ class UpdateService @Autowired constructor(private val versionRepository: Versio
     fun updateVersion(id: UUID, dto: UpdateDto): Mono<Version> {
         return versionRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(VersionNotFound()) })
-            .flatMap { versionRepository.save(it.updateVersion(dto.version))
-                .flatMap { version -> fileHandler.updateFileName("/${version.pluginId}/${version.pluginName}-${version.version}.jar", "${version.pluginName}-${version.version}.jar")
-                    .thenReturn(version)
-                }
+            .flatMap { version -> fileHandler.updateFileName("/${version.pluginId}/${version.pluginName}-${version.version}.jar", "${version.pluginName}-${dto.version}.jar")
+                .thenReturn(version)
+                .flatMap { versionRepository.save(it.updateVersion(dto.version)) }
             }
     }
 
