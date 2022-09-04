@@ -77,7 +77,7 @@ class WikiControllerTest {
         `when`(wikiService.getTopic(anyOrNull(), anyString())).thenReturn(Mono.just(topic))
 
         testClient.get()
-            .uri("/wiki/${UUID.randomUUID()}/test")
+            .uri("/wiki/${UUID.randomUUID()}?name=test")
             .exchange()
             .expectStatus().isOk
             .expectBody()
