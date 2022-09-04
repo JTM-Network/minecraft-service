@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
 @Component
 class FileSystemHandler {
@@ -34,6 +36,12 @@ class FileSystemHandler {
         if (!folder.exists() && folder.mkdirs()) logger.info("Created directories: $path")
         val file = File(disk + path, "$name.jar")
         return filePart.transferTo(file).thenReturn(file)
+    }
+
+    fun updateFileName(path: String, name: String): Mono<Void> {
+        val source = Paths.get(path)
+        Files.move(source, source.resolveSibling(name))
+        return Mono.empty()
     }
 
     /**
