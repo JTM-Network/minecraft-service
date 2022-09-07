@@ -3,6 +3,7 @@ package com.jtm.version.core.usecase.auth
 import com.jtm.version.core.domain.dto.AuthDto
 import com.jtm.version.core.domain.exceptions.authentication.FailedProcessingRequest
 import com.jtm.version.core.domain.exceptions.authentication.ProfileUnauthorized
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
@@ -11,9 +12,9 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
-class ProfileAuthorization(@Value("\${profile.host}") var profileHost: String, @Value("\${profile.port:8222}") var profilePort: Int) {
+class ProfileAuthorization @Autowired constructor(@Value("\${profile.host}") host: String, @Value("\${profile.port}") port: Int) {
 
-    private val client = WebClient.create("$profileHost:$profilePort")
+    private val client = WebClient.create("${host}:${port}")
 
     fun authorize(clientId: String, plugin: UUID): Mono<Boolean> {
         return client.post()
