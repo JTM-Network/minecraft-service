@@ -7,6 +7,7 @@ import com.jtm.plugin.core.domain.exception.plugin.PluginFound
 import com.jtm.plugin.core.domain.exception.plugin.PluginInformationNull
 import com.jtm.plugin.core.domain.exception.plugin.PluginNotFound
 import com.jtm.plugin.core.usecase.currency.PriceConverter
+import com.jtm.plugin.core.usecase.provider.AccessProvider
 import com.jtm.plugin.core.usecase.repository.PluginRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -32,7 +33,8 @@ class PluginServiceTest {
 
     private val pluginRepository: PluginRepository = mock()
     private val converter: PriceConverter = mock()
-    private val pluginService = PluginService(pluginRepository, converter)
+    private val provider: AccessProvider = mock()
+    private val pluginService = PluginService(pluginRepository, converter, provider)
     private val plugin = Plugin(name = "Test", basic_description = "Basic", description = "Desc", active = true)
     private val pluginTwo = Plugin(name = "plugin #3", basic_description = "Basic description #3", description = "description #3", active = true)
     private val dto = PluginDto(name = "Test #1", basic_description = "Basic description", description = "Description", version = "0.1", active = true, price = 10.50)

@@ -10,3 +10,7 @@ redis:
 
 rapidapi:
   key: ${RAPID_KEY}
+
+profile:
+  host: ${PROFILE_HOST}
+  port: ${PROFILE_PORT}
