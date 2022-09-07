@@ -9,6 +9,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.slf4j.LoggerFactory
 import org.springframework.test.context.junit4.SpringRunner
 import reactor.test.StepVerifier
 import java.util.*
@@ -18,6 +19,7 @@ class ProfileAuthorizationTest {
 
     private val mockWebServer = MockWebServer()
     private lateinit var profileAuthorization: ProfileAuthorization
+    private val logger = LoggerFactory.getLogger(ProfileAuthorizationTest::class.java)
 
     @Before
     fun setup() {
@@ -30,7 +32,7 @@ class ProfileAuthorizationTest {
     @After
     fun tearDown() {
         mockWebServer.shutdown()
-        println("Shutdown ran.")
+        logger.info("Shutdown ran.")
     }
 
     @Test

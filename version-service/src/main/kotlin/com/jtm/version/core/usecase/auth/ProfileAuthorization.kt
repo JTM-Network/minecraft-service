@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
-class ProfileAuthorization(@Value("\${profile.host}") var profileHost: String, @Value("\${profile.port}") var profilePort: Int) {
+class ProfileAuthorization(@Value("\${profile.host}") var profileHost: String, @Value("\${profile.port:8222}") var profilePort: Int) {
 
     private val client = WebClient.create("$profileHost:$profilePort")
 
