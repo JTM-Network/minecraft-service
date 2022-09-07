@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
-class ProfileAuthorization @Autowired constructor(@Value("\${profile.host}") host: String, @Value("\${profile.port}") port: Int) {
+class ProfileAuthorization @Autowired constructor(@Value("\${profile.host}") host: String, @Value("\${profile.port}") port: Int = 8222) {
 
     private val client = WebClient.create("${host}:${port}")
 
