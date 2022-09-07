@@ -7,6 +7,7 @@ import com.jtm.plugin.data.service.PluginService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -17,6 +18,11 @@ class PluginController @Autowired constructor(private val pluginService: PluginS
 
     @PostMapping
     fun postPlugin(@RequestBody dto: PluginDto): Mono<Plugin> = pluginService.insertPlugin(dto)
+
+    @GetMapping("/{id}/free")
+    fun getFreeAccess(request: ServerHttpRequest, @PathVariable id: UUID): Mono<Void> {
+        return pluginService.addFreeAccess(request, id)
+    }
 
     @GetMapping("/{id}")
     fun getPlugin(@PathVariable id: UUID, @RequestParam("currency", required = false) currency: String?): Mono<Plugin> = pluginService.getPlugin(id, currency)

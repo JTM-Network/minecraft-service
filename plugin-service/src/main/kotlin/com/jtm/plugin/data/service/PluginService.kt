@@ -2,15 +2,16 @@ package com.jtm.plugin.data.service
 
 import com.jtm.plugin.core.domain.dto.PluginDto
 import com.jtm.plugin.core.domain.entity.Plugin
-import com.jtm.plugin.core.domain.exception.plugin.FailedUpdatePlugin
-import com.jtm.plugin.core.domain.exception.plugin.PluginFound
-import com.jtm.plugin.core.domain.exception.plugin.PluginInformationNull
-import com.jtm.plugin.core.domain.exception.plugin.PluginNotFound
+import com.jtm.plugin.core.domain.exception.plugin.*
+import com.jtm.plugin.core.domain.exception.profile.ClientIdNotFound
+import com.jtm.plugin.core.domain.exception.profile.NoAccess
 import com.jtm.plugin.core.domain.model.PageSupport
 import com.jtm.plugin.core.usecase.currency.PriceConverter
+import com.jtm.plugin.core.usecase.provider.AccessProvider
 import com.jtm.plugin.core.usecase.repository.PluginRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
+import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -18,7 +19,7 @@ import java.util.*
 import java.util.stream.Collectors
 
 @Service
-class PluginService @Autowired constructor(private val pluginRepository: PluginRepository, private val priceConverter: PriceConverter) {
+class PluginService @Autowired constructor(private val pluginRepository: PluginRepository, private val priceConverter: PriceConverter, private val provider: AccessProvider) {
 
     /**
      * This will insert a new plugin, if name is not found it will be successful.
@@ -36,6 +37,21 @@ class PluginService @Autowired constructor(private val pluginRepository: PluginR
         return pluginRepository.findByName(name)
             .flatMap<Plugin> { Mono.error(PluginFound()) }
             .switchIfEmpty(Mono.defer { pluginRepository.save(Plugin(dto)) })
+    }
+
+    fun addFreeAccess(request: ServerHttpRequest, id: UUID): Mono<Void> {
+        val clientId = request.headers.getFirst("CLIENT_ID")
+        if (clientId.isNullOrBlank()) return Mono.error { ClientIdNotFound() }
+        return pluginRepository.findById(id)
+            .switchIfEmpty(Mono.defer { Mono.error(PluginNotFound()) })
+            .flatMap { plugin ->
+                if (plugin.premium) return@flatMap Mono.error(NeedFreePlugin())
+                return@flatMap provider.checkAccess(clientId, plugin.id)
+                    .onErrorResume {
+                        if (it.cause is NoAccess) return@onErrorResume provider.addAccess(clientId, plugin.id)
+                        return@onErrorResume Mono.empty()
+                    }
+            }
     }
 
     /**
