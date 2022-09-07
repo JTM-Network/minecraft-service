@@ -32,6 +32,7 @@ class AccessProvider @Autowired constructor(@Value("\${profile.host}") host: Str
                     return@exchangeToMono Mono.error(NoAccess())
                 }
 
+                logger.info("Successfully added access.")
                 return@exchangeToMono Mono.empty()
             }
     }
