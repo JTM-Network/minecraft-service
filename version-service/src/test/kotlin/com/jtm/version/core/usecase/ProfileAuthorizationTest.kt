@@ -23,8 +23,8 @@ class ProfileAuthorizationTest {
     fun setup() {
         mockWebServer.start()
 
-        val baseUrl = String.format("http://localhost:%s", mockWebServer.port)
-        profileAuthorization = ProfileAuthorization(baseUrl)
+        val baseUrl = "http://localhost"
+        profileAuthorization = ProfileAuthorization(baseUrl, mockWebServer.port)
     }
 
     @After
