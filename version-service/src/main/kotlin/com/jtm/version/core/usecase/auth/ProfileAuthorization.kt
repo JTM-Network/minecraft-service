@@ -11,9 +11,9 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
-class ProfileAuthorization(@Value("\${host.profile}") var profileHost: String) {
+class ProfileAuthorization(@Value("\${profile.host}") var profileHost: String, @Value("\${profile.port}") var profilePort: Int) {
 
-    private val client = WebClient.create(profileHost)
+    private val client = WebClient.create("$profileHost:$profilePort")
 
     fun authorize(clientId: String, plugin: UUID): Mono<Boolean> {
         return client.post()
