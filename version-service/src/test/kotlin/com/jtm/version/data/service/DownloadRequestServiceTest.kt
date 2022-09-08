@@ -94,7 +94,7 @@ class DownloadRequestServiceTest {
     @Test
     fun requestDownload() {
         `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyString())).thenReturn(Mono.just(version))
-        `when`(authorization.authorize(anyString(), anyOrNull())).thenReturn(Mono.just(true))
+        `when`(authorization.authorize(anyString(), anyOrNull())).thenReturn(Mono.empty())
         `when`(downloadRepository.save(anyOrNull())).thenReturn(Mono.just(downloadLink))
 
         val returned = downloadRequestService.requestDownload(request, dto)
@@ -103,7 +103,7 @@ class DownloadRequestServiceTest {
         verifyNoMoreInteractions(versionRepository)
 
         StepVerifier.create(returned)
-            .assertNext { assertThat(it).isEqualTo(downloadLink.id) }
+            .assertNext { assertThat(it.id).isEqualTo(downloadLink.id) }
             .verifyComplete()
     }
 

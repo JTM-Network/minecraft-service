@@ -37,15 +37,15 @@ class DownloadRequestControllerTest {
 
     @Test
     fun requestDownload() {
-        `when`(requestService.requestDownload(anyOrNull(), anyOrNull())).thenReturn(Mono.just(id))
+        `when`(requestService.requestDownload(anyOrNull(), anyOrNull())).thenReturn(Mono.just(link))
 
         testClient.post()
             .uri("/request")
             .bodyValue(dto)
             .exchange()
             .expectStatus().isOk
-            .expectBody(UUID::class.java)
-            .isEqualTo(id)
+            .expectBody()
+            .jsonPath("$.id").isEqualTo(link.id.toString())
 
         verify(requestService, times(1)).requestDownload(anyOrNull(), anyOrNull())
         verifyNoMoreInteractions(requestService)
