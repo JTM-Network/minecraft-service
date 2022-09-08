@@ -178,6 +178,43 @@ class PluginServiceTest {
     }
 
     @Test
+    fun getRecent() {
+        val dtoOne = PluginDto(name = "Test #2", basic_description = "Basic Desc #2", description = "Description #2")
+        val dtoTwo = PluginDto(name = "Test #3", basic_description = "Basic Desc #3", description = "Description #3")
+        val dtoThree = PluginDto(name = "Test #4", basic_description = "Basic Desc #4", description = "Description #4")
+
+        `when`(pluginRepository.findAll()).thenReturn(Flux.just(plugin, Plugin(dtoOne), Plugin(dtoTwo), Plugin(dtoThree)))
+
+        val returned = pluginService.getRecent()
+
+        verify(pluginRepository, times(1)).findAll()
+        verifyNoMoreInteractions(pluginRepository)
+
+        StepVerifier.create(returned)
+            .assertNext {
+                assertThat(it.name).isEqualTo("Test")
+                assertThat(it.basic_description).isEqualTo("Basic")
+                assertThat(it.description).isEqualTo("Desc")
+            }
+            .assertNext {
+                assertThat(it.name).isEqualTo("Test #2")
+                assertThat(it.basic_description).isEqualTo("Basic Desc #2")
+                assertThat(it.description).isEqualTo("Description #2")
+            }
+            .assertNext {
+                assertThat(it.name).isEqualTo("Test #3")
+                assertThat(it.basic_description).isEqualTo("Basic Desc #3")
+                assertThat(it.description).isEqualTo("Description #3")
+            }
+            .assertNext {
+                assertThat(it.name).isEqualTo("Test #4")
+                assertThat(it.basic_description).isEqualTo("Basic Desc #4")
+                assertThat(it.description).isEqualTo("Description #4")
+            }
+            .verifyComplete()
+    }
+
+    @Test
     fun getPluginsPaginated() {
         val pageable = PageRequest.of(1, 5, Sort.by(Sort.Direction.ASC, "createdTime"))
 

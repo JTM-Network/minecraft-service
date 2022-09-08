@@ -100,6 +100,12 @@ class PluginService @Autowired constructor(private val pluginRepository: PluginR
             }
     }
 
+    fun getRecent(): Flux<Plugin> {
+        return pluginRepository.findAll()
+            .sort(Comparator.comparing(Plugin::lastUpdated))
+            .take(5)
+    }
+
     /**
      * This will sort the plugins based on the {@link Pageable} values provided.
      *
