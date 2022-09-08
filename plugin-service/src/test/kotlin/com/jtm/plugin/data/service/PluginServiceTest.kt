@@ -183,7 +183,7 @@ class PluginServiceTest {
         val dtoTwo = PluginDto(name = "Test #3", basic_description = "Basic Desc #3", description = "Description #3")
         val dtoThree = PluginDto(name = "Test #4", basic_description = "Basic Desc #4", description = "Description #4")
 
-        `when`(pluginRepository.findAll()).thenReturn(Flux.just(plugin, Plugin(dtoOne), Plugin(dtoTwo), Plugin(dtoThree)))
+        `when`(pluginRepository.findAll()).thenReturn(Flux.just(plugin.updateActive(true), Plugin(dtoOne).updateActive(true), Plugin(dtoTwo).updateActive(true), Plugin(dtoThree).updateActive(true)))
 
         val returned = pluginService.getRecent()
 
