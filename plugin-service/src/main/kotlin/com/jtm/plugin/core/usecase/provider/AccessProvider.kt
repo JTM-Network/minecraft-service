@@ -39,8 +39,9 @@ class AccessProvider @Autowired constructor(@Value("\${profile.host}") host: Str
     }
 
     fun checkAccess(id: String, pluginId: UUID): Mono<Void> {
-        return client.get()
-            .uri("/plugin/access/auth?id='$id'&permission=$pluginId")
+        return client.post()
+            .uri("/plugin/access/auth")
+            .bodyValue(PermissionDto(id, pluginId.toString()))
             .exchangeToMono {
                 if (it.statusCode().is5xxServerError) {
                     logger.error("Failed to check access for user.")
