@@ -102,6 +102,7 @@ class PluginService @Autowired constructor(private val pluginRepository: PluginR
 
     fun getRecent(): Flux<Plugin> {
         return pluginRepository.findAll()
+            .filter { it.active }
             .sort(Comparator.comparing(Plugin::lastUpdated))
             .take(5)
     }
