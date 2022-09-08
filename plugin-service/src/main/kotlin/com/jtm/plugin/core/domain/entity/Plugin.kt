@@ -45,7 +45,7 @@ data class Plugin(@Id val id: UUID = UUID.randomUUID(), var name: String = "", v
     }
 
     fun updatePrice(price: Double): Plugin {
-        this.premium = this.price > 0.0
+        this.premium = this.price.toDouble() >= 0.5
         this.price = if (price <= 0.0) 0.0 else price
         this.lastUpdated = System.currentTimeMillis()
         return this
