@@ -30,6 +30,9 @@ class PluginController @Autowired constructor(private val pluginService: PluginS
     @GetMapping("/all")
     fun getPlugins(@RequestParam("currency", required = false) currency: String?): Flux<Plugin> = pluginService.getPlugins(currency)
 
+    @GetMapping("/recent")
+    fun getRecent(): Flux<Plugin> = pluginService.getRecent()
+
     @GetMapping("/name/{name}")
     fun getPluginByName(@PathVariable name: String): Mono<Plugin> = pluginService.getPluginByName(name)
 

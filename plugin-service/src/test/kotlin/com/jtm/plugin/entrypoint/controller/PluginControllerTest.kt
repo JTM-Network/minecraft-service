@@ -109,6 +109,23 @@ class PluginControllerTest {
     }
 
     @Test
+    fun getRecent() {
+        `when`(pluginService.getRecent()).thenReturn(Flux.just(plugin))
+
+        testClient.get()
+            .uri("/recent")
+            .exchange()
+            .expectStatus().isOk
+            .expectBody()
+            .jsonPath("$[0].name").isEqualTo("Test")
+            .jsonPath("$[0].basic_description").isEqualTo("Basic")
+            .jsonPath("$[0].description").isEqualTo("Desc")
+
+        verify(pluginService, times(1)).getRecent()
+        verifyNoMoreInteractions(pluginService)
+    }
+
+    @Test
     fun getPluginsPaginated() {
         `when`(pluginService.getPluginsPaginated(anyOrNull(), anyOrNull())).thenReturn(Mono.just(PageSupport(mutableListOf(plugin, pluginTwo), 1, 5, 2)))
 
