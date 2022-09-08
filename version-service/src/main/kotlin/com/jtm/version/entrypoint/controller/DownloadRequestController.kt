@@ -14,7 +14,7 @@ import java.util.*
 class DownloadRequestController @Autowired constructor(private val requestService: DownloadRequestService) {
 
     @PostMapping
-    fun requestDownload(request: ServerHttpRequest, @RequestBody dto: DownloadRequestDto): Mono<UUID> {
+    fun requestDownload(request: ServerHttpRequest, @RequestBody dto: DownloadRequestDto): Mono<DownloadLink> {
         return requestService.requestDownload(request, dto)
     }
 

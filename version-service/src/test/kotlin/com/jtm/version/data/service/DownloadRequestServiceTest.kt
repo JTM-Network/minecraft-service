@@ -103,7 +103,7 @@ class DownloadRequestServiceTest {
         verifyNoMoreInteractions(versionRepository)
 
         StepVerifier.create(returned)
-            .assertNext { assertThat(it).isEqualTo(downloadLink.id) }
+            .assertNext { assertThat(it.id).isEqualTo(downloadLink.id) }
             .verifyComplete()
     }
 

@@ -1,9 +1,9 @@
 package com.jtm.version.data.service
 
-import com.jtm.version.core.domain.entity.DownloadLink
 import com.jtm.version.core.domain.exceptions.download.DownloadLinkNotFound
-import com.jtm.version.core.domain.exceptions.version.VersionNotFound
+import com.jtm.version.core.domain.exceptions.download.DownloadNotAvailable
 import com.jtm.version.core.domain.exceptions.filesystem.FileNotFound
+import com.jtm.version.core.domain.exceptions.version.VersionNotFound
 import com.jtm.version.core.usecase.file.FileSystemHandler
 import com.jtm.version.core.usecase.repository.DownloadRepository
 import com.jtm.version.core.usecase.repository.VersionRepository
@@ -34,15 +34,17 @@ class DownloadService @Autowired constructor(private val downloadRepository: Dow
     fun getDownload(response: ServerHttpResponse, id: UUID): Mono<Resource> {
         return downloadRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(DownloadLinkNotFound()) })
-            .flatMap { link -> versionRepository.findByPluginIdAndVersion(link.pluginId, link.version)
-                .switchIfEmpty(Mono.defer { Mono.error(VersionNotFound()) })
-                .flatMap { version -> fileSystemHandler.fetch("/${version.pluginId}/${version.pluginName}-${version.version}.jar")
-                    .map { file ->
-                        response.headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=${file.name}")
-                        FileSystemResource(file)
-                    }
-                    .doOnSuccess { downloadRepository.save(link.download()) }
-                    .doOnSuccess { versionRepository.save(version.addDownload()) }
+            .flatMap { link ->
+                if (!link.canDownload()) return@flatMap Mono.error(DownloadNotAvailable())
+                versionRepository.findByPluginIdAndVersion(link.pluginId, link.version)
+                    .switchIfEmpty(Mono.defer { Mono.error(VersionNotFound()) })
+                    .flatMap { version -> fileSystemHandler.fetch("/${version.pluginId}/${version.pluginName}-${version.version}.jar")
+                        .map { file ->
+                            response.headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=${file.name}")
+                            FileSystemResource(file)
+                        }
+                        .doOnSuccess { downloadRepository.save(link.download()) }
+                        .doOnSuccess { versionRepository.save(version.addDownload()) }
                 }
             }
     }

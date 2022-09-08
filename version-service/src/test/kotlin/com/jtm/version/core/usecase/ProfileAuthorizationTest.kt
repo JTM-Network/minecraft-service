@@ -8,6 +8,7 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.runner.RunWith
 import org.slf4j.LoggerFactory
 import org.springframework.test.context.junit4.SpringRunner
@@ -64,6 +65,7 @@ class ProfileAuthorizationTest {
         val returned = profileAuthorization.authorize("clientId", UUID.randomUUID())
 
         StepVerifier.create(returned)
+            .assertNext { assertTrue(it) }
             .verifyComplete()
     }
 }
