@@ -37,6 +37,7 @@ dependencies {
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
     implementation 'commons-io:commons-io:2.11.0'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+    implementation 'com.google.cloud:google-cloud-storage:2.22.4'
 
     runtimeOnly 'org.jetbrains.kotlin:kotlin-reflect:1.7.10'
     compileOnly 'org.projectlombok:lombok:1.18.24'
