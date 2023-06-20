@@ -12,7 +12,7 @@ interface ImageHandler {
 
     fun fetch(name: String): Mono<File>
 
-    fun list(): Flux<File>
+    fun list(): Flux<String>
 
     fun delete(name: String): Mono<File>
 }

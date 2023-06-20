@@ -21,7 +21,7 @@ class ImageService @Autowired constructor(@Qualifier("cloud") private val imageH
 
     fun getImage(name: String): Mono<Resource> = imageHandler.fetch(name).map { FileSystemResource(it) }
 
-    fun getImages(): Flux<String> = imageHandler.list().map { it.name }
+    fun getImages(): Flux<String> = imageHandler.list()
 
     fun removeImage(name: String): Mono<Void> = imageHandler.delete(name).then()
 }
