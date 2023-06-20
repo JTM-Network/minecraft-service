@@ -10,3 +10,7 @@ redis:
 
 profile:
   host: ${PROFILE_HOST}
+
+gcp:
+  project-id: ${PROJECT_ID}
+  bucket-name: ${BUCKET_NAME}

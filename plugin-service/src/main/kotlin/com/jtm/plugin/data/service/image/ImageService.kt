@@ -13,10 +13,10 @@ import reactor.core.publisher.Mono
 import java.util.UUID
 
 @Service
-class ImageService @Autowired constructor(private val imageHandler: ImageHandler) {
+class ImageService @Autowired constructor(@Qualifier("cloud") private val imageHandler: ImageHandler) {
 
     fun insertImage(filePart: FilePart): Mono<ImageInfo> {
-        return imageHandler.save(filePart).map { ImageInfo("https://api.jtm-network.com/images/${it.name}") }
+        return imageHandler.save(filePart).map { ImageInfo("https://api.jtm-network.com/plugin/images/${it.name}") }
     }
 
     fun getImage(name: String): Mono<Resource> = imageHandler.fetch(name).map { FileSystemResource(it) }
