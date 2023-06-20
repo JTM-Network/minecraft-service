@@ -1,7 +1,9 @@
 package com.jtm.plugin
 
 import com.jtm.plugin.data.service.*
+import com.jtm.plugin.data.service.image.ImageServiceUnitTest
 import com.jtm.plugin.entrypoint.controller.*
+import com.jtm.plugin.entrypoint.controller.image.ImageControllerUnitTest
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 
@@ -23,5 +25,9 @@ import org.junit.runners.Suite
     SuggestionControllerTest::class,
     BugControllerTest::class,
     ReviewControllerTest::class,
+
+    ImageServiceUnitTest::class,
+
+    ImageControllerUnitTest::class,
 ])
 class PluginServiceApplicationTestSuite
