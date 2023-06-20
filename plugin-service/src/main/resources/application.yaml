@@ -16,3 +16,6 @@ spring:
 
 rapidapi:
   key: ${RAPID_KEY}
+
+images:
+  path: /images
