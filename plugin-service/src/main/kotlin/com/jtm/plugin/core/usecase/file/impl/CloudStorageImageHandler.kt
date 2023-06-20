@@ -33,7 +33,6 @@ class CloudStorageImageHandler(path: String = "/storage",
         return filePart.transferTo(file).thenReturn(file)
             .flatMap { f -> uploadFile(f)
                 .then(deleteTemp(file.name))
-                .then(deleteTemp(file.name))
             }
     }
 
