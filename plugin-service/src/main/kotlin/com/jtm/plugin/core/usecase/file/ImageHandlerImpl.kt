@@ -32,10 +32,10 @@ abstract class ImageHandlerImpl(var path: String): ImageHandler {
         return Mono.just(file)
     }
 
-    override fun list(): Flux<File> {
+    override fun list(): Flux<String> {
         val folder = File(path)
         val files = folder.listFiles() ?: return Flux.error(DirectoryNotFound())
-        return Flux.fromArray(files)
+        return Flux.fromArray(files).map { it.name }
     }
 
     override fun delete(name: String): Mono<File> {

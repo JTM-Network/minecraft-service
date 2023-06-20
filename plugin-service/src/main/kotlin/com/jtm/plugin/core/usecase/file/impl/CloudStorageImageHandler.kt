@@ -47,10 +47,10 @@ class CloudStorageImageHandler(path: String = "/storage",
         return Mono.just(file)
     }
 
-    override fun list(): Flux<File> {
-        val folder = File("$path/images")
-        val files = folder.listFiles() ?: return Flux.error(DirectoryNotFound())
-        return Flux.fromArray(files)
+    override fun list(): Flux<String> {
+        val storage = StorageOptions.newBuilder().setProjectId(projectId).build().service
+        val blobs = storage.list(bucketName)
+        return Flux.fromIterable(blobs.values).map { it.name }
     }
 
     override fun delete(name: String): Mono<File> {
