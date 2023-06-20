@@ -33,10 +33,13 @@ class CloudStorageImageHandler(path: String = "/storage",
         return filePart.transferTo(file).thenReturn(file)
             .flatMap { f -> uploadFile(f)
                 .then(deleteTemp(file.name))
+                .then(deleteTemp(file.name))
             }
     }
 
     override fun fetch(name: String): Mono<File> {
+        val folder = File("$path/images")
+        if (!folder.exists() && folder.mkdirs()) logger.info("Creating directories: ${folder.path}")
         val file = File("$path/images", name)
         if (!file.exists()) {
             val storage = StorageOptions.newBuilder().setProjectId(projectId).build().service
