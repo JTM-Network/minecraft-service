@@ -13,9 +13,9 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
-class AccessProvider @Autowired constructor(@Value("\${profile.host}") host: String, @Value("\${profile.port}") port: Int) {
+class AccessProvider @Autowired constructor(@Value("\${profile.host}") host: String) {
 
-    private val client = WebClient.create("${host}:${port}")
+    private val client = WebClient.create(host)
     private val logger = LoggerFactory.getLogger(AccessProvider::class.java)
 
     fun addAccess(id: String, pluginId: UUID): Mono<Void> {
