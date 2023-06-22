@@ -1,95 +1,19 @@
 package com.jtm.version.core.usecase.file
 
-import com.jtm.version.core.domain.exceptions.filesystem.FileNotFound
-import com.jtm.version.core.domain.exceptions.filesystem.FilesNotFound
-import com.jtm.version.core.domain.exceptions.filesystem.FolderNotFound
-import org.apache.commons.io.FileUtils
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.codec.multipart.FilePart
-import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import java.io.File
-import java.nio.file.Files
-import java.nio.file.Paths
 
-@Component
-class FileSystemHandler {
+interface FileSystemHandler {
 
-    private val logger = LoggerFactory.getLogger(FileSystemHandler::class.java)
+    fun save(path: String, filePart: FilePart, name: String): Mono<File>
 
-    @Value("\${storage.disk:/disk}")
-    lateinit var disk: String
+    fun updateFileName(path: String, name: String): Mono<File>
 
-    /**
-     * Save a file to disk using the {@link FilePart}
-     *
-     * @param path          the path to save the file to
-     * @param filePart      the file to save
-     * @param name          the name for the file
-     * @return              the file saved
-     * @see                 File
-     */
-    fun save(path: String, filePart: FilePart, name: String): Mono<File> {
-        val folder = File(disk + path)
-        if (!folder.parentFile.exists() && folder.parentFile.mkdirs()) logger.info("Created parent directories: $disk")
-        if (!folder.exists() && folder.mkdirs()) logger.info("Created directories: $path")
-        val file = File(disk + path, "$name.jar")
-        return filePart.transferTo(file).thenReturn(file)
-    }
+    fun fetch(path: String): Mono<File>
 
-    fun updateFileName(path: String, name: String): Mono<Void> {
-        val source = Paths.get(disk + path)
-        Files.move(source, source.resolveSibling(name))
-        return Mono.empty()
-    }
+    fun delete(path: String): Mono<File>
 
-    /**
-     * Return the file found at the path specified.
-     *
-     * @param path          the path to the file
-     * @return              the file found
-     * @see                 File
-     * @throws FileNotFound if the file does not exist
-     */
-    fun fetch(path: String): Mono<File> {
-        val file = File(disk + path)
-        if (!file.exists()) return Mono.error { FileNotFound() }
-        return Mono.just(file)
-    }
-
-    /**
-     * Delete file at the path specified.
-     *
-     * @param path          the path to the file
-     * @return              the deleted file/folder
-     * @see                 File
-     * @throws FileNotFound if the file/folder does not exist or the deletion of the file fails.
-     */
-    fun delete(path: String): Mono<File> {
-        val file = File(disk + path)
-        if (!file.exists()) return Mono.error { FileNotFound() }
-        return Mono.just(file)
-            .flatMap {
-                if (it.isDirectory) FileUtils.deleteDirectory(it) else if (!it.delete()) return@flatMap Mono.error { FileNotFound() }
-                Mono.just(it)
-            }
-    }
-
-    /**
-     * Return the list of files/folders from the path
-     *
-     * @param path          the path
-     * @return              the list of files & folders
-     * @see                 File
-     * @throws FolderNotFound if the folder does not exist
-     * @throws FilesNotFound if listing the files returns null
-     */
-    fun listFiles(path: String): Flux<File> {
-        val folder = File(disk + path)
-        if (!folder.exists()) return Flux.error(FolderNotFound())
-        val files = folder.listFiles() ?: return Flux.error(FilesNotFound())
-        return Flux.fromArray(files)
-    }
+    fun listFiles(path: String): Flux<File>
 }

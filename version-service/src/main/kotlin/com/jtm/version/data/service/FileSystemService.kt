@@ -5,7 +5,9 @@ import com.jtm.version.core.domain.exceptions.filesystem.FolderNotFound
 import com.jtm.version.core.domain.model.FileInfo
 import com.jtm.version.core.domain.model.FolderInfo
 import com.jtm.version.core.usecase.file.FileSystemHandler
+import com.jtm.version.core.usecase.file.StandardFileSystemHandler
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -13,7 +15,7 @@ import java.io.File
 import java.util.*
 
 @Service
-class FileSystemService @Autowired constructor(private val fileSystemHandler: FileSystemHandler) {
+class FileSystemService @Autowired constructor(@Qualifier("standard") private val fileSystemHandler: FileSystemHandler) {
 
     /**
      * This will get the plugin folder with the name of the identifier.
