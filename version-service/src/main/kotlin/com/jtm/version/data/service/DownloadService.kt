@@ -1,13 +1,14 @@
 package com.jtm.version.data.service
 
-import com.jtm.version.core.domain.entity.DownloadLink
 import com.jtm.version.core.domain.exceptions.download.DownloadLinkNotFound
 import com.jtm.version.core.domain.exceptions.version.VersionNotFound
 import com.jtm.version.core.domain.exceptions.filesystem.FileNotFound
 import com.jtm.version.core.usecase.file.FileSystemHandler
+import com.jtm.version.core.usecase.file.StandardFileSystemHandler
 import com.jtm.version.core.usecase.repository.DownloadRepository
 import com.jtm.version.core.usecase.repository.VersionRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 import org.springframework.http.HttpHeaders
@@ -19,7 +20,8 @@ import java.util.*
 @Service
 class DownloadService @Autowired constructor(private val downloadRepository: DownloadRepository,
                                              private val versionRepository: VersionRepository,
-                                             private val fileSystemHandler: FileSystemHandler) {
+                                             @Qualifier("standard") private val fileSystemHandler: FileSystemHandler
+) {
 
     /**
      * This will check for the download request made and return the resource from the request.

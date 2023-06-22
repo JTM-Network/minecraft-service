@@ -2,7 +2,7 @@ package com.jtm.version.data.service
 
 import com.jtm.version.core.domain.exceptions.filesystem.FileNotFound
 import com.jtm.version.core.domain.exceptions.filesystem.FolderNotFound
-import com.jtm.version.core.usecase.file.FileSystemHandler
+import com.jtm.version.core.usecase.file.StandardFileSystemHandler
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -20,7 +20,7 @@ import java.util.*
 @RunWith(SpringRunner::class)
 class FileSystemServiceTest {
 
-    private val fileSystemHandler: FileSystemHandler = mock()
+    private val fileSystemHandler: StandardFileSystemHandler = mock()
     private val fileSystemService = FileSystemService(fileSystemHandler)
     private val fileOne: File = mock()
     private val folderOne: File = mock()

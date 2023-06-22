@@ -4,7 +4,7 @@ import com.jtm.version.core.domain.dto.VersionDto
 import com.jtm.version.core.domain.entity.Version
 import com.jtm.version.core.domain.exceptions.filesystem.FileNotFound
 import com.jtm.version.core.domain.exceptions.version.VersionFound
-import com.jtm.version.core.usecase.file.FileSystemHandler
+import com.jtm.version.core.usecase.file.StandardFileSystemHandler
 import com.jtm.version.core.usecase.repository.VersionRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -24,7 +24,7 @@ import java.util.*
 class UploadServiceTest {
 
     private val versionRepository: VersionRepository = mock()
-    private val systemHandler: FileSystemHandler = mock()
+    private val systemHandler: StandardFileSystemHandler = mock()
     private val uploadService = UploadService(versionRepository, systemHandler)
     private val file: File = mock()
     private val filePart: FilePart = mock()

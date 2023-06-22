@@ -4,10 +4,9 @@ import com.jtm.version.core.domain.entity.DownloadLink
 import com.jtm.version.core.domain.entity.Version
 import com.jtm.version.core.domain.exceptions.download.DownloadLinkNotFound
 import com.jtm.version.core.domain.exceptions.version.VersionNotFound
-import com.jtm.version.core.usecase.file.FileSystemHandler
+import com.jtm.version.core.usecase.file.StandardFileSystemHandler
 import com.jtm.version.core.usecase.repository.DownloadRepository
 import com.jtm.version.core.usecase.repository.VersionRepository
-import com.mongodb.internal.connection.tlschannel.util.Util.assertTrue
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -29,7 +28,7 @@ class DownloadServiceTest {
 
     private val downloadRepository: DownloadRepository = mock()
     private val versionRepository: VersionRepository = mock()
-    private val systemHandler: FileSystemHandler = mock()
+    private val systemHandler: StandardFileSystemHandler = mock()
     private val downloadService = DownloadService(downloadRepository, versionRepository, systemHandler)
 
     private val link = DownloadLink(pluginId = UUID.randomUUID(), version = "1.0", clientId = "id")

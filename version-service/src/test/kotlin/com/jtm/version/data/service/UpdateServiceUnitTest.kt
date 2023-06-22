@@ -4,7 +4,7 @@ import com.jtm.version.core.domain.dto.UpdateDto
 import com.jtm.version.core.domain.dto.VersionDto
 import com.jtm.version.core.domain.entity.Version
 import com.jtm.version.core.domain.exceptions.version.VersionNotFound
-import com.jtm.version.core.usecase.file.FileSystemHandler
+import com.jtm.version.core.usecase.file.StandardFileSystemHandler
 import com.jtm.version.core.usecase.repository.VersionRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -23,7 +23,7 @@ import java.util.*
 class UpdateServiceUnitTest {
 
     private val versionRepository: VersionRepository = mock()
-    private val fileHandler: FileSystemHandler = mock()
+    private val fileHandler: StandardFileSystemHandler = mock()
     private val updateService = UpdateService(versionRepository, fileHandler)
 
     private val dto = VersionDto(UUID.randomUUID(), "Test", version = "1.0", changelog = "Changelog")
