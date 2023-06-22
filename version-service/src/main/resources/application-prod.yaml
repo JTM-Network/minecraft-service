@@ -4,6 +4,5 @@ spring:
       uri: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/admin
       database: ${MONGO_DATABASE}
 
-profile:
-  host: ${PROFILE_HOST}
-  port: ${PROFILE_PORT}
+host:
+  profile: ${PROFILE_HOST}
