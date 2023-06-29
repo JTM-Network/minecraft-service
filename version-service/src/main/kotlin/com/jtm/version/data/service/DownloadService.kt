@@ -1,7 +1,6 @@
 package com.jtm.version.data.service
 
 import com.jtm.version.core.domain.exceptions.download.DownloadLinkNotFound
-import com.jtm.version.core.domain.exceptions.version.VersionNotFound
 import com.jtm.version.core.domain.exceptions.filesystem.FileNotFound
 import com.jtm.version.core.domain.exceptions.version.VersionNotFound
 import com.jtm.version.core.usecase.file.FileSystemHandler
@@ -37,7 +36,6 @@ class DownloadService @Autowired constructor(private val downloadRepository: Dow
         return downloadRepository.findById(id)
             .switchIfEmpty(Mono.defer { Mono.error(DownloadLinkNotFound()) })
             .flatMap { link ->
-                if (!link.canDownload()) return@flatMap Mono.error(DownloadNotAvailable())
                 versionRepository.findByPluginIdAndVersion(link.pluginId, link.version)
                     .switchIfEmpty(Mono.defer { Mono.error(VersionNotFound()) })
                     .flatMap { version -> fileSystemHandler.fetch("/${version.pluginId}/${version.pluginName}-${version.version}.jar")
