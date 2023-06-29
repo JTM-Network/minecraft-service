@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Service
-class UpdateService @Autowired constructor(private val versionRepository: VersionRepository, @Qualifier("standard") private val fileSystemHandler: FileSystemHandler) {
+class UpdateService @Autowired constructor(private val versionRepository: VersionRepository, @Qualifier("cloud") private val fileSystemHandler: FileSystemHandler) {
 
     fun updateVersion(id: UUID, dto: UpdateDto): Mono<Version> {
         return versionRepository.findById(id)

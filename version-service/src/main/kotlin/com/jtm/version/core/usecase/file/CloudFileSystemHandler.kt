@@ -58,8 +58,9 @@ class CloudFileSystemHandler(@Value("\${gcp.project-id}") var projectId: String,
         val blobs = storage.list(bucketName, Storage.BlobListOption.prefix(path))
         return Flux.fromIterable(blobs.values).map {
             val name = it.name.substringAfterLast("/")
-            val path = it.name.replace(name, "")
-            FileDTO(name, path, it.size, it.updateTimeOffsetDateTime)
+            val blob_path = it.name.replace(name, "")
+            val extension = name.substringAfterLast(".")
+            FileDTO(name, blob_path, it.size, it.updateTimeOffsetDateTime, extension, !it.isDirectory, it.isDirectory)
         }
     }
 

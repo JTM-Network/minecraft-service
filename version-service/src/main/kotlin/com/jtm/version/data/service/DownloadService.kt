@@ -1,13 +1,9 @@
 package com.jtm.version.data.service
 
 import com.jtm.version.core.domain.exceptions.download.DownloadLinkNotFound
-import com.jtm.version.core.domain.exceptions.download.DownloadNotAvailable
 import com.jtm.version.core.domain.exceptions.filesystem.FileNotFound
 import com.jtm.version.core.domain.exceptions.version.VersionNotFound
-import com.jtm.version.core.usecase.file.StandardFileSystemHandler
-import com.jtm.version.core.domain.exceptions.filesystem.FileNotFound
 import com.jtm.version.core.usecase.file.FileSystemHandler
-import com.jtm.version.core.usecase.file.StandardFileSystemHandler
 import com.jtm.version.core.usecase.repository.DownloadRepository
 import com.jtm.version.core.usecase.repository.VersionRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +19,7 @@ import java.util.*
 @Service
 class DownloadService @Autowired constructor(private val downloadRepository: DownloadRepository,
                                              private val versionRepository: VersionRepository,
-                                             @Qualifier("standard") private val fileSystemHandler: FileSystemHandler
+                                             @Qualifier("cloud") private val fileSystemHandler: FileSystemHandler
 ) {
 
     /**
