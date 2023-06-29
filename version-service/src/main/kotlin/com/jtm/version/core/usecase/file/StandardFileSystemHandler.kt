@@ -105,6 +105,8 @@ class StandardFileSystemHandler: FileSystemHandler {
         val folder = File(disk + path)
         if (!folder.exists()) return Flux.error(FolderNotFound())
         val files = folder.listFiles() ?: return Flux.error(FilesNotFound())
-        return Flux.fromArray(files).map { FileDTO(it.name, it.path, it.length(), OffsetDateTime.ofInstant(Instant.ofEpochMilli(it.lastModified()), ZoneId.systemDefault())) }
+        return Flux.fromArray(files).map {
+            FileDTO(it.name, it.path, it.length(), OffsetDateTime.ofInstant(Instant.ofEpochMilli(it.lastModified()), ZoneId.systemDefault()), it.extension, it.isFile, it.isDirectory)
+        }
     }
 }

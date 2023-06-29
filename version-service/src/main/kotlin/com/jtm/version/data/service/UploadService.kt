@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
-class UploadService @Autowired constructor(private val versionRepository: VersionRepository, private val systemHandler: FileSystemHandler) {
+class UploadService @Autowired constructor(private val versionRepository: VersionRepository, @Qualifier("cloud") private val systemHandler: FileSystemHandler) {
 
     fun uploadResource(dto: VersionDto): Mono<Version> {
         return versionRepository.findByPluginIdAndVersion(dto.pluginId, dto.version)

@@ -1,5 +1,6 @@
 package com.jtm.version.data.service
 
+import com.jtm.version.core.domain.dto.FileDTO
 import com.jtm.version.core.domain.exceptions.filesystem.FileNotFound
 import com.jtm.version.core.domain.exceptions.filesystem.FolderNotFound
 import com.jtm.version.core.domain.model.FileInfo
@@ -15,7 +16,7 @@ import java.io.File
 import java.util.*
 
 @Service
-class FileSystemService @Autowired constructor(@Qualifier("standard") private val fileSystemHandler: FileSystemHandler) {
+class FileSystemService @Autowired constructor(@Qualifier("cloud") private val fileSystemHandler: FileSystemHandler) {
 
     /**
      * This will get the plugin folder with the name of the identifier.
@@ -27,7 +28,7 @@ class FileSystemService @Autowired constructor(@Qualifier("standard") private va
     fun getVersions(id: UUID): Flux<FileInfo> {
         return fileSystemHandler.listFiles("/${id}")
             .map {
-                val calc: Double = (it.length().toDouble() / (1024 * 1024).toDouble())
+                val calc: Double = (it.size.toDouble() / (1024 * 1024).toDouble())
                 val size = "%.2f".format(calc).toDouble()
                 FileInfo(it.name, size, it.extension)
             }
@@ -42,9 +43,9 @@ class FileSystemService @Autowired constructor(@Qualifier("standard") private va
      */
     fun getFiles(path: String): Flux<FileInfo> {
         return fileSystemHandler.listFiles(path)
-            .filter(File::isFile)
+            .filter(FileDTO::isFile)
             .map {
-                val calc: Double = (it.length().toDouble() / (1024 * 1024).toDouble())
+                val calc: Double = (it.size.toDouble() / (1024 * 1024).toDouble())
                 val size = "%.2f".format(calc).toDouble()
                 FileInfo(it.name, size, it.extension)
             }
@@ -59,10 +60,10 @@ class FileSystemService @Autowired constructor(@Qualifier("standard") private va
      */
     fun getFolders(path: String): Flux<FolderInfo> {
         return fileSystemHandler.listFiles(path)
-            .filter(File::isDirectory)
+            .filter(FileDTO::isDirectory)
             .map {
-                val files = it.listFiles() ?: arrayOf()
-                FolderInfo(it.name, files.size)
+                val files = fileSystemHandler.listFiles(it.path) ?: Flux.empty()
+                FolderInfo(it.name, files.count().block() ?: 0L)
             }
     }
 
@@ -101,8 +102,8 @@ class FileSystemService @Autowired constructor(@Qualifier("standard") private va
             .switchIfEmpty(Mono.defer { Mono.error(FolderNotFound()) })
             .flatMap { fileSystemHandler.delete(path)
                 .map {
-                    val files = it.listFiles() ?: arrayOf()
-                    FolderInfo(it.name, files.size)
+                    val files = fileSystemHandler.listFiles(it.path) ?: Flux.empty()
+                    FolderInfo(it.name, files.count().block() ?: 0L)
                 }
             }
     }
