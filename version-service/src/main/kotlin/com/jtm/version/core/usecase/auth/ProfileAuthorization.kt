@@ -12,10 +12,10 @@ import reactor.core.publisher.Mono
 import java.util.*
 
 @Component
-class ProfileAuthorization @Autowired constructor(@Value("\${profile.host}") host: String, @Value("\${profile.port}") port: Int = 8222) {
+class ProfileAuthorization @Autowired constructor(@Value("\${profile.host}") host: String) {
 
     private val logger = LoggerFactory.getLogger(ProfileAuthorization::class.java)
-    private val baseUrl = "$host:$port"
+    private val baseUrl = host
 
     private val client = WebClient.create()
 
