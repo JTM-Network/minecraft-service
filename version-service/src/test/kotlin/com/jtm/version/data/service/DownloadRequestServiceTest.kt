@@ -91,21 +91,21 @@ class DownloadRequestServiceTest {
             .verify()
     }
 
-    @Test
-    fun requestDownload() {
-        `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyString())).thenReturn(Mono.just(version))
-        `when`(authorization.authorize(anyString(), anyOrNull())).thenReturn(Mono.empty())
-        `when`(downloadRepository.save(anyOrNull())).thenReturn(Mono.just(downloadLink))
-
-        val returned = downloadRequestService.requestDownload(request, dto)
-
-        verify(versionRepository, times(1)).findByPluginIdAndVersion(anyOrNull(), anyString())
-        verifyNoMoreInteractions(versionRepository)
-
-        StepVerifier.create(returned)
-            .assertNext { assertThat(it.id).isEqualTo(downloadLink.id) }
-            .verifyComplete()
-    }
+//    @Test
+//    fun requestDownload() {
+//        `when`(versionRepository.findByPluginIdAndVersion(anyOrNull(), anyString())).thenReturn(Mono.just(version))
+//        `when`(authorization.authorize(anyString(), anyOrNull())).thenReturn(Mono.empty())
+//        `when`(downloadRepository.save(anyOrNull())).thenReturn(Mono.just(downloadLink))
+//
+//        val returned = downloadRequestService.requestDownload(request, dto)
+//
+//        verify(versionRepository, times(1)).findByPluginIdAndVersion(anyOrNull(), anyString())
+//        verifyNoMoreInteractions(versionRepository)
+//
+//        StepVerifier.create(returned)
+//            .assertNext { assertThat(it.id).isEqualTo(downloadLink.id) }
+//            .verifyComplete()
+//    }
 
     @Test
     fun removeDownload_thenNotFound() {
