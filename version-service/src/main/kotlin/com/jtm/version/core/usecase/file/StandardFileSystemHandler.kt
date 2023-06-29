@@ -1,5 +1,6 @@
 package com.jtm.version.core.usecase.file
 
+import com.jtm.version.core.domain.dto.FileDTO
 import com.jtm.version.core.domain.exceptions.filesystem.FileNotFound
 import com.jtm.version.core.domain.exceptions.filesystem.FilesNotFound
 import com.jtm.version.core.domain.exceptions.filesystem.FolderNotFound
@@ -15,6 +16,9 @@ import java.io.File
 import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneId
 
 @Component
 @Qualifier("standard")
@@ -97,10 +101,10 @@ class StandardFileSystemHandler: FileSystemHandler {
      * @throws FolderNotFound if the folder does not exist
      * @throws FilesNotFound if listing the files returns null
      */
-    override fun listFiles(path: String): Flux<File> {
+    override fun listFiles(path: String): Flux<FileDTO> {
         val folder = File(disk + path)
         if (!folder.exists()) return Flux.error(FolderNotFound())
         val files = folder.listFiles() ?: return Flux.error(FilesNotFound())
-        return Flux.fromArray(files)
+        return Flux.fromArray(files).map { FileDTO(it.name, it.path, it.length(), OffsetDateTime.ofInstant(Instant.ofEpochMilli(it.lastModified()), ZoneId.systemDefault())) }
     }
 }

@@ -1,0 +1,4 @@
+data:
+  mongodb:
+    uri: mongodb://joety:secret@local.jtm-network.com:27017/admin
+    database: test

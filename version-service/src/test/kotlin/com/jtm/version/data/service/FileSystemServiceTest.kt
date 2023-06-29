@@ -40,12 +40,12 @@ class FileSystemServiceTest {
 
     @Test
     fun getVersions() {
-        `when`(fileSystemHandler.listFiles(anyString())).thenReturn(Flux.just(fileOne))
+        `when`(standardFileSystemHandler.listFiles(anyString())).thenReturn(Flux.just(fileOne))
 
         val returned = fileSystemService.getVersions(UUID.randomUUID())
 
-        verify(fileSystemHandler, times(1)).listFiles(anyString())
-        verifyNoMoreInteractions(fileSystemHandler)
+        verify(standardFileSystemHandler, times(1)).listFiles(anyString())
+        verifyNoMoreInteractions(standardFileSystemHandler)
 
         StepVerifier.create(returned)
             .assertNext {
@@ -58,12 +58,12 @@ class FileSystemServiceTest {
 
     @Test
     fun getFiles() {
-        `when`(fileSystemHandler.listFiles(anyString())).thenReturn(Flux.just(fileOne))
+        `when`(standardFileSystemHandler.listFiles(anyString())).thenReturn(Flux.just(fileOne))
 
         val returned = fileSystemService.getFiles("/test.jar")
 
-        verify(fileSystemHandler, times(1)).listFiles(anyString())
-        verifyNoMoreInteractions(fileSystemHandler)
+        verify(standardFileSystemHandler, times(1)).listFiles(anyString())
+        verifyNoMoreInteractions(standardFileSystemHandler)
 
         StepVerifier.create(returned)
             .assertNext {
@@ -76,12 +76,12 @@ class FileSystemServiceTest {
 
     @Test
     fun getFolders() {
-        `when`(fileSystemHandler.listFiles(anyString())).thenReturn(Flux.just(folderOne))
+        `when`(standardFileSystemHandler.listFiles(anyString())).thenReturn(Flux.just(folderOne))
 
         val returned = fileSystemService.getFolders("/test")
 
-        verify(fileSystemHandler, times(1)).listFiles(anyString())
-        verifyNoMoreInteractions(fileSystemHandler)
+        verify(standardFileSystemHandler, times(1)).listFiles(anyString())
+        verifyNoMoreInteractions(standardFileSystemHandler)
 
         StepVerifier.create(returned)
             .assertNext {
@@ -93,12 +93,12 @@ class FileSystemServiceTest {
 
     @Test
     fun removeFile_thenNotFound() {
-        `when`(fileSystemHandler.fetch(anyString())).thenReturn(Mono.just(folderOne))
+        `when`(standardFileSystemHandler.fetch(anyString())).thenReturn(Mono.just(folderOne))
 
         val returned = fileSystemService.removeFile("/test.jar")
 
-        verify(fileSystemHandler, times(1)).fetch(anyString())
-        verifyNoMoreInteractions(fileSystemHandler)
+        verify(standardFileSystemHandler, times(1)).fetch(anyString())
+        verifyNoMoreInteractions(standardFileSystemHandler)
 
         StepVerifier.create(returned)
             .expectError(FileNotFound::class.java)
@@ -107,13 +107,13 @@ class FileSystemServiceTest {
 
     @Test
     fun removeFile() {
-        `when`(fileSystemHandler.fetch(anyString())).thenReturn(Mono.just(fileOne))
-        `when`(fileSystemHandler.delete(anyString())).thenReturn(Mono.just(fileOne))
+        `when`(standardFileSystemHandler.fetch(anyString())).thenReturn(Mono.just(fileOne))
+        `when`(standardFileSystemHandler.delete(anyString())).thenReturn(Mono.just(fileOne))
 
         val returned = fileSystemService.removeFile("/test.jar")
 
-        verify(fileSystemHandler, times(1)).fetch(anyString())
-        verifyNoMoreInteractions(fileSystemHandler)
+        verify(standardFileSystemHandler, times(1)).fetch(anyString())
+        verifyNoMoreInteractions(standardFileSystemHandler)
 
         StepVerifier.create(returned)
             .assertNext {
@@ -126,12 +126,12 @@ class FileSystemServiceTest {
 
     @Test
     fun removeFolder_thenNotFound() {
-        `when`(fileSystemHandler.fetch(anyString())).thenReturn(Mono.just(fileOne))
+        `when`(standardFileSystemHandler.fetch(anyString())).thenReturn(Mono.just(fileOne))
 
         val returned = fileSystemService.removeFolder("/test")
 
-        verify(fileSystemHandler, times(1)).fetch(anyString())
-        verifyNoMoreInteractions(fileSystemHandler)
+        verify(standardFileSystemHandler, times(1)).fetch(anyString())
+        verifyNoMoreInteractions(standardFileSystemHandler)
 
         StepVerifier.create(returned)
             .expectError(FolderNotFound::class.java)
@@ -140,13 +140,13 @@ class FileSystemServiceTest {
 
     @Test
     fun removeFolder() {
-        `when`(fileSystemHandler.fetch(anyString())).thenReturn(Mono.just(folderOne))
-        `when`(fileSystemHandler.delete(anyString())).thenReturn(Mono.just(folderOne))
+        `when`(standardFileSystemHandler.fetch(anyString())).thenReturn(Mono.just(folderOne))
+        `when`(standardFileSystemHandler.delete(anyString())).thenReturn(Mono.just(folderOne))
 
         val returned = fileSystemService.removeFolder("/test")
 
-        verify(fileSystemHandler, times(1)).fetch(anyString())
-        verifyNoMoreInteractions(fileSystemHandler)
+        verify(standardFileSystemHandler, times(1)).fetch(anyString())
+        verifyNoMoreInteractions(standardFileSystemHandler)
 
         StepVerifier.create(returned)
             .assertNext {

@@ -1,5 +1,6 @@
 package com.jtm.version.core.usecase.file
 
+import com.jtm.version.core.domain.dto.FileDTO
 import org.springframework.http.codec.multipart.FilePart
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -15,5 +16,5 @@ interface FileSystemHandler {
 
     fun delete(path: String): Mono<File>
 
-    fun listFiles(path: String): Flux<File>
+    fun listFiles(path: String): Flux<FileDTO>
 }
