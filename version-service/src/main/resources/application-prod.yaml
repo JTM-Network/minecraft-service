@@ -6,3 +6,7 @@ spring:
 
 host:
   profile: ${PROFILE_HOST}
+
+gcp:
+  project-id: ${PROJECT_ID}
+  bucket-name: ${BUCKET_NAME}
